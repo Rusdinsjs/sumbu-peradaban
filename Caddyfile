@@ -1,13 +1,11 @@
 super.sjsgroup.site {
-    # ── Sumbu Peradaban Reverse Proxy ──
-
-    # Route GraphQL API requests to Backend
-    handle /graphql* {
-        reverse_proxy backend:8080
-    }
+    # Reverse proxy ke backend Rust (semua request /api dan /graphql diarahkan ke sini)
+    reverse_proxy /api/* sumbu-backend:8080
+    reverse_proxy /graphql* sumbu-backend:8080
     
-    # Route all other requests to SvelteKit Frontend
-    handle /* {
-        reverse_proxy frontend:5173
-    }
+    # Reverse proxy ke frontend Svelte (semua trafik selain API masuk ke sini)
+    reverse_proxy * sumbu-frontend:5173
+    
+    # Reverse proxy ke Neo4j (opsional, jika ingin akses browser via domain)
+    # reverse_proxy /neo4j/* sumbu-neo4j:7474
 }
