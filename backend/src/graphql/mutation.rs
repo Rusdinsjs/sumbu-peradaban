@@ -5,7 +5,7 @@ use uuid::Uuid;
 use crate::models::{
     event::{Event, CreateEventInput, UpdateEventInput},
     actor::{Actor, CreateActorInput, UpdateActorInput},
-    location::{Location, CreateLocationInput, UpdateLocationInput},
+    location::{Location, CreateLocationInput},
     source::{Source, CreateSourceInput},
     common::*,
 };
@@ -397,40 +397,45 @@ impl MutationRoot {
         event_uuid: Uuid, 
         input: CreateSourceInput
     ) -> Result<Source> {
+        use sqlx::Row;
         let pool = ctx.data::<PgPool>()?;
         let graph = ctx.data::<Graph>()?;
 
         // 1. Insert into PostgreSQL
         let reliability_dec = input.reliability_score.map(|v| BigDecimal::from_f64(v).unwrap_or_default());
         
-        let row = sqlx::query!(
-            r#"INSERT INTO sources (domain, reference, interpretation_method, reliability_score)
-               VALUES ($1, $2, $3, $4)
-               RETURNING source_id, created_at, updated_at"#,
-            input.domain,
-            input.reference_text,
-            input.interpretation_method,
-            reliability_dec
+        let row = sqlx::query(
+            "INSERT INTO sources (domain, reference, interpretation_method, reliability_score) \
+             VALUES ($1, $2, $3, $4) \
+             RETURNING source_id, created_at, updated_at"
         )
+        .bind(input.domain.clone())
+        .bind(input.reference_text.clone())
+        .bind(input.interpretation_method.clone())
+        .bind(reliability_dec)
         .fetch_one(pool)
         .await?;
+
+        let source_id: Uuid = row.get("source_id");
+        let created_at: chrono::DateTime<chrono::Utc> = row.get("created_at");
+        let updated_at: chrono::DateTime<chrono::Utc> = row.get("updated_at");
 
         // 2. Link in Neo4j using SOURCED_FROM with source_id
         graph.run(
             neo_query("MATCH (e:Event {uuid: $event_uuid})
                        CREATE (e)-[r:SOURCED_FROM {source_id: $source_id}]->(:Source {uuid: $source_id})")
                 .param("event_uuid", event_uuid.to_string())
-                .param("source_id", row.source_id.to_string())
+                .param("source_id", source_id.to_string())
         ).await?;
 
         Ok(Source {
-            source_id: row.source_id,
+            source_id,
             domain: input.domain,
             reference_text: input.reference_text,
             interpretation_method: input.interpretation_method,
             reliability_score: input.reliability_score,
-            created_at: row.created_at,
-            updated_at: row.updated_at,
+            created_at,
+            updated_at,
         })
     }
 
@@ -472,12 +477,12 @@ impl MutationRoot {
         }
 
         // Log this action to PostgreSQL Audit Log
-        sqlx::query!(
-            "INSERT INTO audit_log (entity_type, entity_id, action, performed_by)
-             VALUES ($1, $2, 'promote', 'Curator (BozzQ)')",
-            label,
-            uuid
+        sqlx::query(
+            "INSERT INTO audit_log (entity_type, entity_id, action, performed_by) \
+             VALUES ($1, $2, 'promote', 'Curator (BozzQ)')"
         )
+        .bind(label)
+        .bind(uuid)
         .execute(pool)
         .await?;
 

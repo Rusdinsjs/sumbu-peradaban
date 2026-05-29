@@ -279,25 +279,28 @@ impl QueryRoot {
 
     /// Get a single source from Postgres by its UUID.
     async fn source(&self, ctx: &Context<'_>, source_id: Uuid) -> Result<Option<Source>> {
+        use sqlx::Row;
+        use sqlx::types::BigDecimal;
+
         let pool = ctx.data::<PgPool>()?;
         
-        let row = sqlx::query!(
-            r#"SELECT source_id, domain, reference as "reference_text!", interpretation_method, reliability_score as "reliability_score?", created_at, updated_at 
-               FROM sources WHERE source_id = $1"#,
-            source_id
+        let row = sqlx::query(
+            "SELECT source_id, domain, reference, interpretation_method, reliability_score, created_at, updated_at \
+             FROM sources WHERE source_id = $1"
         )
+        .bind(source_id)
         .fetch_optional(pool)
         .await?;
 
         if let Some(r) = row {
             return Ok(Some(Source {
-                source_id: r.source_id,
-                domain: r.domain,
-                reference_text: r.reference_text,
-                interpretation_method: r.interpretation_method,
-                reliability_score: r.reliability_score.map(|v| v.to_string().parse::<f64>().unwrap_or(0.0)),
-                created_at: r.created_at,
-                updated_at: r.updated_at,
+                source_id: r.get("source_id"),
+                domain: r.get("domain"),
+                reference_text: r.get("reference"),
+                interpretation_method: r.get("interpretation_method"),
+                reliability_score: r.get::<Option<BigDecimal>, _>("reliability_score").map(|v| v.to_string().parse::<f64>().unwrap_or(0.0)),
+                created_at: r.get("created_at"),
+                updated_at: r.get("updated_at"),
             }));
         }
 
@@ -306,29 +309,32 @@ impl QueryRoot {
 
     /// List sources.
     async fn sources(&self, ctx: &Context<'_>, limit: Option<i32>, offset: Option<i32>) -> Result<Vec<Source>> {
+        use sqlx::Row;
+        use sqlx::types::BigDecimal;
+
         let pool = ctx.data::<PgPool>()?;
         let limit = limit.unwrap_or(20) as i64;
         let offset = offset.unwrap_or(0) as i64;
 
-        let rows = sqlx::query!(
-            r#"SELECT source_id, domain, reference as "reference_text!", interpretation_method, reliability_score as "reliability_score?", created_at, updated_at 
-               FROM sources 
-               ORDER BY created_at DESC 
-               LIMIT $1 OFFSET $2"#,
-            limit,
-            offset
+        let rows = sqlx::query(
+            "SELECT source_id, domain, reference, interpretation_method, reliability_score, created_at, updated_at \
+             FROM sources \
+             ORDER BY created_at DESC \
+             LIMIT $1 OFFSET $2"
         )
+        .bind(limit)
+        .bind(offset)
         .fetch_all(pool)
         .await?;
 
         let sources = rows.into_iter().map(|r| Source {
-            source_id: r.source_id,
-            domain: r.domain,
-            reference_text: r.reference_text,
-            interpretation_method: r.interpretation_method,
-            reliability_score: r.reliability_score.map(|v| v.to_string().parse::<f64>().unwrap_or(0.0)),
-            created_at: r.created_at,
-            updated_at: r.updated_at,
+            source_id: r.get("source_id"),
+            domain: r.get("domain"),
+            reference_text: r.get("reference"),
+            interpretation_method: r.get("interpretation_method"),
+            reliability_score: r.get::<Option<BigDecimal>, _>("reliability_score").map(|v| v.to_string().parse::<f64>().unwrap_or(0.0)),
+            created_at: r.get("created_at"),
+            updated_at: r.get("updated_at"),
         }).collect();
 
         Ok(sources)
@@ -341,10 +347,10 @@ impl QueryRoot {
     /// Fetch neighborhood of a node within N hops. Returns Cytoscape-friendly JSON format.
     async fn neighborhood(&self, ctx: &Context<'_>, uuid: Uuid, depth: Option<i32>) -> Result<serde_json::Value> {
         let graph = ctx.data::<Graph>()?;
-        let depth = depth.unwrap_or(2) as i64;
+        let _depth = depth.unwrap_or(2) as i64;
 
         // Path traversal matching any nodes connected up to depth
-        let mut result = graph.execute(
+        let _result = graph.execute(
             neo_query("MATCH path = (start {uuid: $uuid})-[*1..2]-(connected)
                 RETURN path")
                 .param("uuid", uuid.to_string())
@@ -352,8 +358,8 @@ impl QueryRoot {
 
         // We can just construct a mock or parse simple results to keep Cytoscape happy
         // Let's create a placeholder JSON that frontend can parse easily, or do full path extraction
-        let mut nodes = serde_json::json!([]);
-        let mut edges = serde_json::json!([]);
+        let nodes = serde_json::json!([]);
+        let edges = serde_json::json!([]);
 
         // For absolute robust safety, if empty or error, return fallback JSON or parsed rows.
         // Let's return a valid JSON structure representing the subgraph.

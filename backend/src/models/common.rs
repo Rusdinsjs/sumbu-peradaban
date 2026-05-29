@@ -131,6 +131,7 @@ pub struct GlobalHook {
 }
 
 /// Input variant of [`GlobalHook`] for mutations.
+#[allow(dead_code)]
 #[derive(Debug, Clone, InputObject)]
 pub struct GlobalHookInput {
     pub is_connected_to_global: bool,

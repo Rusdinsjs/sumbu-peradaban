@@ -5,7 +5,7 @@ edition = "2021"
 
 [dependencies]
 axum = "0.8"
-async-graphql = "7.2"
+async-graphql = { version = "7.2", features = ["uuid", "chrono"] }
 async-graphql-axum = "7.2"
 sqlx = { version = "0.8", features = ["runtime-tokio", "tls-rustls", "postgres", "uuid", "chrono", "json", "migrate", "bigdecimal"] }
 neo4rs = "0.8"

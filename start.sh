@@ -41,7 +41,7 @@ fi
 
 # 4. Run Docker Compose
 echo -e "\e[1;32m[+] Membangun & Menjalankan Kontainer Sumbu Peradaban...\e[0m"
-sudo docker compose up --build -d
+sudo docker compose up -d
 
 echo -e "\e[1;36m========================================================\e[0m"
 echo -e "\e[1;32mSUKSES! Aplikasi Sumbu Peradaban telah aktif.\e[0m"

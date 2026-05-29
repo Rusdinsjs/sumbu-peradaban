@@ -4,6 +4,7 @@ use serde_json::json;
 use std::fmt;
 
 /// Central error type for the Sumbu Peradaban backend.
+#[allow(dead_code)]
 #[derive(Debug)]
 pub enum AppError {
     /// A PostgreSQL / sqlx error.
@@ -66,8 +67,4 @@ impl From<neo4rs::Error> for AppError {
     }
 }
 
-impl From<AppError> for async_graphql::Error {
-    fn from(err: AppError) -> Self {
-        async_graphql::Error::new(err.to_string())
-    }
-}
+

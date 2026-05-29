@@ -37,6 +37,7 @@ pub struct CreateLocationInput {
     pub global_pivot_category: Option<String>,
 }
 
+#[allow(dead_code)]
 #[derive(Debug, InputObject)]
 pub struct UpdateLocationInput {
     pub name: Option<String>,
