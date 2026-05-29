@@ -6,16 +6,17 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  # Menggunakan huruf kecil untuk nama image Docker sesuai standar
-  IMAGE_NAME: ${{ github.repository_owner }}/sumbu-peradaban-backend
+  # WAJIB huruf kecil semua untuk Docker
+  IMAGE_NAME: rusdinsjs/sumbu-peradaban-backend
+
+permissions:
+  contents: read
+  packages: write
 
 jobs:
   build-and-push:
     name: Build Rust & Push to GHCR
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     steps:
       - name: Checkout repository
@@ -26,6 +27,10 @@ jobs:
         
       - name: Cache Cargo Registry & Target
         uses: Swatinem/rust-cache@v2
+        with:
+          # Beritahu cache bahwa project Rust ada di dalam folder backend
+          workspaces: |
+            backend -> target
 
       - name: Compile Backend (Release Mode)
         run: cargo build --release
