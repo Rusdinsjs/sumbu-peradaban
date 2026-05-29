@@ -63,8 +63,8 @@ jobs:
       - name: Execute Deployment over SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.VPS_HOST }}
-          username: ${{ secrets.VPS_USERNAME }}
+          host: 43.134.17.13
+          username: ubuntu
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd ~/sumbu-peradaban
