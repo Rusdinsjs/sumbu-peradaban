@@ -8,10 +8,9 @@ RUN apt-get update && apt-get install -y \
     libssl-dev \
     libpq-dev \
     curl \
-    tar \
     xz-utils \
     && curl -L https://github.com/watchexec/cargo-watch/releases/download/v8.4.1/cargo-watch-v8.4.1-x86_64-unknown-linux-musl.tar.xz | tar -xJ --strip-components=1 -C /usr/local/bin \
-    && apt-get purge -y curl tar xz-utils \
+    && apt-get purge -y curl xz-utils \
     && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
