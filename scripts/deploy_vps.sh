@@ -7,6 +7,7 @@ ssh ubuntu@43.134.17.13 << 'EOF'
   cd ~/sumbu-peradaban
   
   echo "📥 Menarik kode terbaru dari GitHub..."
+  git reset --hard HEAD
   git pull origin main
   
   echo "🔄 Mengunduh Docker Image terbaru (Backend & Caddy)..."

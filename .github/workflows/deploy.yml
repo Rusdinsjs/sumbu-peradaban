@@ -68,6 +68,9 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           script: |
             cd ~/sumbu-peradaban
+            
+            # Buang paksa semua perubahan lokal yang belum ter-commit di VPS
+            git reset --hard HEAD
             git pull origin main
             
             # Login sementara ke GHCR menggunakan token dari GitHub Actions
