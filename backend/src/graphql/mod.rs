@@ -1,9 +1,9 @@
-pub mod query;
 pub mod mutation;
+pub mod query;
 
-use async_graphql::{Schema, EmptySubscription};
-use sqlx::PgPool;
+use async_graphql::{EmptySubscription, Schema};
 use neo4rs::Graph;
+use sqlx::PgPool;
 
 pub type AppSchema = Schema<query::QueryRoot, mutation::MutationRoot, EmptySubscription>;
 

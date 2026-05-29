@@ -1,14 +1,8 @@
+use crate::models::{actor::Actor, common::*, event::Event, location::Location, source::Source};
 use async_graphql::{Context, Object, Result};
+use neo4rs::{query as neo_query, Graph};
 use sqlx::PgPool;
-use neo4rs::{Graph, query as neo_query};
 use uuid::Uuid;
-use crate::models::{
-    event::Event,
-    actor::Actor,
-    location::Location,
-    source::Source,
-    common::*,
-};
 
 #[derive(Default)]
 pub struct QueryRoot;
@@ -22,8 +16,10 @@ impl QueryRoot {
     /// Get a single event by its UUID.
     async fn event(&self, ctx: &Context<'_>, uuid: Uuid) -> Result<Option<Event>> {
         let graph = ctx.data::<Graph>()?;
-        let mut result = graph.execute(
-            neo_query("MATCH (e:Event {uuid: $uuid}) RETURN 
+        let mut result = graph
+            .execute(
+                neo_query(
+                    "MATCH (e:Event {uuid: $uuid}) RETURN 
                 e.uuid AS uuid, 
                 e.title AS title, 
                 e.description AS description, 
@@ -37,9 +33,11 @@ impl QueryRoot {
                 e.precision AS precision, 
                 e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
-                e.global_pivot_category AS global_pivot_category")
-                .param("uuid", uuid.to_string())
-        ).await?;
+                e.global_pivot_category AS global_pivot_category",
+                )
+                .param("uuid", uuid.to_string()),
+            )
+            .await?;
 
         if let Some(row) = result.next().await? {
             return Ok(Some(row_to_event(&row)?));
@@ -49,13 +47,20 @@ impl QueryRoot {
     }
 
     /// List historical events.
-    async fn events(&self, ctx: &Context<'_>, limit: Option<i32>, offset: Option<i32>) -> Result<Vec<Event>> {
+    async fn events(
+        &self,
+        ctx: &Context<'_>,
+        limit: Option<i32>,
+        offset: Option<i32>,
+    ) -> Result<Vec<Event>> {
         let graph = ctx.data::<Graph>()?;
         let limit = limit.unwrap_or(20);
         let offset = offset.unwrap_or(0);
 
-        let mut result = graph.execute(
-            neo_query("MATCH (e:Event) RETURN 
+        let mut result = graph
+            .execute(
+                neo_query(
+                    "MATCH (e:Event) RETURN 
                 e.uuid AS uuid, 
                 e.title AS title, 
                 e.description AS description, 
@@ -71,10 +76,12 @@ impl QueryRoot {
                 e.is_connected_to_global AS is_connected_to_global, 
                 e.global_pivot_category AS global_pivot_category 
                 ORDER BY e.hijri_year ASC, e.hijri_month ASC, e.hijri_day ASC 
-                SKIP $offset LIMIT $limit")
+                SKIP $offset LIMIT $limit",
+                )
                 .param("offset", offset as i64)
-                .param("limit", limit as i64)
-        ).await?;
+                .param("limit", limit as i64),
+            )
+            .await?;
 
         let mut events = Vec::new();
         while let Some(row) = result.next().await? {
@@ -85,7 +92,12 @@ impl QueryRoot {
     }
 
     /// Search events using fulltext index.
-    async fn search_events(&self, ctx: &Context<'_>, query: String, limit: Option<i32>) -> Result<Vec<Event>> {
+    async fn search_events(
+        &self,
+        ctx: &Context<'_>,
+        query: String,
+        limit: Option<i32>,
+    ) -> Result<Vec<Event>> {
         let graph = ctx.data::<Graph>()?;
         let limit = limit.unwrap_or(10);
 
@@ -126,8 +138,10 @@ impl QueryRoot {
     /// Get a single actor by its UUID.
     async fn actor(&self, ctx: &Context<'_>, uuid: Uuid) -> Result<Option<Actor>> {
         let graph = ctx.data::<Graph>()?;
-        let mut result = graph.execute(
-            neo_query("MATCH (a:Actor {uuid: $uuid}) RETURN 
+        let mut result = graph
+            .execute(
+                neo_query(
+                    "MATCH (a:Actor {uuid: $uuid}) RETURN 
                 a.uuid AS uuid, 
                 a.name AS name, 
                 a.actor_type AS actor_type, 
@@ -136,9 +150,11 @@ impl QueryRoot {
                 a.death_year AS death_year, 
                 a.curation_tier AS curation_tier, 
                 a.is_connected_to_global AS is_connected_to_global, 
-                a.global_pivot_category AS global_pivot_category")
-                .param("uuid", uuid.to_string())
-        ).await?;
+                a.global_pivot_category AS global_pivot_category",
+                )
+                .param("uuid", uuid.to_string()),
+            )
+            .await?;
 
         if let Some(row) = result.next().await? {
             return Ok(Some(row_to_actor(&row)?));
@@ -148,13 +164,20 @@ impl QueryRoot {
     }
 
     /// List historical actors.
-    async fn actors(&self, ctx: &Context<'_>, limit: Option<i32>, offset: Option<i32>) -> Result<Vec<Actor>> {
+    async fn actors(
+        &self,
+        ctx: &Context<'_>,
+        limit: Option<i32>,
+        offset: Option<i32>,
+    ) -> Result<Vec<Actor>> {
         let graph = ctx.data::<Graph>()?;
         let limit = limit.unwrap_or(20);
         let offset = offset.unwrap_or(0);
 
-        let mut result = graph.execute(
-            neo_query("MATCH (a:Actor) RETURN 
+        let mut result = graph
+            .execute(
+                neo_query(
+                    "MATCH (a:Actor) RETURN 
                 a.uuid AS uuid, 
                 a.name AS name, 
                 a.actor_type AS actor_type, 
@@ -164,10 +187,12 @@ impl QueryRoot {
                 a.curation_tier AS curation_tier, 
                 a.is_connected_to_global AS is_connected_to_global, 
                 a.global_pivot_category AS global_pivot_category 
-                SKIP $offset LIMIT $limit")
+                SKIP $offset LIMIT $limit",
+                )
                 .param("offset", offset as i64)
-                .param("limit", limit as i64)
-        ).await?;
+                .param("limit", limit as i64),
+            )
+            .await?;
 
         let mut actors = Vec::new();
         while let Some(row) = result.next().await? {
@@ -184,8 +209,10 @@ impl QueryRoot {
     /// Get a single location by its UUID.
     async fn location(&self, ctx: &Context<'_>, uuid: Uuid) -> Result<Option<Location>> {
         let graph = ctx.data::<Graph>()?;
-        let mut result = graph.execute(
-            neo_query("MATCH (l:Location {uuid: $uuid}) RETURN 
+        let mut result = graph
+            .execute(
+                neo_query(
+                    "MATCH (l:Location {uuid: $uuid}) RETURN 
                 l.uuid AS uuid, 
                 l.name AS name, 
                 l.lat AS lat, 
@@ -194,9 +221,11 @@ impl QueryRoot {
                 l.is_transcendental AS is_transcendental, 
                 l.curation_tier AS curation_tier, 
                 l.is_connected_to_global AS is_connected_to_global, 
-                l.global_pivot_category AS global_pivot_category")
-                .param("uuid", uuid.to_string())
-        ).await?;
+                l.global_pivot_category AS global_pivot_category",
+                )
+                .param("uuid", uuid.to_string()),
+            )
+            .await?;
 
         if let Some(row) = result.next().await? {
             return Ok(Some(row_to_location(&row)?));
@@ -206,13 +235,20 @@ impl QueryRoot {
     }
 
     /// List historical locations.
-    async fn locations(&self, ctx: &Context<'_>, limit: Option<i32>, offset: Option<i32>) -> Result<Vec<Location>> {
+    async fn locations(
+        &self,
+        ctx: &Context<'_>,
+        limit: Option<i32>,
+        offset: Option<i32>,
+    ) -> Result<Vec<Location>> {
         let graph = ctx.data::<Graph>()?;
         let limit = limit.unwrap_or(20);
         let offset = offset.unwrap_or(0);
 
-        let mut result = graph.execute(
-            neo_query("MATCH (l:Location) RETURN 
+        let mut result = graph
+            .execute(
+                neo_query(
+                    "MATCH (l:Location) RETURN 
                 l.uuid AS uuid, 
                 l.name AS name, 
                 l.lat AS lat, 
@@ -222,10 +258,12 @@ impl QueryRoot {
                 l.curation_tier AS curation_tier, 
                 l.is_connected_to_global AS is_connected_to_global, 
                 l.global_pivot_category AS global_pivot_category 
-                SKIP $offset LIMIT $limit")
+                SKIP $offset LIMIT $limit",
+                )
                 .param("offset", offset as i64)
-                .param("limit", limit as i64)
-        ).await?;
+                .param("limit", limit as i64),
+            )
+            .await?;
 
         let mut locations = Vec::new();
         while let Some(row) = result.next().await? {
@@ -237,12 +275,12 @@ impl QueryRoot {
 
     /// Get locations within a bounding box.
     async fn locations_by_bbox(
-        &self, 
-        ctx: &Context<'_>, 
-        min_lat: f64, 
-        min_lng: f64, 
-        max_lat: f64, 
-        max_lng: f64
+        &self,
+        ctx: &Context<'_>,
+        min_lat: f64,
+        min_lng: f64,
+        max_lat: f64,
+        max_lng: f64,
     ) -> Result<Vec<Location>> {
         let graph = ctx.data::<Graph>()?;
 
@@ -279,11 +317,11 @@ impl QueryRoot {
 
     /// Get a single source from Postgres by its UUID.
     async fn source(&self, ctx: &Context<'_>, source_id: Uuid) -> Result<Option<Source>> {
-        use sqlx::Row;
         use sqlx::types::BigDecimal;
+        use sqlx::Row;
 
         let pool = ctx.data::<PgPool>()?;
-        
+
         let row = sqlx::query(
             "SELECT source_id, domain, reference, interpretation_method, reliability_score, created_at, updated_at \
              FROM sources WHERE source_id = $1"
@@ -298,7 +336,9 @@ impl QueryRoot {
                 domain: r.get("domain"),
                 reference_text: r.get("reference"),
                 interpretation_method: r.get("interpretation_method"),
-                reliability_score: r.get::<Option<BigDecimal>, _>("reliability_score").map(|v| v.to_string().parse::<f64>().unwrap_or(0.0)),
+                reliability_score: r
+                    .get::<Option<BigDecimal>, _>("reliability_score")
+                    .map(|v| v.to_string().parse::<f64>().unwrap_or(0.0)),
                 created_at: r.get("created_at"),
                 updated_at: r.get("updated_at"),
             }));
@@ -308,9 +348,14 @@ impl QueryRoot {
     }
 
     /// List sources.
-    async fn sources(&self, ctx: &Context<'_>, limit: Option<i32>, offset: Option<i32>) -> Result<Vec<Source>> {
-        use sqlx::Row;
+    async fn sources(
+        &self,
+        ctx: &Context<'_>,
+        limit: Option<i32>,
+        offset: Option<i32>,
+    ) -> Result<Vec<Source>> {
         use sqlx::types::BigDecimal;
+        use sqlx::Row;
 
         let pool = ctx.data::<PgPool>()?;
         let limit = limit.unwrap_or(20) as i64;
@@ -327,15 +372,20 @@ impl QueryRoot {
         .fetch_all(pool)
         .await?;
 
-        let sources = rows.into_iter().map(|r| Source {
-            source_id: r.get("source_id"),
-            domain: r.get("domain"),
-            reference_text: r.get("reference"),
-            interpretation_method: r.get("interpretation_method"),
-            reliability_score: r.get::<Option<BigDecimal>, _>("reliability_score").map(|v| v.to_string().parse::<f64>().unwrap_or(0.0)),
-            created_at: r.get("created_at"),
-            updated_at: r.get("updated_at"),
-        }).collect();
+        let sources = rows
+            .into_iter()
+            .map(|r| Source {
+                source_id: r.get("source_id"),
+                domain: r.get("domain"),
+                reference_text: r.get("reference"),
+                interpretation_method: r.get("interpretation_method"),
+                reliability_score: r
+                    .get::<Option<BigDecimal>, _>("reliability_score")
+                    .map(|v| v.to_string().parse::<f64>().unwrap_or(0.0)),
+                created_at: r.get("created_at"),
+                updated_at: r.get("updated_at"),
+            })
+            .collect();
 
         Ok(sources)
     }
@@ -345,16 +395,25 @@ impl QueryRoot {
     // -------------------------------------------------------------------------
 
     /// Fetch neighborhood of a node within N hops. Returns Cytoscape-friendly JSON format.
-    async fn neighborhood(&self, ctx: &Context<'_>, uuid: Uuid, depth: Option<i32>) -> Result<serde_json::Value> {
+    async fn neighborhood(
+        &self,
+        ctx: &Context<'_>,
+        uuid: Uuid,
+        depth: Option<i32>,
+    ) -> Result<serde_json::Value> {
         let graph = ctx.data::<Graph>()?;
         let _depth = depth.unwrap_or(2) as i64;
 
         // Path traversal matching any nodes connected up to depth
-        let _result = graph.execute(
-            neo_query("MATCH path = (start {uuid: $uuid})-[*1..2]-(connected)
-                RETURN path")
-                .param("uuid", uuid.to_string())
-        ).await?;
+        let _result = graph
+            .execute(
+                neo_query(
+                    "MATCH path = (start {uuid: $uuid})-[*1..2]-(connected)
+                RETURN path",
+                )
+                .param("uuid", uuid.to_string()),
+            )
+            .await?;
 
         // We can just construct a mock or parse simple results to keep Cytoscape happy
         // Let's create a placeholder JSON that frontend can parse easily, or do full path extraction
@@ -370,11 +429,18 @@ impl QueryRoot {
     }
 
     /// Events in a specific year range based on Hijri calendar.
-    async fn timeline(&self, ctx: &Context<'_>, from_year: i32, to_year: i32) -> Result<Vec<Event>> {
+    async fn timeline(
+        &self,
+        ctx: &Context<'_>,
+        from_year: i32,
+        to_year: i32,
+    ) -> Result<Vec<Event>> {
         let graph = ctx.data::<Graph>()?;
 
-        let mut result = graph.execute(
-            neo_query("MATCH (e:Event) 
+        let mut result = graph
+            .execute(
+                neo_query(
+                    "MATCH (e:Event) 
                 WHERE e.hijri_year >= $from_year AND e.hijri_year <= $to_year 
                 RETURN 
                 e.uuid AS uuid, 
@@ -391,10 +457,12 @@ impl QueryRoot {
                 e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
                 e.global_pivot_category AS global_pivot_category 
-                ORDER BY e.hijri_year ASC")
+                ORDER BY e.hijri_year ASC",
+                )
                 .param("from_year", from_year as i64)
-                .param("to_year", to_year as i64)
-        ).await?;
+                .param("to_year", to_year as i64),
+            )
+            .await?;
 
         let mut events = Vec::new();
         while let Some(row) = result.next().await? {
@@ -434,7 +502,9 @@ fn row_to_event(row: &neo4rs::Row) -> Result<Event> {
         _ => TimePrecision::Exact,
     };
 
-    let tier_str: String = row.get("curation_tier").unwrap_or_else(|_| "Draft".to_string());
+    let tier_str: String = row
+        .get("curation_tier")
+        .unwrap_or_else(|_| "Draft".to_string());
     let curation_tier = match tier_str.as_str() {
         "Draft" => CurationTier::Draft,
         "Verified" => CurationTier::Verified,
@@ -474,8 +544,10 @@ fn row_to_actor(row: &neo4rs::Row) -> Result<Actor> {
     let uuid_str: String = row.get("uuid")?;
     let uuid = Uuid::parse_str(&uuid_str).map_err(|e| async_graphql::Error::new(e.to_string()))?;
     let name: String = row.get("name")?;
-    let type_str: String = row.get("actor_type").unwrap_or_else(|_| "Individual".to_string());
-    
+    let type_str: String = row
+        .get("actor_type")
+        .unwrap_or_else(|_| "Individual".to_string());
+
     let actor_type = match type_str.as_str() {
         "Individual" => ActorType::Individual,
         "Group" => ActorType::Group,
@@ -486,7 +558,9 @@ fn row_to_actor(row: &neo4rs::Row) -> Result<Actor> {
     let birth_year: Option<i32> = row.get("birth_year").ok();
     let death_year: Option<i32> = row.get("death_year").ok();
 
-    let tier_str: String = row.get("curation_tier").unwrap_or_else(|_| "Draft".to_string());
+    let tier_str: String = row
+        .get("curation_tier")
+        .unwrap_or_else(|_| "Draft".to_string());
     let curation_tier = match tier_str.as_str() {
         "Draft" => CurationTier::Draft,
         "Verified" => CurationTier::Verified,
@@ -519,7 +593,7 @@ fn row_to_location(row: &neo4rs::Row) -> Result<Location> {
     let name: String = row.get("name")?;
     let lat: Option<f64> = row.get("lat").ok();
     let lng: Option<f64> = row.get("lng").ok();
-    
+
     let prec_str: String = row.get("precision").unwrap_or_else(|_| "Point".to_string());
     let precision = match prec_str.as_str() {
         "Point" => LocationPrecision::Point,
@@ -530,7 +604,9 @@ fn row_to_location(row: &neo4rs::Row) -> Result<Location> {
 
     let is_transcendental: bool = row.get("is_transcendental").unwrap_or(false);
 
-    let tier_str: String = row.get("curation_tier").unwrap_or_else(|_| "Draft".to_string());
+    let tier_str: String = row
+        .get("curation_tier")
+        .unwrap_or_else(|_| "Draft".to_string());
     let curation_tier = match tier_str.as_str() {
         "Draft" => CurationTier::Draft,
         "Verified" => CurationTier::Verified,

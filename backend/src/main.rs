@@ -25,20 +25,13 @@ type AppSchema = async_graphql::Schema<
 >;
 
 /// Handler for POST /graphql — executes a GraphQL request.
-async fn graphql_handler(
-    State(schema): State<AppSchema>,
-    req: GraphQLRequest,
-) -> GraphQLResponse {
+async fn graphql_handler(State(schema): State<AppSchema>, req: GraphQLRequest) -> GraphQLResponse {
     schema.execute(req.into_inner()).await.into()
 }
 
 /// Handler for GET / — serves the GraphiQL interactive playground.
 async fn graphiql() -> impl IntoResponse {
-    Html(
-        GraphiQLSource::build()
-            .endpoint("/graphql")
-            .finish(),
-    )
+    Html(GraphiQLSource::build().endpoint("/graphql").finish())
 }
 
 #[tokio::main]
@@ -56,8 +49,7 @@ async fn main() {
     info!("Starting Sumbu Peradaban backend…");
 
     // --- PostgreSQL ---
-    let database_url =
-        std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
+    let database_url = std::env::var("DATABASE_URL").expect("DATABASE_URL must be set");
     let pool = db::postgres::init_pool(&database_url)
         .await
         .expect("Failed to connect to PostgreSQL");
@@ -72,10 +64,8 @@ async fn main() {
     // --- Neo4j ---
     let neo4j_uri =
         std::env::var("NEO4J_URI").unwrap_or_else(|_| "bolt://localhost:7687".to_string());
-    let neo4j_user =
-        std::env::var("NEO4J_USER").unwrap_or_else(|_| "neo4j".to_string());
-    let neo4j_pass =
-        std::env::var("NEO4J_PASS").expect("NEO4J_PASS must be set");
+    let neo4j_user = std::env::var("NEO4J_USER").unwrap_or_else(|_| "neo4j".to_string());
+    let neo4j_pass = std::env::var("NEO4J_PASS").expect("NEO4J_PASS must be set");
 
     let graph = db::neo4j::init_graph(&neo4j_uri, &neo4j_user, &neo4j_pass)
         .await
@@ -104,7 +94,5 @@ async fn main() {
         .expect("Failed to bind to 0.0.0.0:8080");
     info!("Server listening on http://0.0.0.0:8080");
 
-    axum::serve(listener, app)
-        .await
-        .expect("Server error");
+    axum::serve(listener, app).await.expect("Server error");
 }

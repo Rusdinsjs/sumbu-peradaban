@@ -66,5 +66,3 @@ impl From<neo4rs::Error> for AppError {
         AppError::Neo4j(err)
     }
 }
-
-
