@@ -1,72 +1,73 @@
-name: CI/CD Pipeline
+name: Production Deployment (CI/CD)
 
 on:
   push:
-    branches:
-      - main
-      - master
+    branches: [ "main", "master" ]
+
+env:
+  REGISTRY: ghcr.io
+  # Menggunakan huruf kecil untuk nama image Docker sesuai standar
+  IMAGE_NAME: ${{ github.repository_owner }}/sumbu-peradaban-backend
 
 jobs:
-  # ---------------------------------------------------------------------------
-  # Stage 1: Continuous Integration (CI)
-  # ---------------------------------------------------------------------------
-  ci:
-    name: Continuous Integration
+  build-and-push:
+    name: Build Rust & Push to GHCR
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      # ── Backend CI (Rust) ───────────────────────────────────────────────────
-      - name: Setup Rust toolchain
+      - name: Setup Rust Toolchain
         uses: dtolnay/rust-toolchain@stable
+        
+      - name: Cache Cargo Registry & Target
+        uses: Swatinem/rust-cache@v2
+
+      - name: Compile Backend (Release Mode)
+        run: cargo build --release
+        working-directory: ./backend
+
+      - name: Move Binary for Docker Context
+        # Memindahkan hasil rakitan ke tempat yang bisa dijangkau Docker
+        run: cp ./backend/target/release/sumbu-peradaban ./backend/sumbu-peradaban
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          components: clippy, rustfmt
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Rust Cache
-        uses: swatinem/rust-cache@v2
+      - name: Build and Push Docker Image
+        uses: docker/build-push-action@v5
         with:
-          workspaces: backend
+          context: ./backend
+          file: ./backend/Dockerfile.prod
+          push: true
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
 
-      - name: Check Backend Formatting
-        run: cargo fmt --manifest-path backend/Cargo.toml --all -- --check
-
-      - name: Check Backend Compiler
-        run: cargo check --manifest-path backend/Cargo.toml
-
-      # ── Frontend CI (SvelteKit) ─────────────────────────────────────────────
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22
-
-      - name: Install Frontend Dependencies
-        run: npm ci --prefix frontend
-
-      - name: Check Frontend Compiler & Types
-        env:
-          PUBLIC_MAPBOX_TOKEN: pk.your_mapbox_token_here
-        run: npm run build --prefix frontend
-
-  # ---------------------------------------------------------------------------
-  # Stage 2: Continuous Deployment (CD)
-  # ---------------------------------------------------------------------------
-  deploy:
-    name: Continuous Deployment
+  deploy-to-vps:
+    name: Deploy to VPS
+    needs: build-and-push
     runs-on: ubuntu-latest
-    needs: ci
-    if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master'
-
     steps:
-      - name: Deploy to VPS via SSH
+      - name: Execute Deployment over SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
-          host: ${{ secrets.VPS_IP }}
-          username: ${{ secrets.VPS_USER }}
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USERNAME }}
           key: ${{ secrets.VPS_SSH_KEY }}
-          port: ${{ secrets.VPS_PORT || 22 }}
           script: |
-            cd /home/ubuntu/sumbu-peradaban || cd ~/sumbu-peradaban || cd /home/rus/Ngoding/sumbu-peradaban
-            git pull origin ${{ github.ref_name }}
-            ./start.sh
+            cd ~/sumbu-peradaban
+            git pull origin main
+            
+            # Login sementara ke GHCR menggunakan token dari GitHub Actions
+            echo "${{ secrets.GITHUB_TOKEN }}" | sudo docker login ghcr.io -u ${{ github.actor }} --password-stdin
+            
+            # Tarik image yang baru saja dibuat dan hidupkan sistem
+            sudo docker compose -f docker-compose.prod.yml pull backend
+            sudo docker compose -f docker-compose.prod.yml up -d
