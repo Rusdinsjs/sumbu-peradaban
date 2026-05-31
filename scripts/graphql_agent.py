@@ -20,7 +20,7 @@ class SumbuPeradabanClient:
         """Set JWT token secara manual jika sudah punya."""
         self.token = token
 
-    def login(self, email, password):
+    def login(self, username, password):
         """Melakukan login untuk mendapatkan JWT Token."""
         query = """
         mutation Login($input: LoginInput!) {
@@ -31,7 +31,7 @@ class SumbuPeradabanClient:
         """
         variables = {
             "input": {
-                "email": email,
+                "username": username,
                 "password": password
             }
         }
