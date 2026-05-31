@@ -3,7 +3,7 @@ use crate::models::{
     common::*,
     event::{CreateEventInput, Event, UpdateEventInput},
     location::{CreateLocationInput, UpdateLocationInput, Location},
-    source::{CreateSourceInput, UpdateSourceInput, Source},
+    source::{CreateSourceInput, UpdateSourceInput, Source, SubReferenceInput},
     auth::{User, UserRole, Claims, AuthToken, RegisterInput, LoginInput, UpdateProfileInput, UpdateUserRoleInput, AdminCreateUserInput, AdminUpdateUserInput, create_jwt},
 };
 use async_graphql::{Context, Object, Result, Error};
@@ -1391,12 +1391,18 @@ impl MutationRoot {
         ctx: &Context<'_>,
         event_uuid: Uuid,
         source_id: Uuid,
-        sub_references: Option<String>,
+        sub_references: Option<Vec<SubReferenceInput>>,
     ) -> Result<bool> {
         let claims = ctx.data_opt::<Claims>().ok_or_else(|| Error::new("Unauthorized: Please log in"))?;
         if !claims.role.can_edit() {
             return Err(Error::new("Forbidden: You do not have permission to link sources"));
         }
+        
+        let sub_refs_json = match &sub_references {
+            Some(refs) => serde_json::to_string(refs).unwrap_or_else(|_| "[]".to_string()),
+            None => "[]".to_string(),
+        };
+
         let graph = ctx.data::<Graph>()?;
         graph.run(
             neo_query("MATCH (e:Event {uuid: $event_uuid}), (s:Source {uuid: $source_id})
@@ -1404,7 +1410,7 @@ impl MutationRoot {
                        SET r.source_id = $source_id, r.sub_references = $sub_ref")
                 .param("event_uuid", event_uuid.to_string())
                 .param("source_id", source_id.to_string())
-                .param("sub_ref", sub_references.unwrap_or_default())
+                .param("sub_ref", sub_refs_json)
         ).await?;
         Ok(true)
     }

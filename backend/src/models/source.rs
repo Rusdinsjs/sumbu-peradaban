@@ -2,9 +2,22 @@ use async_graphql::{InputObject, SimpleObject};
 use chrono::{DateTime, Utc};
 use uuid::Uuid;
 use crate::models::common::{MediaLink, MediaLinkInput};
+use serde::{Deserialize, Serialize};
 
-// ---------------------------------------------------------------------------
-// Source — Dimension 4: anchored in PostgreSQL
+#[derive(Debug, Clone, SimpleObject, Serialize, Deserialize)]
+pub struct SubReference {
+    pub volume_chapter: Option<String>,
+    pub page_verse: Option<String>,
+    pub quote_notes: Option<String>,
+}
+
+#[derive(Debug, Clone, InputObject, Serialize, Deserialize)]
+pub struct SubReferenceInput {
+    pub volume_chapter: Option<String>,
+    pub page_verse: Option<String>,
+    pub quote_notes: Option<String>,
+}
+
 // ---------------------------------------------------------------------------
 
 /// A scholarly source / reference stored in PostgreSQL.
@@ -21,7 +34,7 @@ pub struct Source {
     pub reliability_score: Option<f64>,
     pub reliability_assessment: Option<String>,
     pub media_links: Option<Vec<MediaLink>>,
-    pub sub_references: Option<String>,
+    pub sub_references: Option<Vec<SubReference>>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

@@ -802,7 +802,8 @@ impl Event {
                 .await?;
             if let Some(r) = row {
                 let mut source = row_to_source(&r)?;
-                source.sub_references = sub_ref;
+                let parsed_sub_refs: Option<Vec<crate::models::source::SubReference>> = sub_ref.and_then(|s| serde_json::from_str(&s).ok());
+                source.sub_references = parsed_sub_refs;
                 sources.push(source);
             }
         }

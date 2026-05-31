@@ -202,17 +202,32 @@ class SumbuPeradabanClient:
         except Exception as e:
             print(f"❌ Gagal melink Event ke Location: Cek logs")
 
-    def link_event_to_source(self, event_uuid, source_id, sub_references=""):
+    def link_event_to_source(self, event_uuid, source_id, sub_references=None):
+        """
+        Melink sebuah Event dengan Source (Rujukan).
+        `sub_references` kini menerima list of dicts untuk 3 kolom rujukan.
+        Format yang didukung:
+        [
+            {
+                "volumeChapter": "Bab 4 / Surat Al-Baqarah",
+                "pageVerse": "Halaman 123 / Ayat 10-15",
+                "quoteNotes": "Kutipan dari sumber atau ulasan tafsir"
+            }
+        ]
+        """
         if not source_id or not event_uuid: return
+        if sub_references is None:
+            sub_references = []
+            
         query = """
-        mutation LinkEventToSource($eventUuid: UUID!, $sourceId: UUID!, $subReferences: String) {
+        mutation LinkEventToSource($eventUuid: UUID!, $sourceId: UUID!, $subReferences: [SubReferenceInput!]) {
             linkEventToSource(eventUuid: $eventUuid, sourceId: $sourceId, subReferences: $subReferences)
         }
         """
         variables = {"eventUuid": event_uuid, "sourceId": source_id, "subReferences": sub_references}
         try:
             self._execute(query, variables)
-            print(f"🔗 Linked Event({event_uuid}) -> Source({source_id}) [Ref: {sub_references}]")
+            print(f"🔗 Linked Event({event_uuid}) -> Source({source_id}) [{len(sub_references)} Rincian Rujukan]")
         except Exception as e:
             print(f"❌ Gagal melink Event ke Source: Cek logs")
 
@@ -291,7 +306,18 @@ class SumbuPeradabanClient:
                 "event": {"title": "Perang Badar", "year": 624},
                 "actors": [{"name": "Rasulullah SAW", "type": "INDIVIDUAL", "role": "Commander"}],
                 "locations": [{"name": "Lembah Badar", "precision": "AREA"}],
-                "sources": [{"id": "UUID-SOURCE-DI-DB", "ref": "Sirah Nabawiyah Hlm 120"}]
+                "sources": [
+                    {
+                        "id": "UUID-SOURCE-DI-DB", 
+                        "sub_refs": [
+                            {
+                                "volumeChapter": "Jilid 1 / Bab 2",
+                                "pageVerse": "Halaman 120",
+                                "quoteNotes": "Penjelasan tentang logistik perang"
+                            }
+                        ]
+                    }
+                ]
             }
         ]
         """
@@ -322,7 +348,7 @@ class SumbuPeradabanClient:
 
             # 4. Sources
             for src in item.get("sources", []):
-                self.link_event_to_source(event_id, src.get("id"), src.get("ref", ""))
+                self.link_event_to_source(event_id, src.get("id"), src.get("sub_refs", []))
             
             # 5. Quality Gate
             self.validate_event(event_id)
