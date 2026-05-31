@@ -80,4 +80,4 @@ jobs:
             
             # Tarik image yang baru saja dibuat dan hidupkan sistem
             sudo docker compose -f docker-compose.prod.yml pull backend
-            sudo docker compose -f docker-compose.prod.yml up -d
+            sudo docker compose -f docker-compose.prod.yml up -d --build
