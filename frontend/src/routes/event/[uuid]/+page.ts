@@ -17,6 +17,15 @@ export const load: PageLoad = async ({ fetch, params }) => {
         }
         curationTier
         precision
+        sources {
+          sourceId
+          domain
+          title
+          author
+          referenceText
+          reliabilityScore
+          subReferences
+        }
       }
       fullGraph(limit: 500)
     }

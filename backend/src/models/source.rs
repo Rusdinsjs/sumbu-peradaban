@@ -21,6 +21,7 @@ pub struct Source {
     pub reliability_score: Option<f64>,
     pub reliability_assessment: Option<String>,
     pub media_links: Option<Vec<MediaLink>>,
+    pub sub_references: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
 }

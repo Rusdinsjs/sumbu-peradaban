@@ -39,7 +39,8 @@
     isPivot: false,
     selectedActors: [] as string[],
     selectedLocations: [] as string[],
-    selectedSources: [] as string[]
+    selectedSources: [] as string[],
+    subReferences: {} as Record<string, Array<{ section: string, point: string, note: string }>>
   });
   let submitError = $state('');
   let isSaving = $state(false);
@@ -74,7 +75,7 @@
             precision 
             actors { uuid }
             locations { uuid }
-            sources { sourceId }
+            sources { sourceId subReferences }
           }
           actors { uuid name }
           locations { uuid name }
@@ -101,6 +102,19 @@
 
   function openEditForm(evt: any) {
     formMode = 'edit';
+    const subRefsMap: Record<string, any[]> = {};
+    (evt.sources || []).forEach((s: any) => {
+      let parsed = [];
+      if (s.subReferences) {
+        try {
+          parsed = JSON.parse(s.subReferences);
+        } catch (e) {
+          console.error('Failed to parse subReferences JSON:', e);
+        }
+      }
+      subRefsMap[s.sourceId] = parsed;
+    });
+
     formData = {
       uuid: evt.uuid,
       title: evt.title,
@@ -111,7 +125,8 @@
       isPivot: false,
       selectedActors: (evt.actors || []).map((a: any) => a.uuid),
       selectedLocations: (evt.locations || []).map((l: any) => l.uuid),
-      selectedSources: (evt.sources || []).map((s: any) => s.sourceId)
+      selectedSources: (evt.sources || []).map((s: any) => s.sourceId),
+      subReferences: subRefsMap
     };
     submitError = '';
     showForm = true;
@@ -120,7 +135,8 @@
   function resetForm() {
     formData = {
       uuid: '', title: '', description: '', hijriYear: '', gregorianYear: '', 
-      precision: 'EXACT', isPivot: false, selectedActors: [], selectedLocations: [], selectedSources: []
+      precision: 'EXACT', isPivot: false, selectedActors: [], selectedLocations: [], selectedSources: [],
+      subReferences: {}
     };
     submitError = '';
   }
@@ -165,6 +181,9 @@
           input: {
             title: formData.title,
             description: formData.description,
+            islamicDate: { year: parseInt(formData.hijriYear) || 0 },
+            gregorianDate: { year: parseInt(formData.gregorianYear) || 0 },
+            precision: formData.precision,
             isConnectedToGlobal: formData.isPivot,
             globalPivotCategory: formData.isPivot ? "Dunia Islam" : null
           }
@@ -188,7 +207,14 @@
 
       // 4. Link Sources
       for (const sourceId of formData.selectedSources) {
-        await gql(`mutation { linkEventToSource(eventUuid: "${eventUuid}", sourceId: "${sourceId}") }`);
+        const subRefsList = formData.subReferences[sourceId] || [];
+        const serialized = subRefsList.length > 0 ? JSON.stringify(subRefsList) : null;
+        const linkMutation = `
+          mutation LinkSource($eventUuid: String!, $sourceId: String!, $subRefs: String) {
+            linkEventToSource(eventUuid: $eventUuid, sourceId: $sourceId, subReferences: $subRefs)
+          }
+        `;
+        await gql(linkMutation, { eventUuid, sourceId, subRefs: serialized });
       }
 
       showForm = false;
@@ -310,161 +336,294 @@
       <div class="glass p-8 rounded-2xl border border-border/10">
         <h2 class="text-lg font-bold text-text-primary mb-6 border-b border-border/10 pb-4">Formulir Perekaman Peristiwa</h2>
         
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <!-- Kolom 1: Peristiwa Dasar -->
-          <div class="flex flex-col gap-5">
-            <h3 class="text-sm font-bold text-gold-400">1. Data Dasar Peristiwa</h3>
+        <div class="flex flex-col gap-6">
+          <!-- Group 1: Data Dasar Peristiwa (Full Width) -->
+          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-5 bg-navy-950/20">
+            <h3 class="text-sm font-bold text-gold-400 flex items-center gap-2 border-b border-border/5 pb-2.5">
+              <span>🗂️</span> 1. Data Dasar Peristiwa
+            </h3>
             
-            <div class="flex flex-col gap-1.5">
-              <label for="f-title" class="text-xs font-bold text-text-secondary">Judul Peristiwa *</label>
-              <input id="f-title" bind:value={formData.title} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none" />
-            </div>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+              <div class="flex flex-col gap-4">
+                <div class="flex flex-col gap-1.5">
+                  <label for="f-title" class="text-xs font-bold text-text-secondary">Judul Peristiwa *</label>
+                  <input id="f-title" bind:value={formData.title} placeholder="Contoh: Pembukaan Kota Makkah (Fathu Makkah)" class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full" />
+                </div>
 
-            <div class="flex flex-col gap-1.5">
-              <label for="f-desc" class="text-xs font-bold text-text-secondary">Deskripsi Historis *</label>
-              <textarea id="f-desc" bind:value={formData.description} rows="4" class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none"></textarea>
-            </div>
+                <div class="flex flex-col gap-1.5">
+                  <label for="f-desc" class="text-xs font-bold text-text-secondary">Deskripsi Historis *</label>
+                  <textarea id="f-desc" bind:value={formData.description} rows="5" placeholder="Tuliskan kronologi singkat, konteks sosio-politik, dan dampak peradaban..." class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full resize-y"></textarea>
+                </div>
+              </div>
 
-            <div class="grid grid-cols-2 gap-4">
-              <div class="flex flex-col gap-1.5">
-                <label for="f-masehi" class="text-xs font-bold text-text-secondary">Tahun Masehi</label>
-                <input id="f-masehi" type="number" bind:value={formData.gregorianYear} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary" />
+              <div class="flex flex-col gap-4">
+                <div class="grid grid-cols-2 gap-4">
+                  <div class="flex flex-col gap-1.5">
+                    <label for="f-masehi" class="text-xs font-bold text-text-secondary">Tahun Masehi</label>
+                    <input id="f-masehi" type="number" bind:value={formData.gregorianYear} placeholder="Contoh: 630" class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none" />
+                  </div>
+                  <div class="flex flex-col gap-1.5">
+                    <label for="f-hijri" class="text-xs font-bold text-text-secondary">Tahun Hijriah</label>
+                    <input id="f-hijri" type="number" bind:value={formData.hijriYear} placeholder="Contoh: 8" class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none" />
+                  </div>
+                </div>
+                
+                <div class="flex flex-col gap-1.5">
+                  <label for="f-prec" class="text-xs font-bold text-text-secondary">Presisi Waktu</label>
+                  <select id="f-prec" bind:value={formData.precision} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none">
+                    <option value="EXACT">Tepat Waktu (Exact)</option>
+                    <option value="YEAR">Kira-kira Tahun (Year)</option>
+                    <option value="DECADE">Kira-kira Dekade (Decade)</option>
+                  </select>
+                </div>
+
+                <!-- Global Connection / Pivot Toggle -->
+                <div class="flex flex-col gap-1.5 mt-2">
+                  <label class="text-xs font-bold text-text-secondary">Status Hubungan Global</label>
+                  <label class="flex items-center gap-3 p-3 rounded-lg bg-navy-950/40 border border-border/5 hover:border-gold-500/20 transition-all cursor-pointer">
+                    <input type="checkbox" bind:checked={formData.isPivot} class="rounded text-gold-500 focus:ring-gold-500/30 bg-navy-950 border-border/10" />
+                    <div>
+                      <span class="text-xs font-bold text-text-primary block">Tandai sebagai Pivot Peradaban Global</span>
+                      <span class="text-[10px] text-text-muted">Peristiwa ini terhubung dengan dinamika sosial-politik lintas benua di luar dunia Islam.</span>
+                    </div>
+                  </label>
+                </div>
               </div>
-              <div class="flex flex-col gap-1.5">
-                <label for="f-hijri" class="text-xs font-bold text-text-secondary">Tahun Hijriah</label>
-                <input id="f-hijri" type="number" bind:value={formData.hijriYear} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary" />
-              </div>
-            </div>
-            
-            <div class="flex flex-col gap-1.5">
-              <label for="f-prec" class="text-xs font-bold text-text-secondary">Presisi Waktu</label>
-              <select id="f-prec" bind:value={formData.precision} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary">
-                <option value="EXACT">Tepat Waktu (Exact)</option>
-                <option value="YEAR">Kira-kira Tahun (Year)</option>
-                <option value="DECADE">Kira-kira Dekade (Decade)</option>
-              </select>
             </div>
           </div>
 
-          <!-- Kolom 2: Relasi 3 Entitas Lain -->
-          <div class="flex flex-col gap-5 border-l border-border/10 pl-0 lg:pl-8">
-            <h3 class="text-sm font-bold text-emerald-400">2. Relasi Graf Historis</h3>
+          <!-- Group 2: Relasi Tokoh Terkait (Actors) - Full Width -->
+          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 bg-navy-950/20">
+            <div class="flex justify-between items-center border-b border-border/5 pb-2.5">
+              <h3 class="text-sm font-bold text-gold-400 flex items-center gap-2">
+                <span>👤</span> 2. Tokoh / Pelaku Sejarah Terlibat
+              </h3>
+              <a href="/factory/actors" target="_blank" class="text-[10px] text-gold-400 hover:text-gold-300 font-bold flex items-center gap-1">Kelola Tokoh ↗</a>
+            </div>
             
-            <!-- Tokoh -->
-            <div class="flex flex-col gap-1.5">
-              <div class="flex justify-between items-end">
-                <label for="f-actors" class="text-xs font-bold text-text-secondary flex items-center gap-2"><span>👤</span> Pelaku/Tokoh Terlibat</label>
-                <a href="/factory/actors" target="_blank" class="text-[10px] text-gold-400 hover:text-gold-300 font-bold flex items-center gap-1">Kelola Tokoh ↗</a>
-              </div>
-              <!-- Custom Multi-Select UI for Actors -->
-              <div class="flex flex-col gap-2">
-                {#if formData.selectedActors.length > 0}
-                  <div class="flex flex-wrap gap-2 p-2 bg-navy-950/30 border border-border/5 rounded-lg min-h-[40px] items-center">
-                    {#each formData.selectedActors as actorUuid}
-                      {@const actor = actors.find(a => a.uuid === actorUuid)}
-                      {#if actor}
-                        <span class="inline-flex items-center gap-1 px-3 py-1 bg-gold-500/10 border border-gold-500/30 text-gold-400 rounded-full text-[10px] font-bold animate-fade-in">
-                          {actor.name}
-                          <button type="button" onclick={() => formData.selectedActors = formData.selectedActors.filter(id => id !== actorUuid)} class="hover:text-red-400 transition-colors ml-1" title="Hapus">✕</button>
-                        </span>
-                      {/if}
-                    {/each}
-                  </div>
-                {/if}
-                <select 
-                  class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full"
-                  onchange={(e) => {
-                    const val = (e.target as HTMLSelectElement).value;
-                    if (val && !formData.selectedActors.includes(val)) {
-                      formData.selectedActors = [...formData.selectedActors, val];
-                      (e.target as HTMLSelectElement).value = "";
-                    }
-                  }}
-                >
-                  <option value="">-- + Pilih Tokoh untuk Ditambahkan --</option>
-                  {#each actors.filter(a => !formData.selectedActors.includes(a.uuid)) as actor}
-                    <option value={actor.uuid}>{actor.name}</option>
-                  {/each}
-                </select>
-              </div>
-            </div>
+            <div class="flex flex-col gap-3">
+              <!-- Selection dropdown -->
+              <select 
+                class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full"
+                onchange={(e) => {
+                  const val = (e.target as HTMLSelectElement).value;
+                  if (val && !formData.selectedActors.includes(val)) {
+                    formData.selectedActors = [...formData.selectedActors, val];
+                    (e.target as HTMLSelectElement).value = "";
+                  }
+                }}
+              >
+                <option value="">-- + Pilih Tokoh untuk Ditambahkan --</option>
+                {#each actors.filter(a => !formData.selectedActors.includes(a.uuid)) as actor}
+                  <option value={actor.uuid}>{actor.name}</option>
+                {/each}
+              </select>
 
-            <!-- Lokasi -->
-            <div class="flex flex-col gap-1.5">
-              <div class="flex justify-between items-end">
-                <label for="f-locs" class="text-xs font-bold text-text-secondary flex items-center gap-2"><span>🗺️</span> Lokasi Kejadian Utama</label>
-                <a href="/factory/locations" target="_blank" class="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">Kelola Lokasi ↗</a>
-              </div>
-              <!-- Custom Multi-Select UI for Locations -->
-              <div class="flex flex-col gap-2">
-                {#if formData.selectedLocations.length > 0}
-                  <div class="flex flex-wrap gap-2 p-2 bg-navy-950/30 border border-border/5 rounded-lg min-h-[40px] items-center">
-                    {#each formData.selectedLocations as locUuid}
-                      {@const loc = locations.find(l => l.uuid === locUuid)}
-                      {#if loc}
-                        <span class="inline-flex items-center gap-1 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full text-[10px] font-bold animate-fade-in">
-                          {loc.name}
-                          <button type="button" onclick={() => formData.selectedLocations = formData.selectedLocations.filter(id => id !== locUuid)} class="hover:text-red-400 transition-colors ml-1" title="Hapus">✕</button>
-                        </span>
-                      {/if}
-                    {/each}
-                  </div>
-                {/if}
-                <select 
-                  class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full"
-                  onchange={(e) => {
-                    const val = (e.target as HTMLSelectElement).value;
-                    if (val && !formData.selectedLocations.includes(val)) {
-                      formData.selectedLocations = [...formData.selectedLocations, val];
-                      (e.target as HTMLSelectElement).value = "";
-                    }
-                  }}
-                >
-                  <option value="">-- + Pilih Lokasi untuk Ditambahkan --</option>
-                  {#each locations.filter(l => !formData.selectedLocations.includes(l.uuid)) as loc}
-                    <option value={loc.uuid}>{loc.name}</option>
+              <!-- Badges list -->
+              {#if formData.selectedActors.length > 0}
+                <div class="flex flex-wrap gap-2 p-2.5 bg-navy-950/30 border border-border/5 rounded-xl min-h-[45px] items-center">
+                  {#each formData.selectedActors as actorUuid}
+                    {@const actor = actors.find(a => a.uuid === actorUuid)}
+                    {#if actor}
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-gold-500/10 border border-gold-500/30 text-gold-400 rounded-full text-xs font-bold animate-fade-in">
+                        {actor.name}
+                        <button type="button" onclick={() => formData.selectedActors = formData.selectedActors.filter(id => id !== actorUuid)} class="hover:text-red-400 transition-colors ml-1 font-bold" title="Hapus">✕</button>
+                      </span>
+                    {/if}
                   {/each}
-                </select>
-              </div>
+                </div>
+              {:else}
+                <p class="text-[11px] text-text-muted italic p-3 text-center border border-dashed border-border/10 rounded-xl bg-navy-950/10">Belum ada tokoh yang dihubungkan ke peristiwa ini.</p>
+              {/if}
             </div>
+          </div>
 
-            <!-- Rujukan -->
-            <div class="flex flex-col gap-1.5">
-              <div class="flex justify-between items-end">
-                <label for="f-srcs" class="text-xs font-bold text-text-secondary flex items-center gap-2"><span>📄</span> Sumber / Kitab Rujukan</label>
-                <a href="/factory/sources" target="_blank" class="text-[10px] text-blue-400 hover:text-blue-300 font-bold flex items-center gap-1">Daftar Rujukan ↗</a>
-              </div>
-              <!-- Custom Multi-Select UI for Sources -->
-              <div class="flex flex-col gap-2">
-                {#if formData.selectedSources.length > 0}
-                  <div class="flex flex-wrap gap-2 p-2 bg-navy-950/30 border border-border/5 rounded-lg min-h-[40px] items-center">
-                    {#each formData.selectedSources as sourceId}
-                      {@const src = sources.find(s => s.sourceId === sourceId)}
-                      {#if src}
-                        <span class="inline-flex items-center gap-1 px-3 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400 rounded-full text-[10px] font-bold animate-fade-in">
-                          {src.referenceText.substring(0, 30)}{src.referenceText.length > 30 ? '...' : ''}
-                          <button type="button" onclick={() => formData.selectedSources = formData.selectedSources.filter(id => id !== sourceId)} class="hover:text-red-400 transition-colors ml-1" title="Hapus">✕</button>
-                        </span>
-                      {/if}
-                    {/each}
-                  </div>
-                {/if}
-                <select 
-                  class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full"
-                  onchange={(e) => {
-                    const val = (e.target as HTMLSelectElement).value;
-                    if (val && !formData.selectedSources.includes(val)) {
-                      formData.selectedSources = [...formData.selectedSources, val];
-                      (e.target as HTMLSelectElement).value = "";
-                    }
-                  }}
-                >
-                  <option value="">-- + Tambahkan Kitab / Rujukan --</option>
-                  {#each sources.filter(s => !formData.selectedSources.includes(s.sourceId)) as src}
-                    <option value={src.sourceId}>{src.referenceText}</option>
+          <!-- Group 3: Relasi Lokasi Kejadian (Locations) - Full Width -->
+          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 bg-navy-950/20">
+            <div class="flex justify-between items-center border-b border-border/5 pb-2.5">
+              <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+                <span>🗺️</span> 3. Lokasi Geografis Utama
+              </h3>
+              <a href="/factory/locations" target="_blank" class="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">Kelola Lokasi ↗</a>
+            </div>
+            
+            <div class="flex flex-col gap-3">
+              <select 
+                class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full"
+                onchange={(e) => {
+                  const val = (e.target as HTMLSelectElement).value;
+                  if (val && !formData.selectedLocations.includes(val)) {
+                    formData.selectedLocations = [...formData.selectedLocations, val];
+                    (e.target as HTMLSelectElement).value = "";
+                  }
+                }}
+              >
+                <option value="">-- + Pilih Lokasi untuk Ditambahkan --</option>
+                {#each locations.filter(l => !formData.selectedLocations.includes(l.uuid)) as loc}
+                  <option value={loc.uuid}>{loc.name}</option>
+                {/each}
+              </select>
+
+              {#if formData.selectedLocations.length > 0}
+                <div class="flex flex-wrap gap-2 p-2.5 bg-navy-950/30 border border-border/5 rounded-xl min-h-[45px] items-center">
+                  {#each formData.selectedLocations as locUuid}
+                    {@const loc = locations.find(l => l.uuid === locUuid)}
+                    {#if loc}
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full text-xs font-bold animate-fade-in">
+                        {loc.name}
+                        <button type="button" onclick={() => formData.selectedLocations = formData.selectedLocations.filter(id => id !== locUuid)} class="hover:text-red-400 transition-colors ml-1 font-bold" title="Hapus">✕</button>
+                      </span>
+                    {/if}
                   {/each}
-                </select>
-              </div>
+                </div>
+              {:else}
+                <p class="text-[11px] text-text-muted italic p-3 text-center border border-dashed border-border/10 rounded-xl bg-navy-950/10">Belum ada lokasi kejadian yang ditentukan.</p>
+              {/if}
+            </div>
+          </div>
+
+          <!-- Group 4: Rujukan & Bukti Validitas (Sources & Sub-References) - Full Width -->
+          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 bg-navy-950/20">
+            <div class="flex justify-between items-center border-b border-border/5 pb-2.5">
+              <h3 class="text-sm font-bold text-gold-400 flex items-center gap-2">
+                <span>📄</span> 4. Rujukan Sumber Kitab & Sub-Rujukan Pembuktian
+              </h3>
+              <a href="/factory/sources" target="_blank" class="text-[10px] text-gold-400 hover:text-gold-300 font-bold flex items-center gap-1">Daftar Rujukan ↗</a>
+            </div>
+            
+            <div class="flex flex-col gap-4">
+              <!-- Select Dropdown -->
+              <select 
+                class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full animate-fade-in"
+                onchange={(e) => {
+                  const val = (e.target as HTMLSelectElement).value;
+                  if (val && !formData.selectedSources.includes(val)) {
+                    formData.selectedSources = [...formData.selectedSources, val];
+                    if (!formData.subReferences[val]) {
+                      formData.subReferences[val] = [];
+                    }
+                    (e.target as HTMLSelectElement).value = "";
+                  }
+                }}
+              >
+                <option value="">-- + Hubungkan Rujukan Kitab / Sumber --</option>
+                {#each sources.filter(s => !formData.selectedSources.includes(s.sourceId)) as src}
+                  <option value={src.sourceId}>{src.referenceText}</option>
+                {/each}
+              </select>
+
+              <!-- Selected Sources with dynamic Sub-References List -->
+              {#if formData.selectedSources.length > 0}
+                <div class="flex flex-col gap-6 mt-2">
+                  {#each formData.selectedSources as sourceId}
+                    {@const src = sources.find(s => s.sourceId === sourceId)}
+                    {#if src}
+                      <div class="glass p-5 rounded-xl border border-border/10 bg-navy-950/40 flex flex-col gap-4 animate-fade-in">
+                        <!-- Source Card Header -->
+                        <div class="flex flex-col md:flex-row md:justify-between md:items-center pb-3 border-b border-border/5 gap-2">
+                          <span class="text-xs font-extrabold text-gold-400 flex items-center gap-2">
+                            📖 Rujukan Utama: <span class="text-text-primary font-normal">{src.referenceText}</span>
+                          </span>
+                          <button 
+                            type="button" 
+                            onclick={() => {
+                              formData.selectedSources = formData.selectedSources.filter(id => id !== sourceId);
+                              delete formData.subReferences[sourceId];
+                            }} 
+                            class="text-xs font-bold text-red-400 hover:text-red-300 transition-colors flex items-center gap-1 cursor-pointer self-end md:self-auto"
+                          >
+                            ✕ Hapus Rujukan
+                          </button>
+                        </div>
+
+                        <!-- Sub-References List / Table -->
+                        <div class="flex flex-col gap-3">
+                          <span class="text-[10px] font-bold text-text-secondary uppercase tracking-wider pl-1 block">
+                            📌 Rincian Sub-Rujukan Pembuktian (Bab & Ayat)
+                          </span>
+                          
+                          {#if (formData.subReferences[sourceId] || []).length > 0}
+                            <div class="overflow-x-auto rounded-xl border border-border/10 bg-navy-950/60">
+                              <table class="w-full text-left border-collapse text-xs">
+                                <thead>
+                                  <tr class="bg-navy-950/90 border-b border-border/10 text-gold-400/80 font-bold uppercase tracking-wider text-[9px]">
+                                    <th class="px-4 py-3 w-1/4">Bab / Surat / Volume</th>
+                                    <th class="px-4 py-3 w-1/5">Halaman / Ayat / Nomor</th>
+                                    <th class="px-4 py-3">Kutipan & Catatan Ulasan / Tafsir</th>
+                                    <th class="px-4 py-3 text-center w-12">Aksi</th>
+                                  </tr>
+                                </thead>
+                                <tbody class="divide-y divide-border/5">
+                                  {#each formData.subReferences[sourceId] as sub, idx}
+                                    <tr class="hover:bg-navy-900/10 transition-colors">
+                                      <!-- Col 1: Section (Bab/Surat) -->
+                                      <td class="p-3">
+                                        <input 
+                                          type="text" 
+                                          bind:value={sub.section}
+                                          placeholder="Misal: Surat Al-Baqarah"
+                                          class="w-full bg-surface/30 border border-border/10 rounded px-2.5 py-1.5 text-xs text-text-primary focus:outline-none focus:border-gold-500/30 transition-all"
+                                        />
+                                      </td>
+                                      <!-- Col 2: Point (Ayat/Halaman) -->
+                                      <td class="p-3">
+                                        <input 
+                                          type="text" 
+                                          bind:value={sub.point}
+                                          placeholder="Misal: Ayat 25 atau Hal. 12"
+                                          class="w-full bg-surface/30 border border-border/10 rounded px-2.5 py-1.5 text-xs text-text-primary focus:outline-none focus:border-gold-500/30 transition-all font-mono"
+                                        />
+                                      </td>
+                                      <!-- Col 3: Note (Kutipan/Ulasan) -->
+                                      <td class="p-3">
+                                        <textarea 
+                                          bind:value={sub.note}
+                                          placeholder="Tulis tafsir, naskah kutipan, atau keterangan pendukung..."
+                                          rows="1"
+                                          class="w-full bg-surface/30 border border-border/10 rounded px-2.5 py-1.5 text-xs text-text-primary focus:outline-none focus:border-gold-500/30 transition-all resize-y leading-relaxed"
+                                        ></textarea>
+                                      </td>
+                                      <!-- Col 4: Action (Remove) -->
+                                      <td class="p-3 text-center">
+                                        <button 
+                                          type="button" 
+                                          onclick={() => {
+                                            formData.subReferences[sourceId] = formData.subReferences[sourceId].filter((_, i) => i !== idx);
+                                          }}
+                                          class="w-8 h-8 rounded bg-red-500/10 hover:bg-red-500/20 text-red-400 border border-red-500/20 flex items-center justify-center hover:text-red-300 transition-all cursor-pointer mx-auto"
+                                          title="Hapus baris sub-rujukan"
+                                        >
+                                          ✕
+                                        </button>
+                                      </td>
+                                    </tr>
+                                  {/each}
+                                </tbody>
+                              </table>
+                            </div>
+                          {:else}
+                            <p class="text-[11px] text-text-muted italic p-4 text-center border border-dashed border-border/10 rounded-xl bg-navy-950/20">Belum ada rincian sub-rujukan yang ditambahkan. Silakan klik tombol di bawah untuk menambah rincian.</p>
+                          {/if}
+
+                          <!-- Add Row Button -->
+                          <button 
+                            type="button" 
+                            onclick={() => {
+                              formData.subReferences[sourceId] = [
+                                ...(formData.subReferences[sourceId] || []),
+                                { section: '', point: '', note: '' }
+                              ];
+                            }}
+                            class="self-start text-[10px] font-bold text-gold-400 hover:text-gold-300 transition-colors flex items-center gap-1 mt-1 cursor-pointer bg-gold-500/5 hover:bg-gold-500/10 border border-gold-500/20 px-3 py-1.5 rounded-lg"
+                          >
+                            ➕ Tambah Sub Rujukan (Bab/Ayat)
+                          </button>
+                        </div>
+                      </div>
+                    {/if}
+                  {/each}
+                </div>
+              {/if}
             </div>
           </div>
         </div>

@@ -23,6 +23,7 @@ fn row_to_source(r: &sqlx::postgres::PgRow) -> Result<Source> {
         reliability_score: bd.and_then(|b| b.to_f64()),
         reliability_assessment: r.try_get("reliability_assessment").unwrap_or(None),
         media_links,
+        sub_references: None,
         created_at: r.get("created_at"),
         updated_at: r.get("updated_at"),
     })
@@ -780,26 +781,29 @@ impl Event {
         let graph = ctx.data::<Graph>()?;
         let pool = ctx.data::<PgPool>()?;
         let mut result = graph.execute(
-            neo_query("MATCH (e:Event {uuid: $uuid})-[:SOURCED_FROM]->(s:Source) RETURN s.uuid AS source_id")
+            neo_query("MATCH (e:Event {uuid: $uuid})-[r:SOURCED_FROM]->(s:Source) RETURN s.uuid AS source_id, r.sub_references AS sub_references")
             .param("uuid", self.uuid.to_string())
         ).await?;
         
-        let mut source_ids = Vec::new();
+        let mut attributions = Vec::new();
         while let Some(row) = result.next().await? {
             let id: String = row.get("source_id").unwrap_or_default();
+            let sub_ref: Option<String> = row.get("sub_references").ok();
             if let Ok(uid) = Uuid::parse_str(&id) {
-                source_ids.push(uid);
+                attributions.push((uid, sub_ref));
             }
         }
         
         let mut sources = Vec::new();
-        for id in source_ids {
+        for (id, sub_ref) in attributions {
             let row = sqlx::query("SELECT * FROM sources WHERE source_id = $1")
                 .bind(id)
                 .fetch_optional(pool)
                 .await?;
             if let Some(r) = row {
-                sources.push(row_to_source(&r)?);
+                let mut source = row_to_source(&r)?;
+                source.sub_references = sub_ref;
+                sources.push(source);
             }
         }
         Ok(sources)

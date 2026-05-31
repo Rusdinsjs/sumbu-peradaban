@@ -20,9 +20,8 @@
     
     let actors: any[] = [];
     let locations: any[] = [];
-    let sources: any[] = [];
     
-    // Find all edges connected to this event UUID
+    // Find all edges connected to this event UUID (for Actors and Locations)
     edges.forEach((e: any) => {
       let relatedNodeId = null;
       let relationship = e.data.relationship || 'Terkait';
@@ -39,18 +38,32 @@
           if (relatedNode.data.type === 'actor') {
             actors.push({ name: relatedNode.data.label, role: relationship });
           } else if (relatedNode.data.type === 'location') {
-            // Note: locations in graph typically don't have lat/lng directly in the basic node data, we'll fake it for display or remove it
             locations.push({ name: relatedNode.data.label, type: relatedNode.data.tier || 'Titik Kritis', lat: 21.0, lng: 39.0 });
-          } else if (relatedNode.data.type === 'source') {
-            sources.push({ 
-              id: relatedNode.data.id, 
-              domain: relatedNode.data.tier || 'Verified', 
-              text: relatedNode.data.label, 
-              score: 0.95 
-            });
           }
         }
       }
+    });
+
+    // Directly parse sources and subReferences from DB response
+    const rawSources = dbEvent.sources || [];
+    const sources = rawSources.map((s: any) => {
+      let subRefs = [];
+      if (s.subReferences) {
+        try {
+          subRefs = JSON.parse(s.subReferences);
+        } catch (e) {
+          console.error('Failed to parse sub-references JSON:', e);
+        }
+      }
+      return {
+        id: s.sourceId,
+        domain: s.domain || 'Verified',
+        title: s.title || 'Tanpa Judul',
+        author: s.author || 'Tanpa Penulis',
+        text: s.referenceText,
+        score: s.reliabilityScore || 0.95,
+        subReferences: subRefs
+      };
     });
 
     return {
@@ -130,18 +143,54 @@
         <h2 class="text-sm font-bold text-gold-400">Kredibilitas Sumber & Pembuktian (Dimension 4)</h2>
         <div class="flex flex-col gap-3">
           {#each event.sources as src}
-            <a href="/source/{src.id}" class="p-3.5 rounded-xl bg-navy-950/60 border border-border/10 hover:border-violet-500/20 hover:bg-violet-500/5 transition-all flex flex-col md:flex-row md:justify-between md:items-center gap-3 group">
-              <div>
-                <span class="text-[10px] font-bold text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded">
-                  {src.domain}
-                </span>
-                <p class="text-xs text-text-primary mt-2 font-medium group-hover:text-violet-400 transition-colors">{src.text}</p>
+            <div class="p-4 rounded-xl bg-navy-950/60 border border-border/10 flex flex-col gap-3">
+              <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
+                <div>
+                  <div class="flex items-center gap-2">
+                    <span class="text-[10px] font-bold text-violet-400 bg-violet-500/10 px-2 py-0.5 rounded">
+                      {src.domain}
+                    </span>
+                    <a href="/source/{src.id}" class="text-xs font-extrabold text-gold-400 hover:text-gold-300 hover:underline transition-all">
+                      Lihat Rujukan Lengkap ↗
+                    </a>
+                  </div>
+                  <p class="text-xs text-text-primary mt-2 font-medium leading-relaxed">{src.text}</p>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <span class="text-[10px] text-text-secondary block">Reliability Score</span>
+                  <span class="text-xs font-extrabold text-emerald-400">{(src.score * 100).toFixed(0)}% Match</span>
+                </div>
               </div>
-              <div class="text-right flex-shrink-0">
-                <span class="text-[10px] text-text-secondary block">Reliability Score</span>
-                <span class="text-xs font-extrabold text-emerald-400">{(src.score * 100).toFixed(0)}% Match</span>
-              </div>
-            </a>
+
+              <!-- Sub-References Perkamen Table -->
+              {#if src.subReferences && src.subReferences.length > 0}
+                <div class="mt-2 border-t border-border/5 pt-3">
+                  <span class="text-[10px] font-bold text-text-secondary uppercase tracking-wider pl-1 mb-2 block">
+                    📌 Rincian Sub-Rujukan Pembuktian (Bab & Ayat)
+                  </span>
+                  <div class="overflow-x-auto rounded-lg border border-border/10 bg-surface/40">
+                    <table class="w-full text-left border-collapse text-xs">
+                      <thead>
+                        <tr class="bg-navy-950/60 border-b border-border/10 text-gold-400/80 font-bold uppercase tracking-wider text-[9px]">
+                          <th class="px-4 py-2 w-1/3">Bab / Surat / Volume</th>
+                          <th class="px-4 py-2 w-1/4">Halaman / Ayat / Nomor</th>
+                          <th class="px-4 py-2">Kutipan & Catatan Ulasan / Tafsir</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-border/5">
+                        {#each src.subReferences as sub}
+                          <tr class="hover:bg-navy-900/20 transition-colors">
+                            <td class="px-4 py-2.5 font-bold text-text-primary font-serif">{sub.section || '-'}</td>
+                            <td class="px-4 py-2.5 font-mono text-emerald-400 font-bold">{sub.point || '-'}</td>
+                            <td class="px-4 py-2.5 text-text-secondary leading-relaxed font-light italic">{sub.note || '-'}</td>
+                          </tr>
+                        {/each}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              {/if}
+            </div>
           {/each}
         </div>
       </div>

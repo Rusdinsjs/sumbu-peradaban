@@ -406,6 +406,40 @@ impl MutationRoot {
                 )
                 .await?;
         }
+        if let Some(isl) = input.islamic_date {
+            graph
+                .run(
+                    neo_query("MATCH (e:Event {uuid: $uuid}) SET e.hijri_year = $year")
+                        .param("uuid", uuid.to_string())
+                        .param("year", isl.year),
+                )
+                .await?;
+        }
+        if let Some(greg) = input.gregorian_date {
+            graph
+                .run(
+                    neo_query("MATCH (e:Event {uuid: $uuid}) SET e.gregorian_year = $year")
+                        .param("uuid", uuid.to_string())
+                        .param("year", greg.year),
+                )
+                .await?;
+        }
+        if let Some(prec) = input.precision {
+            let prec_str = match prec {
+                TimePrecision::Exact => "Exact",
+                TimePrecision::Year => "Year",
+                TimePrecision::Decade => "Decade",
+                TimePrecision::Century => "Century",
+                TimePrecision::Approximate => "Approximate",
+            };
+            graph
+                .run(
+                    neo_query("MATCH (e:Event {uuid: $uuid}) SET e.precision = $prec")
+                        .param("uuid", uuid.to_string())
+                        .param("prec", prec_str),
+                )
+                .await?;
+        }
         if let Some(is_conn) = input.is_connected_to_global {
             graph
                 .run(
@@ -1123,6 +1157,13 @@ impl MutationRoot {
         let created_at: chrono::DateTime<chrono::Utc> = row.get("created_at");
         let updated_at: chrono::DateTime<chrono::Utc> = row.get("updated_at");
 
+        // 2. Insert/create corresponding node in Neo4j so it can be matched for relationships
+        let graph = ctx.data::<Graph>()?;
+        graph.run(
+            neo_query("CREATE (s:Source {uuid: $uuid})")
+                .param("uuid", uuid.to_string())
+        ).await?;
+
         Ok(Source {
             source_id: uuid,
             domain: input.domain,
@@ -1138,6 +1179,7 @@ impl MutationRoot {
                 url: m.url,
                 title: m.title,
             }).collect()),
+            sub_references: None,
             created_at,
             updated_at,
         })
@@ -1215,6 +1257,7 @@ impl MutationRoot {
                 reliability_score: bd.and_then(|b| b.to_f64()),
                 reliability_assessment: r.try_get("reliability_assessment").unwrap_or(None),
                 media_links,
+                sub_references: None,
                 created_at: r.get("created_at"),
                 updated_at: r.get("updated_at"),
             })
@@ -1348,6 +1391,7 @@ impl MutationRoot {
         ctx: &Context<'_>,
         event_uuid: Uuid,
         source_id: Uuid,
+        sub_references: Option<String>,
     ) -> Result<bool> {
         let claims = ctx.data_opt::<Claims>().ok_or_else(|| Error::new("Unauthorized: Please log in"))?;
         if !claims.role.can_edit() {
@@ -1357,9 +1401,10 @@ impl MutationRoot {
         graph.run(
             neo_query("MATCH (e:Event {uuid: $event_uuid}), (s:Source {uuid: $source_id})
                        MERGE (e)-[r:SOURCED_FROM]->(s)
-                       SET r.source_id = $source_id")
+                       SET r.source_id = $source_id, r.sub_references = $sub_ref")
                 .param("event_uuid", event_uuid.to_string())
                 .param("source_id", source_id.to_string())
+                .param("sub_ref", sub_references.unwrap_or_default())
         ).await?;
         Ok(true)
     }
@@ -1419,6 +1464,7 @@ impl MutationRoot {
             reliability_score: input.reliability_score,
             reliability_assessment: None,
             media_links: None,
+            sub_references: None,
             created_at,
             updated_at,
         })
