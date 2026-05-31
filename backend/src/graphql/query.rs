@@ -1,4 +1,4 @@
-use crate::models::{actor::{Actor, RelatedActor}, common::*, event::Event, location::Location, source::Source, auth::{User, UserRole, Claims}};
+use crate::models::{actor::{Actor, RelatedActor}, common::*, event::Event, location::{Location, RelatedLocation}, source::Source, auth::{User, UserRole, Claims}};
 use async_graphql::{Context, Object, ComplexObject, Result, Error};
 use neo4rs::{query as neo_query, Graph};
 use sqlx::PgPool;
@@ -920,23 +920,46 @@ impl Actor {
         Ok(events)
     }
 
-    /// 4. Visited Locations: Locations visited by this actor.
-    async fn visited_locations(&self, ctx: &Context<'_>) -> Result<Vec<Location>> {
+    /// 4. Visited Locations: Locations related to this actor (visited or occurred events).
+    async fn visited_locations(&self, ctx: &Context<'_>) -> Result<Vec<RelatedLocation>> {
         let graph = ctx.data::<Graph>()?;
+        // Match direct visited locations AND locations of events this actor participated in
         let mut result = graph.execute(
-            neo_query("MATCH (a:Actor {uuid: $uuid})-[:VISITED]->(l:Location) RETURN 
-                l.uuid AS uuid, l.name AS name, l.location_type AS location_type, 
-                l.region AS region, l.latitude AS latitude, l.longitude AS longitude, 
-                l.curation_tier AS curation_tier, l.is_connected_to_global AS is_connected_to_global, 
-                l.global_pivot_category AS global_pivot_category")
+            neo_query("
+                MATCH (a:Actor {uuid: $uuid})
+                OPTIONAL MATCH (a)-[:VISITED]->(l1:Location)
+                OPTIONAL MATCH (a)-[:PARTICIPATED_IN]->(e:Event)-[:OCCURRED_AT]->(l2:Location)
+                WITH a, l1, l2, e
+                WITH a, l1, 'Pernah Disinggahi' AS rel1,
+                     l2, 'Lokasi Peristiwa: ' + e.title AS rel2
+                WITH a, collect({node: l1, rel: rel1}) + collect({node: l2, rel: rel2}) AS connections
+                UNWIND connections AS conn
+                WITH conn.node AS loc, conn.rel AS rel
+                WHERE loc IS NOT NULL
+                RETURN DISTINCT
+                    loc.uuid AS uuid, loc.name AS name, loc.lat AS lat, loc.lng AS lng, 
+                    loc.precision AS precision, loc.is_transcendental AS is_transcendental, 
+                    loc.curation_tier AS curation_tier, loc.is_connected_to_global AS is_connected_to_global, 
+                    loc.global_pivot_category AS global_pivot_category,
+                    loc.geography_climate AS geography_climate, loc.demographics AS demographics, 
+                    loc.socio_cultural AS socio_cultural, loc.historical_role AS historical_role, 
+                    loc.media_links AS media_links,
+                    collect(rel) AS relationships
+            ")
             .param("uuid", self.uuid.to_string())
         ).await?;
         
-        let mut locations = Vec::new();
+        let mut related_locations = Vec::new();
         while let Some(row) = result.next().await? {
-            locations.push(row_to_location(&row)?);
+            let location = row_to_location(&row)?;
+            let rels: Vec<String> = row.get("relationships").unwrap_or_default();
+            let relationship_type = rels.join(", ");
+            related_locations.push(RelatedLocation {
+                location,
+                relationship_type,
+            });
         }
-        Ok(locations)
+        Ok(related_locations)
     }
 
     /// 5. Sources: Historical sources that refer to this actor.

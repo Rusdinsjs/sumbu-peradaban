@@ -180,28 +180,33 @@
           {/if}
         </div>
 
-        <!-- Visited Locations -->
+        <!-- Related Locations -->
         <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
           <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
-            <span>🌍</span> Tempat yang Pernah Disinggahi
+            <span>🌍</span> Tempat yang Terkait
           </h2>
 
           {#if actor.visitedLocations && actor.visitedLocations.length > 0}
             <div class="flex flex-col gap-2">
-              {#each actor.visitedLocations as loc}
-                <a href="/location/{loc.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-emerald-500/20 rounded-2xl transition-all gap-3">
+              {#each actor.visitedLocations as rel}
+                <a href="/location/{rel.location.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-emerald-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-base">📍</span>
-                    <span class="text-[11px] font-bold text-text-primary group-hover:text-emerald-400 transition-colors truncate">
-                      {loc.name}
-                    </span>
+                    <div class="flex flex-col overflow-hidden">
+                      <span class="text-[11px] font-bold text-text-primary group-hover:text-emerald-400 transition-colors truncate">
+                        {rel.location.name}
+                      </span>
+                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                        {rel.relationshipType}
+                      </span>
+                    </div>
                   </div>
                   <span class="text-[10px] text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
                 </a>
               {/each}
             </div>
           {:else}
-            <p class="text-[11px] text-text-muted italic">Tidak ada catatan riwayat singgah di lokasi sejarah.</p>
+            <p class="text-[11px] text-text-muted italic">Tidak ada catatan lokasi sejarah yang terkait dengan tokoh ini.</p>
           {/if}
         </div>
 

@@ -77,8 +77,11 @@ export const load: PageLoad = async ({ params, fetch }) => {
             }
           }
           visitedLocations {
-            uuid
-            name
+            relationshipType
+            location {
+              uuid
+              name
+            }
           }
           sources {
             sourceId

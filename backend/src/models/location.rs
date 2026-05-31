@@ -28,6 +28,13 @@ pub struct Location {
     pub media_links: Option<Vec<MediaLink>>,
 }
 
+/// Location with a relationship label/type.
+#[derive(Debug, Clone, SimpleObject)]
+pub struct RelatedLocation {
+    pub location: Location,
+    pub relationship_type: String,
+}
+
 // ---------------------------------------------------------------------------
 // Inputs
 // ---------------------------------------------------------------------------
