@@ -1,0 +1,28 @@
+[
+    {
+        "event": {
+            "title": "Perjanjian Hudaibiyah",
+            "year": 628,
+            "description": "Perjanjian damai antara kaum Muslimin Madinah dan kaum Quraisy Mekkah yang menjadi titik balik diplomasi Islam."
+        },
+        "actors": [
+            {"name": "Nabi Muhammad SAW", "type": "INDIVIDUAL", "role": "Pemimpin Muslimin"},
+            {"name": "Suhail bin Amr", "type": "INDIVIDUAL", "role": "Negosiator Quraisy"}
+        ],
+        "locations": [
+            {"name": "Hudaibiyah", "precision": "AREA"}
+        ],
+        "sources": [
+            {
+                "id": "e458db41-0000-4b36-a367-9154784a9235", 
+                "sub_refs": [
+                    {
+                        "volumeChapter": "Sirah Nabawiyah Ibnu Hisyam / Jilid 2",
+                        "pageVerse": "Halaman 311",
+                        "quoteNotes": "Detail isi perjanjian dan proses negosiasi"
+                    }
+                ]
+            }
+        ]
+    }
+]
