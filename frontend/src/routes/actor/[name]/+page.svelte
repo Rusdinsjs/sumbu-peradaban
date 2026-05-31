@@ -5,7 +5,7 @@
   let actor = $derived(data.actor);
 </script>
 
-<div class="w-full flex flex-col gap-6 animate-fade-in pb-12 p-8 max-w-5xl mx-auto">
+<div class="w-full flex flex-col gap-6 animate-fade-in pb-12 p-8 max-w-5xl mx-auto @container">
   <!-- Back link -->
   <a href="/actor" class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors font-bold flex items-center gap-1.5 self-start">
     ← Kembali ke Direktori Tokoh
@@ -28,7 +28,15 @@
       
       <div class="flex items-start sm:items-center gap-5 relative z-10">
         <div class="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-4xl shadow-[0_0_20px_rgba(16,185,129,0.15)] flex-shrink-0">
-          👤
+          {#if actor.actorType === 'Nabi & Rasul' || actor.actorType === 'Khulafaur Rasyidin'}
+            👑
+          {:else if actor.actorType === 'Sahabat Nabi'}
+            ⚔️
+          {:else if actor.actorType === 'Tabi\'in & Tabi\'ut Tabi\'in'}
+            📖
+          {:else}
+            👤
+          {/if}
         </div>
         
         <div class="flex flex-col gap-1">
@@ -43,10 +51,9 @@
             {actor.name}
           </h1>
           
-          <div class="text-xs text-text-secondary font-medium flex flex-wrap items-center gap-x-2 gap-y-1 mt-0.5">
-            <span>Afiliasi Kebudayaan:</span> 
-            <span class="text-emerald-400 font-bold">{actor.culturalSphere}</span>
-          </div>
+          <p class="text-xs text-text-secondary font-medium mt-0.5">
+            Wilayah Pengaruh: <span class="text-emerald-400 font-bold">{actor.culturalSphere}</span>
+          </p>
         </div>
       </div>
 
@@ -63,9 +70,9 @@
     </div>
 
     <!-- Details Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 @3xl:grid-cols-3 gap-6">
       <!-- Column 1 & 2: Biography, Timeline, and Media -->
-      <div class="lg:col-span-2 flex flex-col gap-6">
+      <div class="col-span-1 @3xl:col-span-2 flex flex-col gap-6">
         
         <!-- Biography Description -->
         <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-4">

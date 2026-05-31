@@ -63,7 +63,7 @@
   let rel = $derived(src ? getReliabilityDetails(src.reliabilityScore) : null);
 </script>
 
-<div class="w-full flex flex-col gap-6 animate-fade-in pb-12 p-8 max-w-5xl mx-auto">
+<div class="w-full flex flex-col gap-6 animate-fade-in pb-12 p-8 max-w-5xl mx-auto @container">
   <!-- Back Link -->
   <a href="/source" class="text-xs text-blue-400 hover:text-blue-300 transition-colors font-bold flex items-center gap-1.5 self-start">
     ← Kembali ke Direktori Rujukan
@@ -129,9 +129,9 @@
     </div>
 
     <!-- Details Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 @3xl:grid-cols-3 gap-6">
       <!-- Column 1 & 2: Primary Text and Assessment -->
-      <div class="lg:col-span-2 flex flex-col gap-6">
+      <div class="col-span-1 @3xl:col-span-2 flex flex-col gap-6">
         
         <!-- Kutipan Primer -->
         <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-4 relative">
@@ -253,7 +253,7 @@
         <span>🌐</span> Peta Hubungan Multi-Dimensi Sejarah
       </h2>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div class="grid grid-cols-1 @3xl:grid-cols-3 gap-6">
         <!-- a. Tokoh Sejarah yang Ditulis -->
         <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
           <h3 class="text-xs font-bold text-gold-400 uppercase tracking-wider flex items-center gap-2">
