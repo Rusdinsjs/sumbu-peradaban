@@ -1,5 +1,5 @@
 const API_URL = typeof window !== 'undefined'
-  ? (import.meta.env.VITE_API_URL || 'http://localhost:8080')
+  ? (import.meta.env.VITE_API_URL || (window.location.hostname === 'localhost' ? 'http://localhost:8080' : window.location.origin))
   : 'http://backend:8080';
 
 export interface GraphQLResponse<T> {
