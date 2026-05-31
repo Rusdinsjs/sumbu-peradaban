@@ -205,7 +205,7 @@ class SumbuPeradabanClient:
     def link_event_to_source(self, event_uuid, source_id, sub_references=None):
         """
         Melink sebuah Event dengan Source (Rujukan).
-        `sub_references` kini menerima list of dicts untuk 3 kolom rujukan.
+        `sub_references` menerima list of dicts untuk 3 kolom rujukan, yang akan dikonversi menjadi JSON String.
         Format yang didukung:
         [
             {
@@ -219,12 +219,16 @@ class SumbuPeradabanClient:
         if sub_references is None:
             sub_references = []
             
+        # Konversi list of dicts menjadi JSON string agar sesuai dengan skema GraphQL asli
+        import json
+        sub_refs_str = json.dumps(sub_references) if sub_references else ""
+            
         query = """
-        mutation LinkEventToSource($eventUuid: UUID!, $sourceId: UUID!, $subReferences: [SubReferenceInput!]) {
+        mutation LinkEventToSource($eventUuid: UUID!, $sourceId: UUID!, $subReferences: String) {
             linkEventToSource(eventUuid: $eventUuid, sourceId: $sourceId, subReferences: $subReferences)
         }
         """
-        variables = {"eventUuid": event_uuid, "sourceId": source_id, "subReferences": sub_references}
+        variables = {"eventUuid": event_uuid, "sourceId": source_id, "subReferences": sub_refs_str}
         try:
             self._execute(query, variables)
             print(f"🔗 Linked Event({event_uuid}) -> Source({source_id}) [{len(sub_references)} Rincian Rujukan]")
