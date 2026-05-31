@@ -1,4 +1,4 @@
-use crate::models::{actor::{Actor, RelatedActor}, common::*, event::Event, location::{Location, RelatedLocation}, source::Source, auth::{User, UserRole, Claims}};
+use crate::models::{actor::{Actor, RelatedActor}, common::*, event::Event, location::{Location, RelatedLocation}, source::{Source, RelatedSource}, auth::{User, UserRole, Claims}};
 use async_graphql::{Context, Object, ComplexObject, Result, Error};
 use neo4rs::{query as neo_query, Graph};
 use sqlx::PgPool;
@@ -962,35 +962,55 @@ impl Actor {
         Ok(related_locations)
     }
 
-    /// 5. Sources: Historical sources that refer to this actor.
-    async fn sources(&self, ctx: &Context<'_>) -> Result<Vec<Source>> {
+    /// 5. Sources: Historical sources related to this actor (directly or via events).
+    async fn sources(&self, ctx: &Context<'_>) -> Result<Vec<RelatedSource>> {
         use sqlx::Row;
         let graph = ctx.data::<Graph>()?;
         let pool = ctx.data::<PgPool>()?;
+        
+        // Match direct sources AND sources of events this actor participated in
         let mut result = graph.execute(
-            neo_query("MATCH (a:Actor {uuid: $uuid})-[:SOURCED_FROM]->(s:Source) RETURN s.uuid AS source_id")
+            neo_query("
+                MATCH (a:Actor {uuid: $uuid})
+                OPTIONAL MATCH (a)-[:SOURCED_FROM]->(s1:Source)
+                OPTIONAL MATCH (a)-[:PARTICIPATED_IN]->(e:Event)-[:SOURCED_FROM]->(s2:Source)
+                WITH a, s1, s2, e
+                WITH a, s1, 'Rujukan Riwayat Tokoh' AS rel1,
+                     s2, 'Rujukan Peristiwa: ' + e.title AS rel2
+                WITH a, collect({id: s1.uuid, rel: rel1}) + collect({id: s2.uuid, rel: rel2}) AS connections
+                UNWIND connections AS conn
+                WITH conn.id AS source_id, conn.rel AS rel
+                WHERE source_id IS NOT NULL
+                RETURN DISTINCT source_id, collect(rel) AS relationships
+            ")
             .param("uuid", self.uuid.to_string())
         ).await?;
         
-        let mut source_ids = Vec::new();
+        let mut source_attributions = Vec::new();
         while let Some(row) = result.next().await? {
             let id: String = row.get("source_id").unwrap_or_default();
+            let rels: Vec<String> = row.get("relationships").unwrap_or_default();
+            let relationship_type = rels.join(", ");
             if let Ok(uid) = Uuid::parse_str(&id) {
-                source_ids.push(uid);
+                source_attributions.push((uid, relationship_type));
             }
         }
         
-        let mut sources = Vec::new();
-        for id in source_ids {
+        let mut related_sources = Vec::new();
+        for (id, relationship_type) in source_attributions {
             let row = sqlx::query("SELECT * FROM sources WHERE source_id = $1")
                 .bind(id)
                 .fetch_optional(pool)
                 .await?;
             if let Some(r) = row {
-                sources.push(row_to_source(&r)?);
+                let source = row_to_source(&r)?;
+                related_sources.push(RelatedSource {
+                    source,
+                    relationship_type,
+                });
             }
         }
-        Ok(sources)
+        Ok(related_sources)
     }
 }
 

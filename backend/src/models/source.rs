@@ -26,6 +26,13 @@ pub struct Source {
     pub updated_at: DateTime<Utc>,
 }
 
+/// Source with a relationship label/type.
+#[derive(Debug, Clone, SimpleObject)]
+pub struct RelatedSource {
+    pub source: Source,
+    pub relationship_type: String,
+}
+
 // ---------------------------------------------------------------------------
 // Input
 // ---------------------------------------------------------------------------

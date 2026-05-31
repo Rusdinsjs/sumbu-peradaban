@@ -84,11 +84,14 @@ export const load: PageLoad = async ({ params, fetch }) => {
             }
           }
           sources {
-            sourceId
-            title
-            author
-            referenceText
-            reliabilityScore
+            relationshipType
+            source {
+              sourceId
+              title
+              author
+              referenceText
+              reliabilityScore
+            }
           }
         }
       }
