@@ -176,6 +176,57 @@ class SumbuPeradabanClient:
         self._execute(query, variables)
         print(f"🔗 Linked Event({event_uuid}) -> Location({location_uuid})")
 
+    # --------------------------------------------------------------------------
+    # 3. READ ENTITIES (AUDIT)
+    # --------------------------------------------------------------------------
+    def get_all_actors(self, limit=100):
+        query = """
+        query GetActors($limit: Int!) {
+            actors(limit: $limit) {
+                uuid
+                name
+            }
+        }
+        """
+        result = self._execute(query, {"limit": limit})
+        actors = result.get("actors", [])
+        print(f"📊 Menemukan {len(actors)} Actor")
+        for a in actors:
+            print(f"   - {a['name']} ({a['uuid']})")
+        return actors
+
+    def get_all_locations(self, limit=100):
+        query = """
+        query GetLocations($limit: Int!) {
+            locations(limit: $limit) {
+                uuid
+                name
+            }
+        }
+        """
+        result = self._execute(query, {"limit": limit})
+        locations = result.get("locations", [])
+        print(f"📊 Menemukan {len(locations)} Location")
+        for loc in locations:
+            print(f"   - {loc['name']} ({loc['uuid']})")
+        return locations
+
+    def get_all_events(self, limit=100):
+        query = """
+        query GetEvents($limit: Int!) {
+            events(limit: $limit) {
+                uuid
+                title
+            }
+        }
+        """
+        result = self._execute(query, {"limit": limit})
+        events = result.get("events", [])
+        print(f"📊 Menemukan {len(events)} Event")
+        for e in events:
+            print(f"   - {e['title']} ({e['uuid']})")
+        return events
+
 
 # ==============================================================================
 # CONTOH PENGGUNAAN (SKENARIO OLEH AGEN DEN)
