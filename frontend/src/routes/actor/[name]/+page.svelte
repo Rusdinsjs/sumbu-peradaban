@@ -5,7 +5,7 @@
   let actor = $derived(data.actor);
 </script>
 
-<div class="w-full flex flex-col gap-6 animate-fade-in pb-12 p-8 max-w-5xl mx-auto @container">
+<div class="w-full flex flex-col gap-6 animate-fade-in pb-12">
   <!-- Back link -->
   <a href="/actor" class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors font-bold flex items-center gap-1.5 self-start">
     ← Kembali ke Direktori Tokoh
@@ -70,9 +70,9 @@
     </div>
 
     <!-- Details Grid -->
-    <div class="grid grid-cols-1 @3xl:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
       <!-- Column 1 & 2: Biography, Timeline, and Media -->
-      <div class="col-span-1 @3xl:col-span-2 flex flex-col gap-6">
+      <div class="lg:col-span-2 flex flex-col gap-6">
         
         <!-- Biography Description -->
         <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-4">
