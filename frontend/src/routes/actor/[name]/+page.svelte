@@ -159,15 +159,15 @@
           {#if actor.relatedActors && actor.relatedActors.length > 0}
             <div class="flex flex-col gap-2">
               {#each actor.relatedActors as rel}
-                <a href="/actor/{rel.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-emerald-500/20 rounded-2xl transition-all gap-3">
+                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-emerald-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-base">👤</span>
                     <div class="flex flex-col overflow-hidden">
                       <span class="text-[11px] font-bold text-text-primary group-hover:text-emerald-400 transition-colors truncate">
-                        {rel.name}
+                        {rel.actor.name}
                       </span>
-                      <span class="text-[9px] text-text-muted uppercase tracking-wider mt-0.5">
-                        {rel.actorType}
+                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                        {rel.relationshipType}
                       </span>
                     </div>
                   </div>

@@ -26,6 +26,13 @@ pub struct Actor {
     pub media_links: Option<Vec<MediaLink>>,
 }
 
+/// Actor with a specific relationship label/type.
+#[derive(Debug, Clone, SimpleObject)]
+pub struct RelatedActor {
+    pub actor: Actor,
+    pub relationship_type: String,
+}
+
 // ---------------------------------------------------------------------------
 // Inputs
 // ---------------------------------------------------------------------------

@@ -1,4 +1,4 @@
-use crate::models::{actor::Actor, common::*, event::Event, location::Location, source::Source, auth::{User, UserRole, Claims}};
+use crate::models::{actor::{Actor, RelatedActor}, common::*, event::Event, location::Location, source::Source, auth::{User, UserRole, Claims}};
 use async_graphql::{Context, Object, ComplexObject, Result, Error};
 use neo4rs::{query as neo_query, Graph};
 use sqlx::PgPool;
@@ -852,26 +852,50 @@ impl Actor {
         Ok(events)
     }
 
-    /// 2. Related Actors: Other actors linked to this actor.
-    async fn related_actors(&self, ctx: &Context<'_>) -> Result<Vec<Actor>> {
+    /// 2. Related Actors: Other actors linked to this actor dynamically.
+    async fn related_actors(&self, ctx: &Context<'_>) -> Result<Vec<RelatedActor>> {
         let graph = ctx.data::<Graph>()?;
-        // Match in either direction: -[:RELATED_TO]-
+        // Match direct relationships AND co-participation in events
         let mut result = graph.execute(
-            neo_query("MATCH (a:Actor {uuid: $uuid})-[:RELATED_TO]-(other:Actor) RETURN DISTINCT
-                other.uuid AS uuid, other.name AS name, other.actor_type AS actor_type, 
-                other.cultural_sphere AS cultural_sphere, other.birth_year AS birth_year, 
-                other.death_year AS death_year, other.curation_tier AS curation_tier, 
-                other.is_connected_to_global AS is_connected_to_global, 
-                other.global_pivot_category AS global_pivot_category,
-                other.works AS works, other.roles AS roles, other.description AS description, other.media_links AS media_links")
+            neo_query("
+                MATCH (a:Actor {uuid: $uuid})
+                OPTIONAL MATCH (a)-[r:RELATED_TO]-(other1:Actor)
+                OPTIONAL MATCH (a)-[:PARTICIPATED_IN]->(e:Event)<-[:PARTICIPATED_IN]-(other2:Actor)
+                WITH a, other1, r, other2, e
+                WITH a, other1, coalesce(r.type, r.description, 'Kerabat/Kolega') AS rel1,
+                     other2,
+                     CASE
+                       WHEN e.title =~ '(?i).*perang.*' OR e.title =~ '(?i).*pertempuran.*' OR e.title =~ '(?i).*penaklukan.*' THEN 'Seperjuangan di ' + e.title
+                       WHEN e.title =~ '(?i).*belajar.*' OR e.title =~ '(?i).*kajian.*' OR e.title =~ '(?i).*majelis.*' OR e.title =~ '(?i).*madrasah.*' THEN 'Kolega di ' + e.title
+                       ELSE 'Terlibat bersama di ' + e.title
+                     END AS rel2
+                WITH a, collect({node: other1, rel: rel1}) + collect({node: other2, rel: rel2}) AS connections
+                UNWIND connections AS conn
+                WITH conn.node AS other, conn.rel AS rel
+                WHERE other IS NOT NULL AND other.uuid <> $uuid
+                RETURN DISTINCT
+                    other.uuid AS uuid, other.name AS name, other.actor_type AS actor_type, 
+                    other.cultural_sphere AS cultural_sphere, other.birth_year AS birth_year, 
+                    other.death_year AS death_year, other.curation_tier AS curation_tier, 
+                    other.is_connected_to_global AS is_connected_to_global, 
+                    other.global_pivot_category AS global_pivot_category,
+                    other.works AS works, other.roles AS roles, other.description AS description, other.media_links AS media_links,
+                    collect(rel) AS relationships
+            ")
             .param("uuid", self.uuid.to_string())
         ).await?;
         
-        let mut actors = Vec::new();
+        let mut related_actors = Vec::new();
         while let Some(row) = result.next().await? {
-            actors.push(row_to_actor(&row)?);
+            let actor = row_to_actor(&row)?;
+            let rels: Vec<String> = row.get("relationships").unwrap_or_default();
+            let relationship_type = rels.join(", ");
+            related_actors.push(RelatedActor {
+                actor,
+                relationship_type,
+            });
         }
-        Ok(actors)
+        Ok(related_actors)
     }
 
     /// 3. Participated Events: Events involved in (unsorted).
