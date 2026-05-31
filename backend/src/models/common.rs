@@ -137,3 +137,21 @@ pub struct GlobalHookInput {
     pub is_connected_to_global: bool,
     pub global_pivot_category: Option<String>,
 }
+
+// ---------------------------------------------------------------------------
+// Media Link Structs
+// ---------------------------------------------------------------------------
+
+#[derive(Debug, Clone, SimpleObject, Serialize, Deserialize)]
+pub struct MediaLink {
+    pub media_type: String, // "text" | "audio" | "image" | "video"
+    pub url: String,
+    pub title: Option<String>,
+}
+
+#[derive(Debug, Clone, InputObject, Serialize, Deserialize)]
+pub struct MediaLinkInput {
+    pub media_type: String, // "text" | "audio" | "image" | "video"
+    pub url: String,
+    pub title: Option<String>,
+}

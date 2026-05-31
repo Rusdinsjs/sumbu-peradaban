@@ -1,0 +1,159 @@
+<script lang="ts">
+  import CurationBadge from '$lib/components/CurationBadge.svelte';
+
+  let { data } = $props<{ data: { sources: any[] } }>();
+
+  let searchQuery = $state('');
+  let viewMode = $state<'grid' | 'list'>('list');
+
+  const sources = $derived.by(() => {
+    return (data.sources || []).map((s: any) => {
+      const displayTitle = s.title || 
+        (s.referenceText.length > 70 
+          ? s.referenceText.substring(0, 70) + '...' 
+          : s.referenceText);
+          
+      return {
+        id: s.sourceId,
+        title: displayTitle,
+        author: s.author || s.interpretationMethod || "Penyusun Anonim",
+        type: s.domain,
+        period: s.publicationEra || "Periode Klasik",
+        tier: s.reliabilityScore >= 0.9 ? 'canonical' : (s.reliabilityScore >= 0.75 ? 'reviewed' : 'verified'),
+        reliability: `${((s.reliabilityScore || 0.8) * 100).toFixed(0)}%`,
+        avatar: s.domain === 'Teks Suci' ? '📖' : (s.domain === 'Arkeologi' ? '🪨' : '📄'),
+        referenceText: s.referenceText
+      };
+    });
+  });
+
+  const filteredSources = $derived(
+    sources.filter((source: any) =>
+      source.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      source.author.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      source.type.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      source.referenceText.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+  );
+</script>
+
+<div class="w-full flex flex-col gap-6 animate-fade-in pb-12 p-8 max-w-6xl mx-auto">
+  <!-- Header Title -->
+  <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+    <div>
+      <h1 class="text-xl md:text-2xl font-extrabold text-violet-400">Direktori Kitab Rujukan & Sanad</h1>
+      <p class="text-xs text-text-secondary mt-1">Poros dimensi pembuktian historis — memetakan tingkat keabsahan & reliabilitas naskah rujukan di Sumbu Peradaban.</p>
+    </div>
+  </div>
+
+  <!-- Search and Controls -->
+  <div class="glass p-4 rounded-xl border border-border/10 flex flex-col md:flex-row gap-4 items-center justify-between">
+    <div class="relative w-full md:w-80">
+      <input
+        type="text"
+        bind:value={searchQuery}
+        placeholder="Cari rujukan sejarah..."
+        class="w-full bg-navy-950/60 border border-border/15 rounded-xl px-4 py-2.5 text-xs text-text-primary placeholder-text-muted outline-none focus:border-violet-500/40 transition-colors"
+      />
+    </div>
+    <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
+      <span class="text-xs text-text-muted">{filteredSources.length} sumber tervalidasi</span>
+      <div class="flex items-center bg-navy-950/60 border border-border/10 rounded-lg p-1">
+        <button 
+          class="p-1.5 rounded-md text-xs transition-colors {viewMode === 'grid' ? 'bg-violet-500/20 text-violet-400' : 'text-text-muted hover:text-text-primary'}"
+          onclick={() => viewMode = 'grid'}
+          title="Tampilan Kanban (Grid)"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+        </button>
+        <button 
+          class="p-1.5 rounded-md text-xs transition-colors {viewMode === 'list' ? 'bg-violet-500/20 text-violet-400' : 'text-text-muted hover:text-text-primary'}"
+          onclick={() => viewMode = 'list'}
+          title="Tampilan Daftar (List)"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"></line><line x1="8" y1="12" x2="21" y2="12"></line><line x1="8" y1="18" x2="21" y2="18"></line><line x1="3" y1="6" x2="3.01" y2="6"></line><line x1="3" y1="12" x2="3.01" y2="12"></line><line x1="3" y1="18" x2="3.01" y2="18"></line></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Sources List / Grid -->
+  {#if filteredSources.length === 0}
+    <div class="glass p-12 rounded-2xl border border-border/10 text-center text-xs text-text-muted">
+      Tidak ada naskah rujukan yang cocok dengan kriteria pencarian.
+    </div>
+  {:else if viewMode === 'grid'}
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {#each filteredSources as source}
+        <a 
+          href="/source/{source.id}"
+          class="glass p-5 rounded-2xl border border-border/10 hover:border-violet-500/30 hover:shadow-[0_0_20px_rgba(139,92,246,0.05)] transition-all flex flex-col gap-4 group"
+        >
+          <div class="flex justify-between items-start">
+            <div class="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-xl text-violet-400 group-hover:scale-105 transition-transform">
+              {source.avatar}
+            </div>
+            <CurationBadge tier={source.tier as any} size="sm" />
+          </div>
+
+          <div>
+            <h3 class="text-sm font-bold text-text-primary group-hover:text-violet-400 transition-colors leading-snug">{source.title}</h3>
+            <p class="text-xs text-text-secondary mt-0.5">{source.author}</p>
+          </div>
+
+          <div class="p-3.5 rounded-xl bg-navy-950/40 border border-border/5 flex flex-col gap-1.5 text-[10px] mt-auto">
+            <div class="flex justify-between">
+              <span class="text-text-muted">Klasifikasi:</span>
+              <span class="text-text-primary font-medium">{source.type}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-text-muted">Era Penulisan:</span>
+              <span class="text-gold-400 font-medium">{source.period}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-text-muted">Tingkat Kepercayaan:</span>
+              <span class="text-emerald-400 font-bold">{source.reliability}</span>
+            </div>
+          </div>
+        </a>
+      {/each}
+    </div>
+  {:else}
+    <div class="flex flex-col gap-3">
+      {#each filteredSources as source}
+        <a 
+          href="/source/{source.id}"
+          class="glass p-4 rounded-xl border border-border/10 hover:border-violet-500/30 hover:shadow-[0_0_20px_rgba(139,92,246,0.05)] transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+        >
+          <div class="flex items-center gap-4">
+            <div class="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-lg text-violet-400 group-hover:scale-105 transition-transform flex-shrink-0">
+              {source.avatar}
+            </div>
+            <div>
+              <h3 class="text-sm font-bold text-text-primary group-hover:text-violet-400 transition-colors">{source.title}</h3>
+              <p class="text-[10px] text-text-secondary mt-0.5">{source.author}</p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-4 md:gap-6 flex-wrap text-[10px] justify-between md:justify-end">
+            <div class="flex flex-col text-right">
+              <span class="text-text-muted">Domain</span>
+              <span class="text-text-primary font-medium mt-0.5">{source.type}</span>
+            </div>
+            <div class="flex flex-col text-right">
+              <span class="text-text-muted">Era</span>
+              <span class="text-gold-400 font-medium mt-0.5">{source.period}</span>
+            </div>
+            <div class="flex flex-col text-right">
+              <span class="text-text-muted">Keandalan</span>
+              <span class="text-emerald-400 font-bold mt-0.5 font-mono">{source.reliability}</span>
+            </div>
+            <div class="flex-shrink-0 ml-auto md:ml-0">
+              <CurationBadge tier={source.tier as any} size="sm" />
+            </div>
+          </div>
+        </a>
+      {/each}
+    </div>
+  {/if}
+</div>

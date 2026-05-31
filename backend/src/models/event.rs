@@ -9,6 +9,7 @@ use super::common::*;
 
 /// A historical event node stored in Neo4j.
 #[derive(Debug, Clone, SimpleObject)]
+#[graphql(complex)]
 pub struct Event {
     pub uuid: Uuid,
     pub title: String,

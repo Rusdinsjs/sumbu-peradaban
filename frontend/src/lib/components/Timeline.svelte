@@ -1,13 +1,6 @@
 <script lang="ts">
   import CurationBadge from './CurationBadge.svelte';
-
-  interface TimelineEvent {
-    title: string;
-    hijriYear: string;
-    gregorianYear: string;
-    description: string;
-    tier: 'draft' | 'verified' | 'reviewed' | 'canonical';
-  }
+  import type { TimelineEvent } from '$lib/types/timeline';
 
   let { 
     events = [] 
@@ -15,114 +8,352 @@
     events?: TimelineEvent[];
   }>();
 
-  // Islamic History Timeline Events
-  const defaultEvents: TimelineEvent[] = [
-    { title: 'Tahun Kesedihan (\'Am al-Huzn)', hijriYear: '-3 H', gregorianYear: '619 M', tier: 'canonical', description: 'Wafatnya Sayyidah Khadijah & Abu Thalib.' },
-    { title: 'Peristiwa Hijrah ke Madinah', hijriYear: '1 H', gregorianYear: '622 M', tier: 'canonical', description: 'Titik awal kalender Hijriah dan berdirinya Daulah Madinah.' },
-    { title: 'Perang Badar Al-Kubra', hijriYear: '2 H', gregorianYear: '624 M', tier: 'canonical', description: 'Kemenangan besar pertama umat Islam melawan kaum Quraisy Makkah.' },
-    { title: 'Fathu Makkah (Pembebasan)', hijriYear: '8 H', gregorianYear: '630 M', tier: 'canonical', description: 'Rasulullah ﷺ kembali ke Makkah dan membersihkan Ka\'bah dari berhala.' },
-    { title: 'Wafatnya Nabi Muhammad ﷺ', hijriYear: '11 H', gregorianYear: '632 M', tier: 'canonical', description: 'Wafatnya Rasulullah dan dimulainya era Khulafaur Rasyidin.' },
-    { title: 'Baitul Maqdis Diserahkan', hijriYear: '16 H', gregorianYear: '637 M', tier: 'reviewed', description: 'Khalifah Umar bin Khattab menerima kunci Al-Quds secara damai.' },
-    { title: 'Daulah Umayyah Berdiri', hijriYear: '41 H', gregorianYear: '661 M', tier: 'reviewed', description: 'Muawiyah bin Abi Sufyan mendirikan dinasti Islam pertama di Damaskus.' },
-  ];
-
-  const activeEvents = $derived(events.length > 0 ? events : defaultEvents);
-  let scrollContainer: HTMLDivElement;
-
-  function scroll(direction: 'left' | 'right') {
-    if (scrollContainer) {
-      const scrollAmount = 300;
-      scrollContainer.scrollBy({
-        left: direction === 'left' ? -scrollAmount : scrollAmount,
-        behavior: 'smooth'
-      });
-    }
+  // Group events by year for synchronic clustering
+  interface YearCluster {
+    year: string;
+    yearSort: number;
+    events: TimelineEvent[];
   }
+
+  let clusters = $derived.by(() => {
+    const map = new Map<string, YearCluster>();
+    
+    for (const ev of events) {
+      if (!map.has(ev.year)) {
+        map.set(ev.year, { year: ev.year, yearSort: ev.yearSort, events: [] });
+      }
+      map.get(ev.year)!.events.push(ev);
+    }
+
+    return Array.from(map.values()).sort((a, b) => a.yearSort - b.yearSort);
+  });
 </script>
 
-<div class="relative w-full py-6 flex flex-col">
-  <!-- Scroll controls -->
-  <div class="flex justify-between items-center mb-4">
-    <div class="text-sm font-bold text-gold-500 flex items-center gap-2">
-      <span>📅 Kalender Ganda:</span>
-      <span class="text-xs text-text-secondary font-normal">(Hijriah ↔ Gregorian)</span>
-    </div>
-    <div class="flex gap-2">
-      <button 
-        class="w-8 h-8 rounded-lg glass border border-border/10 hover:border-gold-500/20 text-xs flex items-center justify-center transition-all"
-        onclick={() => scroll('left')}
-      >
-        ←
-      </button>
-      <button 
-        class="w-8 h-8 rounded-lg glass border border-border/10 hover:border-gold-500/20 text-xs flex items-center justify-center transition-all"
-        onclick={() => scroll('right')}
-      >
-        →
-      </button>
-    </div>
-  </div>
+<div class="timeline-container">
+  {#each clusters as cluster, i}
+    <div class="year-cluster">
+      <!-- Year Marker -->
+      <div class="year-marker">
+        <div class="year-dot"></div>
+        <span class="year-label">{cluster.year}</span>
+        {#if i < clusters.length - 1}
+          <div class="year-connector"></div>
+        {/if}
+      </div>
 
-  <!-- Timeline scroll wrapper -->
-  <div 
-    bind:this={scrollContainer}
-    class="w-full overflow-x-auto flex gap-6 pb-6 relative scrollbar-none snap-x snap-mandatory"
-  >
-    <!-- Axis lines -->
-    <div class="absolute top-[28px] left-0 right-0 h-0.5 bg-gradient-to-r from-gold-500/10 via-gold-500/40 to-gold-500/10 pointer-events-none"></div>
-    <div class="absolute top-[52px] left-0 right-0 h-0.5 bg-gradient-to-r from-navy-500/10 via-navy-500/40 to-navy-500/10 pointer-events-none"></div>
-
-    {#each activeEvents as event}
-      <div class="flex-shrink-0 w-80 snap-start flex flex-col relative group">
-        <!-- Date Markers -->
-        <div class="flex flex-col items-center justify-center mb-6 relative">
-          <!-- Hijri Year (Top Axis) -->
-          <span class="text-xs font-extrabold text-gold-400 bg-surface px-2 py-0.5 rounded border border-gold-500/20 z-10">
-            {event.hijriYear}
-          </span>
-          
-          <!-- Node Dot -->
-          <span class="w-3 h-3 rounded-full bg-gold-500 border-2 border-surface my-1 group-hover:scale-125 transition-transform shadow-[0_0_8px_#d4a853]"></span>
-
-          <!-- Gregorian Year (Bottom Axis) -->
-          <span class="text-[10px] font-bold text-text-secondary bg-surface px-2 py-0.5 rounded border border-border/10 z-10">
-            {event.gregorianYear}
-          </span>
-        </div>
-
-        <!-- Event Detail Card -->
-        <div class="glass p-5 rounded-xl border border-border/10 hover:border-gold-500/30 transition-all duration-300 flex-1 flex flex-col justify-between group-hover:translate-y-[-4px] shadow-lg">
-          <div>
-            <div class="flex justify-between items-start gap-2 mb-2">
-              <h3 class="text-sm font-extrabold text-text-primary group-hover:text-gold-400 transition-colors leading-snug">
-                {event.title}
-              </h3>
+      <!-- Events in this year -->
+      <div class="events-column">
+        {#each cluster.events as event}
+          <div class="event-card" class:synchronic={event.isSynchrnic}>
+            <!-- Header -->
+            <div class="event-header">
+              <div class="event-title-area">
+                {#if event.isSynchrnic && event.civilization}
+                  <span class="sync-badge">{event.civilization}</span>
+                {/if}
+                <h4 class="event-title">{event.title}</h4>
+              </div>
               <CurationBadge tier={event.tier} size="sm" />
             </div>
-            <p class="text-xs text-text-secondary leading-relaxed">
-              {event.description}
-            </p>
+
+            <!-- Description -->
+            <p class="event-desc">{event.description}</p>
+
+            <!-- Dimension Chips -->
+            <div class="chips-area">
+              {#if event.locations && event.locations.length > 0}
+                {#each event.locations as loc}
+                  <a href="/location/{encodeURIComponent(loc.name)}" class="chip chip-location" title={loc.type || 'Lokasi'}>
+                    <span class="chip-icon">📍</span>
+                    <span>{loc.name}</span>
+                  </a>
+                {/each}
+              {/if}
+
+              {#if event.actors && event.actors.length > 0}
+                {#each event.actors as actor}
+                  <a href="/actor/{encodeURIComponent(actor.name)}" class="chip chip-actor" title={actor.role || 'Pelaku'}>
+                    <span class="chip-icon">👤</span>
+                    <span>{actor.name}</span>
+                  </a>
+                {/each}
+              {/if}
+
+              {#if event.sources && event.sources.length > 0}
+                {#each event.sources as src}
+                  <a href="/source/{src.id}" class="chip chip-source" title="Rujukan">
+                    <span class="chip-icon">📄</span>
+                    <span>{src.title}</span>
+                  </a>
+                {/each}
+              {/if}
+            </div>
+
+            <!-- Footer -->
+            {#if event.uuid}
+              <div class="event-footer">
+                <a href="/event/{event.uuid}" class="detail-link">
+                  Lihat Detail Peristiwa →
+                </a>
+              </div>
+            {/if}
           </div>
-          <div class="mt-4 border-t border-border/10 pt-3 flex justify-between items-center">
-            <span class="text-[10px] text-text-muted">Pivot: Dunia Islam</span>
-            <button class="text-[10px] text-gold-500 hover:text-gold-400 transition-colors font-bold">
-              Detail Peristiwa →
-            </button>
-          </div>
-        </div>
+        {/each}
       </div>
-    {/each}
-  </div>
+    </div>
+  {:else}
+    <div class="empty-state">
+      <span class="empty-icon">🕰️</span>
+      <p>Belum ada peristiwa untuk ditampilkan pada era ini.</p>
+    </div>
+  {/each}
 </div>
 
 <style>
-  /* Hide scrollbar for Chrome, Safari and Opera */
-  .scrollbar-none::-webkit-scrollbar {
-    display: none;
+  .timeline-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    position: relative;
   }
-  /* Hide scrollbar for IE, Edge and Firefox */
-  .scrollbar-none {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
+
+  .year-cluster {
+    display: flex;
+    gap: 24px;
+    position: relative;
+    min-height: 60px;
+  }
+
+  /* Year Marker (left axis) */
+  .year-marker {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 120px;
+    flex-shrink: 0;
+    position: relative;
+    padding-top: 4px;
+  }
+
+  .year-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: #d4a853;
+    border: 3px solid rgba(13, 17, 23, 0.9);
+    box-shadow: 0 0 10px rgba(212, 168, 83, 0.5);
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .year-label {
+    font-size: 11px;
+    font-weight: 800;
+    color: #d4a853;
+    white-space: nowrap;
+    margin-top: 6px;
+    text-align: center;
+    letter-spacing: 0.02em;
+  }
+
+  .year-connector {
+    position: absolute;
+    top: 16px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: calc(100% + 0px);
+    background: linear-gradient(180deg, rgba(212, 168, 83, 0.4), rgba(212, 168, 83, 0.08));
+    z-index: 1;
+  }
+
+  /* Events Column */
+  .events-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding-bottom: 28px;
+  }
+
+  /* Event Card */
+  .event-card {
+    padding: 16px 20px;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.02);
+    backdrop-filter: blur(12px);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: all 0.25s ease;
+  }
+
+  .event-card:hover {
+    border-color: rgba(212, 168, 83, 0.25);
+    background: rgba(255, 255, 255, 0.035);
+    transform: translateX(4px);
+  }
+
+  .event-card.synchronic {
+    border-left: 3px solid rgba(34, 211, 238, 0.35);
+    background: rgba(34, 211, 238, 0.02);
+  }
+
+  .event-card.synchronic:hover {
+    border-color: rgba(34, 211, 238, 0.4);
+    border-left-color: rgba(34, 211, 238, 0.6);
+  }
+
+  /* Header */
+  .event-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .event-title-area {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .sync-badge {
+    font-size: 9px;
+    font-weight: 700;
+    color: #22d3ee;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    padding: 2px 8px;
+    background: rgba(34, 211, 238, 0.08);
+    border: 1px solid rgba(34, 211, 238, 0.15);
+    border-radius: 4px;
+    width: fit-content;
+  }
+
+  .event-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: rgba(255, 255, 255, 0.9);
+    line-height: 1.3;
+    margin: 0;
+  }
+
+  .event-desc {
+    font-size: 11px;
+    color: rgba(255, 255, 255, 0.45);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  /* Dimension Chips */
+  .chips-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-size: 10px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+  }
+
+  .chip-icon {
+    font-size: 11px;
+  }
+
+  .chip-location {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.06);
+    border-color: rgba(245, 158, 11, 0.12);
+  }
+  .chip-location:hover {
+    background: rgba(245, 158, 11, 0.12);
+    border-color: rgba(245, 158, 11, 0.3);
+  }
+
+  .chip-actor {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.06);
+    border-color: rgba(16, 185, 129, 0.12);
+  }
+  .chip-actor:hover {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.3);
+  }
+
+  .chip-source {
+    color: #8b5cf6;
+    background: rgba(139, 92, 246, 0.06);
+    border-color: rgba(139, 92, 246, 0.12);
+  }
+  .chip-source:hover {
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.3);
+  }
+
+  /* Footer */
+  .event-footer {
+    padding-top: 8px;
+    border-top: 1px solid rgba(255, 255, 255, 0.04);
+  }
+
+  .detail-link {
+    font-size: 10px;
+    font-weight: 700;
+    color: #d4a853;
+    text-decoration: none;
+    transition: color 0.2s ease;
+  }
+
+  .detail-link:hover {
+    color: #e8c068;
+  }
+
+  /* Empty State */
+  .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px 24px;
+    text-align: center;
+  }
+
+  .empty-icon {
+    font-size: 32px;
+    opacity: 0.3;
+    margin-bottom: 12px;
+  }
+
+  .empty-state p {
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.35);
+    font-weight: 500;
+  }
+
+  /* Responsive */
+  @media (max-width: 768px) {
+    .year-marker {
+      width: 72px;
+    }
+    .year-label {
+      font-size: 9px;
+    }
+    .year-cluster {
+      gap: 12px;
+    }
+    .event-card {
+      padding: 12px 14px;
+    }
   }
 </style>

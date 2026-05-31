@@ -25,8 +25,27 @@ type AppSchema = async_graphql::Schema<
 >;
 
 /// Handler for POST /graphql — executes a GraphQL request.
-async fn graphql_handler(State(schema): State<AppSchema>, req: GraphQLRequest) -> GraphQLResponse {
-    schema.execute(req.into_inner()).await.into()
+async fn graphql_handler(
+    State(schema): State<AppSchema>,
+    headers: axum::http::HeaderMap,
+    req: GraphQLRequest,
+) -> GraphQLResponse {
+    let mut req = req.into_inner();
+    
+    // Extract Authorization header
+    if let Some(auth_header) = headers.get("Authorization") {
+        if let Ok(auth_str) = auth_header.to_str() {
+            if auth_str.starts_with("Bearer ") {
+                let token = &auth_str[7..];
+                // Verify JWT and inject into context if valid
+                if let Ok(claims) = models::auth::verify_jwt(token) {
+                    req = req.data(claims);
+                }
+            }
+        }
+    }
+    
+    schema.execute(req).await.into()
 }
 
 /// Handler for GET / — serves the GraphiQL interactive playground.

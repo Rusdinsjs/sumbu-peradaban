@@ -1,32 +1,47 @@
-<script>
+<script lang="ts">
   import SearchBar from '$lib/components/SearchBar.svelte';
   import StatCard from '$lib/components/StatCard.svelte';
   import CurationBadge from '$lib/components/CurationBadge.svelte';
   import GraphExplorer from '$lib/components/GraphExplorer.svelte';
   import { onMount } from 'svelte';
 
+  let { data } = $props<{ data: any }>();
+  
   let visible = $state(false);
   let heroVisible = $state(false);
   let statsVisible = $state(false);
   let activityVisible = $state(false);
   let graphVisible = $state(false);
 
-  const stats = [
-    { icon: '📜', label: 'Total Peristiwa', value: '1,247', trend: '+24 minggu ini', trendUp: true },
-    { icon: '👥', label: 'Total Tokoh', value: '3,891', trend: '+57 minggu ini', trendUp: true },
-    { icon: '🌍', label: 'Total Lokasi', value: '856', trend: '+12 minggu ini', trendUp: true },
-    { icon: '📚', label: 'Total Sumber', value: '5,432', trend: '+89 minggu ini', trendUp: true }
-  ];
+  let dbData = $derived(data.dashboardData || { events: [], actors: [], locations: [], sources: [] });
 
-  const recentActivity = [
-    { id: 1, time: '2 menit lalu', action: 'Ditambahkan', entity: 'Perang Badar', type: 'event', tier: 'verified' },
-    { id: 2, time: '15 menit lalu', action: 'Diperbarui', entity: 'Khalid bin Walid', type: 'actor', tier: 'reviewed' },
-    { id: 3, time: '1 jam lalu', action: 'Dipromosikan', entity: 'Madinah al-Munawwarah', type: 'location', tier: 'canonical' },
-    { id: 4, time: '3 jam lalu', action: 'Ditambahkan', entity: 'Perjanjian Hudaibiyah', type: 'event', tier: 'draft' },
-    { id: 5, time: '5 jam lalu', action: 'Diverifikasi', entity: 'Imam Bukhari', type: 'actor', tier: 'verified' }
-  ];
+  let stats = $derived([
+    { icon: '📜', label: 'Total Peristiwa', value: dbData.events ? dbData.events.length.toString() : '0', trend: 'Live Data' },
+    { icon: '👥', label: 'Total Tokoh', value: dbData.actors ? dbData.actors.length.toString() : '0', trend: 'Live Data' },
+    { icon: '🌍', label: 'Total Lokasi', value: dbData.locations ? dbData.locations.length.toString() : '0', trend: 'Live Data' },
+    { icon: '📚', label: 'Total Sumber', value: dbData.sources ? dbData.sources.length.toString() : '0', trend: 'Live Data' }
+  ]);
+  
+  // Mix real data with some mock time for presentation purposes since audit log isn't fetched yet
+  let recentActivity = $derived([
+    ...(dbData.events || []).map((e: any, i: number) => ({
+      id: `e-${i}`, time: 'Baru saja', action: 'Data Historis', entity: e.title, type: 'event' as const, tier: (e.curationTier?.toLowerCase() || 'draft') as any
+    })),
+    ...(dbData.actors || []).map((a: any, i: number) => ({
+      id: `a-${i}`, time: '1 jam lalu', action: 'Tokoh', entity: a.name, type: 'actor' as const, tier: (a.curationTier?.toLowerCase() || 'draft') as any
+    })),
+    ...(dbData.locations || []).map((l: any, i: number) => ({
+      id: `l-${i}`, time: 'Hari ini', action: 'Lokasi', entity: l.name, type: 'location' as const, tier: (l.curationTier?.toLowerCase() || 'draft') as any
+    }))
+  ].slice(0, 5));
 
-  const typeIcons = {
+  // Fallback if no real data
+  let finalActivity = $derived(recentActivity.length > 0 ? recentActivity : [
+    { id: 'd1', time: '2 menit lalu', action: 'Ditambahkan', entity: 'Perang Badar', type: 'event' as const, tier: 'verified' as any },
+    { id: 'd2', time: '15 menit lalu', action: 'Diperbarui', entity: 'Khalid bin Walid', type: 'actor' as const, tier: 'reviewed' as any }
+  ]);
+
+  const typeIcons: Record<string, string> = {
     event: '📜',
     actor: '👤',
     location: '📍'
@@ -76,7 +91,6 @@
         label={stat.label}
         value={stat.value}
         trend={stat.trend}
-        trendUp={stat.trendUp}
       />
     {/each}
   </section>
@@ -88,14 +102,14 @@
       <span class="section-badge">Live</span>
     </div>
     <div class="glass activity-card">
-      {#each recentActivity as item (item.id)}
+      {#each finalActivity as item (item.id)}
         <div class="activity-item">
           <span class="activity-icon">{typeIcons[item.type]}</span>
           <div class="activity-info">
             <div class="activity-main">
               <span class="activity-action">{item.action}</span>
               <span class="activity-entity">{item.entity}</span>
-              <CurationBadge tier={item.tier} size="small" />
+              <CurationBadge tier={item.tier} size="sm" />
             </div>
             <span class="activity-time">{item.time}</span>
           </div>
@@ -114,7 +128,7 @@
     </div>
     <div class="glass graph-preview-card">
       <div class="graph-container">
-        <GraphExplorer height="300px" compact={true} />
+        <GraphExplorer />
       </div>
     </div>
   </section>

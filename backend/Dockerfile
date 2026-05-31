@@ -1,4 +1,4 @@
-FROM rust:1.85-slim
+FROM rust:slim
 
 WORKDIR /app
 
@@ -17,6 +17,7 @@ RUN apt-get update && apt-get install -y \
 # Copy manifests and source code
 COPY Cargo.toml Cargo.lock* ./
 COPY src ./src
+COPY migrations ./migrations
 
 EXPOSE 8080
 

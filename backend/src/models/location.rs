@@ -9,6 +9,7 @@ use super::common::*;
 
 /// A geographic or conceptual location stored in Neo4j.
 #[derive(Debug, Clone, SimpleObject)]
+#[graphql(complex)]
 pub struct Location {
     pub uuid: Uuid,
     pub name: String,
@@ -20,6 +21,11 @@ pub struct Location {
     pub is_transcendental: bool,
     pub curation_tier: CurationTier,
     pub global_hook: GlobalHook,
+    pub geography_climate: Option<String>,
+    pub demographics: Option<String>,
+    pub socio_cultural: Option<String>,
+    pub historical_role: Option<String>,
+    pub media_links: Option<Vec<MediaLink>>,
 }
 
 // ---------------------------------------------------------------------------
@@ -35,6 +41,11 @@ pub struct CreateLocationInput {
     pub is_transcendental: Option<bool>,
     pub is_connected_to_global: Option<bool>,
     pub global_pivot_category: Option<String>,
+    pub geography_climate: Option<String>,
+    pub demographics: Option<String>,
+    pub socio_cultural: Option<String>,
+    pub historical_role: Option<String>,
+    pub media_links: Option<Vec<MediaLinkInput>>,
 }
 
 #[allow(dead_code)]
@@ -47,4 +58,9 @@ pub struct UpdateLocationInput {
     pub is_transcendental: Option<bool>,
     pub is_connected_to_global: Option<bool>,
     pub global_pivot_category: Option<String>,
+    pub geography_climate: Option<String>,
+    pub demographics: Option<String>,
+    pub socio_cultural: Option<String>,
+    pub historical_role: Option<String>,
+    pub media_links: Option<Vec<MediaLinkInput>>,
 }

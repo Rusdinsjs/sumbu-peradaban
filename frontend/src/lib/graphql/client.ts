@@ -7,13 +7,23 @@ export interface GraphQLResponse<T> {
   errors?: Array<{ message: string; locations?: Array<{ line: number; column: number }> }>;
 }
 
+import { auth } from '../stores/auth.svelte';
+
 export async function gql<T = unknown>(
   query: string,
-  variables?: Record<string, unknown>
+  variables?: Record<string, unknown>,
+  customFetch?: typeof fetch
 ): Promise<T> {
-  const response = await fetch(`${API_URL}/graphql`, {
+  const fetcher = customFetch || fetch;
+  const headers: Record<string, string> = { 'Content-Type': 'application/json' };
+  
+  if (auth.token) {
+    headers['Authorization'] = `Bearer ${auth.token}`;
+  }
+
+  const response = await fetcher(`${API_URL}/graphql`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers,
     body: JSON.stringify({ query, variables }),
   });
 
