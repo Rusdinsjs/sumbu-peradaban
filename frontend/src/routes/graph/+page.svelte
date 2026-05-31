@@ -223,7 +223,16 @@
           curationTier: 'canonical' as const,
           subtitle: match.role,
           stats: `${match.events.length} Peristiwa Sejarah`,
-          link: `/actor/${encodeURIComponent(match.name)}`
+          link: `/actor/${selectedNode.id}`
+        };
+      } else {
+        // Fallback if not in realWorldEvents mock
+        return {
+          description: `Tokoh sejarah ini terlibat aktif dalam peradaban sinkronik global.`,
+          curationTier: 'canonical' as const,
+          subtitle: 'Aktor Sejarah',
+          stats: `1 Peristiwa Terdaftar`,
+          link: `/actor/${selectedNode.id}`
         };
       }
     }
@@ -241,7 +250,15 @@
           curationTier: 'canonical' as const,
           subtitle: match.type || 'Wilayah Strategis',
           stats: `${match.events.length} Peristiwa Terdaftar`,
-          link: `/location/${encodeURIComponent(match.name)}`
+          link: `/location/${selectedNode.id}`
+        };
+      } else {
+        return {
+          description: `Lokasi geospasial klasik ini menjadi panggung utama berlangsungnya peristiwa penting dalam sejarah dunia.`,
+          curationTier: 'canonical' as const,
+          subtitle: 'Wilayah Strategis',
+          stats: `1 Peristiwa Terdaftar`,
+          link: `/location/${selectedNode.id}`
         };
       }
     }

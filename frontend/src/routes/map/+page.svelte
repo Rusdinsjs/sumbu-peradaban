@@ -49,6 +49,7 @@
     (data.locationsData || [])
       .filter((l: any) => l.lat && l.lng)
       .map((l: any) => ({
+        uuid: l.uuid,
         name: l.name,
         lat: l.lat,
         lng: l.lng,

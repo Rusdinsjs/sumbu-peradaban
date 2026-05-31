@@ -36,9 +36,9 @@
         const relatedNode = nodes.find((n: any) => n.data.id === relatedNodeId);
         if (relatedNode) {
           if (relatedNode.data.type === 'actor') {
-            actors.push({ name: relatedNode.data.label, role: relationship });
+            actors.push({ uuid: relatedNode.data.id, name: relatedNode.data.label, role: relationship });
           } else if (relatedNode.data.type === 'location') {
-            locations.push({ name: relatedNode.data.label, type: relatedNode.data.tier || 'Titik Kritis', lat: 21.0, lng: 39.0 });
+            locations.push({ uuid: relatedNode.data.id, name: relatedNode.data.label, type: relatedNode.data.tier || 'Titik Kritis', lat: 21.0, lng: 39.0 });
           }
         }
       }
@@ -203,7 +203,7 @@
         <h2 class="text-sm font-bold text-gold-400">Aktor Terkait</h2>
         <div class="flex flex-col gap-3">
           {#each event.actors as actor}
-            <a href="/actor/{encodeURIComponent(actor.name)}" class="p-3.5 rounded-xl bg-navy-950/60 border border-border/10 hover:border-emerald-500/20 hover:bg-emerald-500/5 transition-all flex justify-between items-center group">
+            <a href="/actor/{actor.uuid}" class="p-3.5 rounded-xl bg-navy-950/60 border border-border/10 hover:border-emerald-500/20 hover:bg-emerald-500/5 transition-all flex justify-between items-center group">
               <div>
                 <h4 class="text-xs font-bold text-text-primary group-hover:text-emerald-400 transition-colors">{actor.name}</h4>
                 <p class="text-[10px] text-text-muted mt-0.5">{actor.role}</p>
@@ -219,7 +219,7 @@
         <h2 class="text-sm font-bold text-gold-400">Lokasi Terkait</h2>
         <div class="flex flex-col gap-3">
           {#each event.locations as loc}
-            <a href="/location/{encodeURIComponent(loc.name)}" class="p-3.5 rounded-xl bg-navy-950/60 border border-border/10 hover:border-amber-500/20 hover:bg-amber-500/5 transition-all flex flex-col gap-1 group">
+            <a href="/location/{loc.uuid}" class="p-3.5 rounded-xl bg-navy-950/60 border border-border/10 hover:border-amber-500/20 hover:bg-amber-500/5 transition-all flex flex-col gap-1 group">
               <h4 class="text-xs font-bold text-text-primary group-hover:text-amber-400 transition-colors">{loc.name}</h4>
               <p class="text-[10px] text-text-muted">{loc.type}</p>
               <p class="text-[9px] text-text-muted mt-1 font-mono">{loc.lat.toFixed(4)}° N, {loc.lng.toFixed(4)}° E</p>

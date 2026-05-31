@@ -47,8 +47,6 @@ export const load: PageLoad = async ({ params, fetch }) => {
         location(uuid: $uuid) {
           uuid
           name
-          locationType
-          region
           lat
           lng
           precision

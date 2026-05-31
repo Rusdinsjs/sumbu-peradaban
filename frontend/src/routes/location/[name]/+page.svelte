@@ -3,6 +3,8 @@
   import MapView from '$lib/components/MapView.svelte';
   import { slide } from 'svelte/transition';
 
+  import { page } from '$app/stores';
+
   let { data } = $props<{ data: { location: any } }>();
   let dbLoc = $derived(data.location);
 
@@ -71,9 +73,33 @@
       };
     }
 
+    const currentName = decodeURIComponent($page.params.name).toLowerCase();
+    
+    // Find matching fallback by substring
+    let fallback = null;
+    for (const [key, value] of Object.entries(locationRegistryFallback)) {
+      if (currentName.includes(key)) {
+        fallback = value;
+        break;
+      }
+    }
+
+    if (fallback) {
+      return {
+        ...fallback,
+        demographics: '',
+        socioCultural: '',
+        mediaLinks: [],
+        timeline: [],
+        relatedLocations: [],
+        actors: [],
+        sources: []
+      };
+    }
+
     // Try finding in fallback registry
     return {
-      name: 'Lokasi Sejarah',
+      name: decodeURIComponent($page.params.name) || 'Lokasi Sejarah',
       ancientName: 'Tidak Tercatat',
       type: 'Titik Wilayah Pengaruh',
       curationTier: 'draft' as const,
@@ -266,6 +292,7 @@
 
             <MapView 
               locations={[{
+                uuid: loc.uuid,
                 name: loc.name,
                 lat: loc.lat,
                 lng: loc.lng,

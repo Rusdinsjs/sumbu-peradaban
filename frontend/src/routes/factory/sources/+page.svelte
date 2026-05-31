@@ -411,6 +411,9 @@
                 </td>
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-2">
+                    <a href="/source/{src.sourceId}" target="_blank" class="text-violet-400 hover:text-violet-300 font-bold px-3 py-1 bg-violet-500/10 rounded-lg transition-colors flex items-center gap-1">
+                      <span class="text-sm">👁️</span> View
+                    </a>
                     <button onclick={() => openEditForm(src)} class="text-blue-400 hover:text-blue-300 font-bold px-3 py-1 bg-blue-500/10 rounded-lg transition-colors">Edit</button>
                     <button onclick={() => deleteSource(src.sourceId)} class="text-red-400 hover:text-red-300 font-bold px-3 py-1 bg-red-500/10 rounded-lg transition-colors">Hapus</button>
                   </div>

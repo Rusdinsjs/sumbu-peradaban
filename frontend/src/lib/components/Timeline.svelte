@@ -63,7 +63,7 @@
             <div class="chips-area">
               {#if event.locations && event.locations.length > 0}
                 {#each event.locations as loc}
-                  <a href="/location/{encodeURIComponent(loc.name)}" class="chip chip-location" title={loc.type || 'Lokasi'}>
+                  <a href="/location/{loc.uuid || encodeURIComponent(loc.name)}" class="chip chip-location" title={loc.type || 'Lokasi'}>
                     <span class="chip-icon">📍</span>
                     <span>{loc.name}</span>
                   </a>
@@ -72,7 +72,7 @@
 
               {#if event.actors && event.actors.length > 0}
                 {#each event.actors as actor}
-                  <a href="/actor/{encodeURIComponent(actor.name)}" class="chip chip-actor" title={actor.role || 'Pelaku'}>
+                  <a href="/actor/{actor.uuid || encodeURIComponent(actor.name)}" class="chip chip-actor" title={actor.role || 'Pelaku'}>
                     <span class="chip-icon">👤</span>
                     <span>{actor.name}</span>
                   </a>

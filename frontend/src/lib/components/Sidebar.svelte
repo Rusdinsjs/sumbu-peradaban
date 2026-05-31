@@ -220,14 +220,6 @@
               <span class="nav-sub-label">Dashboard Kurasi</span>
             </a>
             <a
-              href="/factory/events"
-              class="nav-sub-item"
-              class:active={isActive('/factory/events')}
-            >
-              <span class="nav-sub-icon">📜</span>
-              <span class="nav-sub-label">Manajemen Peristiwa</span>
-            </a>
-            <a
               href="/factory/actors"
               class="nav-sub-item"
               class:active={isActive('/factory/actors')}
@@ -250,6 +242,14 @@
             >
               <span class="nav-sub-icon">📄</span>
               <span class="nav-sub-label">Manajemen Rujukan</span>
+            </a>
+            <a
+              href="/factory/events"
+              class="nav-sub-item"
+              class:active={isActive('/factory/events')}
+            >
+              <span class="nav-sub-icon">📜</span>
+              <span class="nav-sub-label">Manajemen Peristiwa</span>
             </a>
             
             <div class="mt-2 pt-2 border-t border-white/5 pl-2 mb-1">

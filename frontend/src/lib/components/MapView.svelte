@@ -2,6 +2,8 @@
   import { onMount, onDestroy } from 'svelte';
 
   interface LocationMarker {
+    uuid?: string;
+    id?: string;
     name: string;
     lat: number;
     lng: number;
@@ -135,7 +137,7 @@
             <p class="text-[10px] text-text-secondary mt-0.5">${loc.type}</p>
           </div>
           ${loc.description ? `<p class="text-xs border-t border-border/10 pt-1.5 text-text-muted leading-relaxed">${loc.description}</p>` : ''}
-          <a href="/location/${encodeURIComponent(loc.name)}" class="mt-1 w-full py-1.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold text-center transition-colors block">
+          <a href="/location/${loc.uuid || loc.id || encodeURIComponent(loc.name)}" data-sveltekit-reload class="mt-1 w-full py-1.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold text-center transition-colors block">
             Lihat Dimensi Lokasi →
           </a>
         </div>

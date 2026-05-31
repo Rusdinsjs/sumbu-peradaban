@@ -416,6 +416,9 @@
                 </td>
                 <td class="px-6 py-4 text-right font-medium">
                   <div class="flex items-center justify-end gap-2">
+                    <a href="/location/{loc.uuid}" target="_blank" class="text-blue-400 hover:text-blue-300 font-bold px-3 py-1 bg-blue-500/10 rounded-lg transition-colors flex items-center gap-1">
+                      <span class="text-sm">👁️</span> View
+                    </a>
                     <button onclick={() => openEditForm(loc)} class="text-emerald-400 hover:text-emerald-300 font-bold px-3 py-1 bg-emerald-500/10 rounded-lg transition-colors">Edit</button>
                     <button onclick={() => deleteLocation(loc.uuid)} class="text-red-400 hover:text-red-300 font-bold px-3 py-1 bg-red-500/10 rounded-lg transition-colors">Hapus</button>
                   </div>

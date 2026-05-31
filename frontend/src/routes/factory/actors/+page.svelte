@@ -486,6 +486,9 @@
                 </td>
                 <td class="px-6 py-4 text-right">
                   <div class="flex items-center justify-end gap-2">
+                    <a href="/actor/{actor.uuid}" target="_blank" class="text-emerald-400 hover:text-emerald-300 font-bold px-3 py-1 bg-emerald-500/10 rounded-lg transition-colors flex items-center gap-1">
+                      <span class="text-sm">👁️</span> View
+                    </a>
                     <button onclick={() => openEditForm(actor)} class="text-gold-400 hover:text-gold-300 font-bold px-3 py-1 bg-gold-500/10 rounded-lg transition-colors">Edit</button>
                     <button onclick={() => deleteActor(actor.uuid)} class="text-red-400 hover:text-red-300 font-bold px-3 py-1 bg-red-500/10 rounded-lg transition-colors">Hapus</button>
                   </div>
