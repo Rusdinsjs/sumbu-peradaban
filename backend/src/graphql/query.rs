@@ -1101,55 +1101,201 @@ impl Location {
         Ok(events)
     }
 
-    /// 4. Actors: Actors related to this location (e.g. visited it).
-    async fn actors(&self, ctx: &Context<'_>) -> Result<Vec<Actor>> {
+    /// 4. Actors: Actors related to this location (visited it or participated in events here).
+    async fn actors(&self, ctx: &Context<'_>) -> Result<Vec<RelatedActor>> {
         let graph = ctx.data::<Graph>()?;
         let mut result = graph.execute(
-            neo_query("MATCH (a:Actor)-[:VISITED]->(l:Location {uuid: $uuid}) RETURN DISTINCT
-                a.uuid AS uuid, a.name AS name, a.actor_type AS actor_type, 
-                a.cultural_sphere AS cultural_sphere, a.birth_year AS birth_year, 
-                a.death_year AS death_year, a.curation_tier AS curation_tier, 
-                a.is_connected_to_global AS is_connected_to_global, 
-                a.global_pivot_category AS global_pivot_category,
-                a.works AS works, a.roles AS roles, a.description AS description, a.media_links AS media_links")
+            neo_query("
+                MATCH (l:Location {uuid: $uuid})
+                OPTIONAL MATCH (a1:Actor)-[:VISITED]->(l)
+                OPTIONAL MATCH (a2:Actor)-[:PARTICIPATED_IN]->(e:Event)-[:OCCURRED_AT]->(l)
+                WITH l, a1, a2, e
+                WITH l, a1, 'Pernah Berkunjung' AS rel1,
+                     a2, 'Hadir pada Peristiwa: ' + e.title AS rel2
+                WITH l, collect({node: a1, rel: rel1}) + collect({node: a2, rel: rel2}) AS connections
+                UNWIND connections AS conn
+                WITH conn.node AS other, conn.rel AS rel
+                WHERE other IS NOT NULL
+                RETURN DISTINCT
+                    other.uuid AS uuid, other.name AS name, other.actor_type AS actor_type, 
+                    other.cultural_sphere AS cultural_sphere, other.birth_year AS birth_year, 
+                    other.death_year AS death_year, other.curation_tier AS curation_tier, 
+                    other.is_connected_to_global AS is_connected_to_global, 
+                    other.global_pivot_category AS global_pivot_category,
+                    other.works AS works, other.roles AS roles, other.description AS description, other.media_links AS media_links,
+                    collect(rel) AS relationships
+            ")
             .param("uuid", self.uuid.to_string())
         ).await?;
         
-        let mut actors = Vec::new();
+        let mut related_actors = Vec::new();
         while let Some(row) = result.next().await? {
-            actors.push(row_to_actor(&row)?);
+            let actor = row_to_actor(&row)?;
+            let rels: Vec<String> = row.get("relationships").unwrap_or_default();
+            let relationship_type = rels.join(", ");
+            related_actors.push(RelatedActor {
+                actor,
+                relationship_type,
+            });
         }
-        Ok(actors)
+        Ok(related_actors)
     }
 
-    /// 5. Sources: Historical sources referring to this location.
-    async fn sources(&self, ctx: &Context<'_>) -> Result<Vec<Source>> {
+    /// 5. Sources: Historical sources referring to this location (directly or via events).
+    async fn sources(&self, ctx: &Context<'_>) -> Result<Vec<RelatedSource>> {
         use sqlx::Row;
         let graph = ctx.data::<Graph>()?;
         let pool = ctx.data::<PgPool>()?;
         let mut result = graph.execute(
-            neo_query("MATCH (l:Location {uuid: $uuid})-[:SOURCED_FROM]->(s:Source) RETURN s.uuid AS source_id")
+            neo_query("
+                MATCH (l:Location {uuid: $uuid})
+                OPTIONAL MATCH (l)-[:SOURCED_FROM]->(s1:Source)
+                OPTIONAL MATCH (l)<-[:OCCURRED_AT]-(e:Event)-[:SOURCED_FROM]->(s2:Source)
+                WITH l, s1, s2, e
+                WITH l, s1, 'Rujukan Riwayat Lokasi' AS rel1,
+                     s2, 'Rujukan Peristiwa: ' + e.title AS rel2
+                WITH l, collect({id: s1.uuid, rel: rel1}) + collect({id: s2.uuid, rel: rel2}) AS connections
+                UNWIND connections AS conn
+                WITH conn.id AS source_id, conn.rel AS rel
+                WHERE source_id IS NOT NULL
+                RETURN DISTINCT source_id, collect(rel) AS relationships
+            ")
             .param("uuid", self.uuid.to_string())
         ).await?;
         
-        let mut source_ids = Vec::new();
+        let mut source_attributions = Vec::new();
         while let Some(row) = result.next().await? {
             let id: String = row.get("source_id").unwrap_or_default();
+            let rels: Vec<String> = row.get("relationships").unwrap_or_default();
+            let relationship_type = rels.join(", ");
             if let Ok(uid) = Uuid::parse_str(&id) {
-                source_ids.push(uid);
+                source_attributions.push((uid, relationship_type));
             }
         }
         
-        let mut sources = Vec::new();
-        for id in source_ids {
+        let mut related_sources = Vec::new();
+        for (id, relationship_type) in source_attributions {
             let row = sqlx::query("SELECT * FROM sources WHERE source_id = $1")
                 .bind(id)
                 .fetch_optional(pool)
                 .await?;
             if let Some(r) = row {
-                sources.push(row_to_source(&r)?);
+                let source = row_to_source(&r)?;
+                related_sources.push(RelatedSource {
+                    source,
+                    relationship_type,
+                });
             }
         }
-        Ok(sources)
+        Ok(related_sources)
+    }
+}
+
+#[ComplexObject]
+impl Source {
+    /// 1. Actors: Actors referenced by this source (directly or via events).
+    async fn actors(&self, ctx: &Context<'_>) -> Result<Vec<RelatedActor>> {
+        let graph = ctx.data::<Graph>()?;
+        let mut result = graph.execute(
+            neo_query("
+                MATCH (s:Source {uuid: $source_id})
+                OPTIONAL MATCH (a1:Actor)-[:SOURCED_FROM]->(s)
+                OPTIONAL MATCH (a2:Actor)-[:PARTICIPATED_IN]->(e:Event)-[:SOURCED_FROM]->(s)
+                WITH s, a1, a2, e
+                WITH s, a1, 'Ditulis langsung di Riwayat' AS rel1,
+                     a2, 'Ditulis di Peristiwa: ' + e.title AS rel2
+                WITH s, collect({node: a1, rel: rel1}) + collect({node: a2, rel: rel2}) AS connections
+                UNWIND connections AS conn
+                WITH conn.node AS other, conn.rel AS rel
+                WHERE other IS NOT NULL
+                RETURN DISTINCT
+                    other.uuid AS uuid, other.name AS name, other.actor_type AS actor_type, 
+                    other.cultural_sphere AS cultural_sphere, other.birth_year AS birth_year, 
+                    other.death_year AS death_year, other.curation_tier AS curation_tier, 
+                    other.is_connected_to_global AS is_connected_to_global, 
+                    other.global_pivot_category AS global_pivot_category,
+                    other.works AS works, other.roles AS roles, other.description AS description, other.media_links AS media_links,
+                    collect(rel) AS relationships
+            ")
+            .param("source_id", self.source_id.to_string())
+        ).await?;
+        
+        let mut related_actors = Vec::new();
+        while let Some(row) = result.next().await? {
+            let actor = row_to_actor(&row)?;
+            let rels: Vec<String> = row.get("relationships").unwrap_or_default();
+            let relationship_type = rels.join(", ");
+            related_actors.push(RelatedActor {
+                actor,
+                relationship_type,
+            });
+        }
+        Ok(related_actors)
+    }
+
+    /// 2. Locations: Locations referenced by this source (directly or via events).
+    async fn locations(&self, ctx: &Context<'_>) -> Result<Vec<RelatedLocation>> {
+        let graph = ctx.data::<Graph>()?;
+        let mut result = graph.execute(
+            neo_query("
+                MATCH (s:Source {uuid: $source_id})
+                OPTIONAL MATCH (l1:Location)-[:SOURCED_FROM]->(s)
+                OPTIONAL MATCH (l2:Location)<-[:OCCURRED_AT]-(e:Event)-[:SOURCED_FROM]->(s)
+                WITH s, l1, l2, e
+                WITH s, l1, 'Disebut langsung di Riwayat' AS rel1,
+                     l2, 'Disebut di Peristiwa: ' + e.title AS rel2
+                WITH s, collect({node: l1, rel: rel1}) + collect({node: l2, rel: rel2}) AS connections
+                UNWIND connections AS conn
+                WITH conn.node AS loc, conn.rel AS rel
+                WHERE loc IS NOT NULL
+                RETURN DISTINCT
+                    loc.uuid AS uuid, loc.name AS name, loc.lat AS lat, loc.lng AS lng, 
+                    loc.precision AS precision, loc.is_transcendental AS is_transcendental, 
+                    loc.curation_tier AS curation_tier, loc.is_connected_to_global AS is_connected_to_global, 
+                    loc.global_pivot_category AS global_pivot_category,
+                    loc.geography_climate AS geography_climate, loc.demographics AS demographics, 
+                    loc.socio_cultural AS socio_cultural, loc.historical_role AS historical_role, 
+                    loc.media_links AS media_links,
+                    collect(rel) AS relationships
+            ")
+            .param("source_id", self.source_id.to_string())
+        ).await?;
+        
+        let mut related_locations = Vec::new();
+        while let Some(row) = result.next().await? {
+            let location = row_to_location(&row)?;
+            let rels: Vec<String> = row.get("relationships").unwrap_or_default();
+            let relationship_type = rels.join(", ");
+            related_locations.push(RelatedLocation {
+                location,
+                relationship_type,
+            });
+        }
+        Ok(related_locations)
+    }
+
+    /// 3. Events: Historical events referenced by this source.
+    async fn events(&self, ctx: &Context<'_>) -> Result<Vec<Event>> {
+        let graph = ctx.data::<Graph>()?;
+        let mut result = graph.execute(
+            neo_query("
+                MATCH (e:Event)-[:SOURCED_FROM]->(s:Source {uuid: $source_id})
+                RETURN DISTINCT
+                    e.uuid AS uuid, e.title AS title, e.description AS description, 
+                    e.iso_8601 AS iso_8601, e.hijri_year AS hijri_year, e.hijri_month AS hijri_month, 
+                    e.hijri_day AS hijri_day, e.gregorian_year AS gregorian_year, 
+                    e.gregorian_month AS gregorian_month, e.gregorian_day AS gregorian_day, 
+                    e.precision AS precision, e.curation_tier AS curation_tier, 
+                    e.is_connected_to_global AS is_connected_to_global, 
+                    e.global_pivot_category AS global_pivot_category
+            ")
+            .param("source_id", self.source_id.to_string())
+        ).await?;
+        
+        let mut events = Vec::new();
+        while let Some(row) = result.next().await? {
+            events.push(row_to_event(&row)?);
+        }
+        Ok(events)
     }
 }

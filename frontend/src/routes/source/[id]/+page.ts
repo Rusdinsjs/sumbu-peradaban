@@ -21,6 +21,29 @@ export const load: PageLoad = async ({ params, fetch }) => {
             url
             title
           }
+          actors {
+            relationshipType
+            actor {
+              uuid
+              name
+              actorType
+            }
+          }
+          locations {
+            relationshipType
+            location {
+              uuid
+              name
+            }
+          }
+          events {
+            uuid
+            title
+            description
+            gregorianDate {
+              year
+            }
+          }
         }
       }
     `, { sourceId }, fetch);

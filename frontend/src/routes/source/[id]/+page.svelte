@@ -246,5 +246,104 @@
         </div>
       </div>
     </div>
+
+    <!-- Dimension Connections Section -->
+    <div class="border-t border-border/10 pt-8 mt-6">
+      <h2 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-6 flex items-center gap-2">
+        <span>🌐</span> Peta Hubungan Multi-Dimensi Sejarah
+      </h2>
+      
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <!-- a. Tokoh Sejarah yang Ditulis -->
+        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
+          <h3 class="text-xs font-bold text-gold-400 uppercase tracking-wider flex items-center gap-2">
+            <span>👤</span> Tokoh Sejarah Yang Ditulis
+          </h3>
+          
+          {#if src.actors && src.actors.length > 0}
+            <div class="flex flex-col gap-2">
+              {#each src.actors as rel}
+                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
+                  <div class="flex items-center gap-2.5 overflow-hidden">
+                    <span class="text-sm">👤</span>
+                    <div class="flex flex-col overflow-hidden">
+                      <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
+                        {rel.actor.name}
+                      </span>
+                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                        {rel.relationshipType}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-[10px] text-gold-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
+                </a>
+              {/each}
+            </div>
+          {:else}
+            <p class="text-[11px] text-text-muted italic">Tidak ada catatan tokoh sejarah yang ditulis dalam rujukan ini.</p>
+          {/if}
+        </div>
+
+        <!-- b. Tempat Sejarah yang Disebut -->
+        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
+          <h3 class="text-xs font-bold text-gold-400 uppercase tracking-wider flex items-center gap-2">
+            <span>📍</span> Tempat Sejarah Yang Disebut
+          </h3>
+          
+          {#if src.locations && src.locations.length > 0}
+            <div class="flex flex-col gap-2">
+              {#each src.locations as rel}
+                <a href="/location/{rel.location.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
+                  <div class="flex items-center gap-2.5 overflow-hidden">
+                    <span class="text-sm">📍</span>
+                    <div class="flex flex-col overflow-hidden">
+                      <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
+                        {rel.location.name}
+                      </span>
+                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                        {rel.relationshipType}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-[10px] text-gold-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
+                </a>
+              {/each}
+            </div>
+          {:else}
+            <p class="text-[11px] text-text-muted italic">Tidak ada catatan lokasi sejarah yang disebut dalam rujukan ini.</p>
+          {/if}
+        </div>
+
+        <!-- c. Peristiwa Sejarah yang Diulas -->
+        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
+          <h3 class="text-xs font-bold text-gold-400 uppercase tracking-wider flex items-center gap-2">
+            <span>📅</span> Peristiwa Sejarah Yang Diulas
+          </h3>
+          
+          {#if src.events && src.events.length > 0}
+            <div class="flex flex-col gap-2">
+              {#each src.events as ev}
+                <a href="/event/{ev.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
+                  <div class="flex items-center gap-2.5 overflow-hidden">
+                    <span class="text-sm">📅</span>
+                    <div class="flex flex-col overflow-hidden">
+                      <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
+                        {ev.title}
+                      </span>
+                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5 font-mono">
+                        {ev.gregorianDate?.year ? `${ev.gregorianDate.year} M` : 'Kronologi Sejarah'}
+                      </span>
+                    </div>
+                  </div>
+                  <span class="text-[10px] text-gold-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
+                </a>
+              {/each}
+            </div>
+          {:else}
+            <p class="text-[11px] text-text-muted italic">Tidak ada catatan peristiwa sejarah yang diulas dalam rujukan ini.</p>
+          {/if}
+        </div>
+      </div>
+    </div>
   {/if}
 </div>

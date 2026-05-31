@@ -75,17 +75,23 @@ export const load: PageLoad = async ({ params, fetch }) => {
             lat
             lng
           }
-          actors {
-            uuid
-            name
-            actorType
-          }
-          sources {
-            sourceId
-            title
-            author
-            reliabilityScore
-          }
+           actors {
+             relationshipType
+             actor {
+               uuid
+               name
+               actorType
+             }
+           }
+           sources {
+             relationshipType
+             source {
+               sourceId
+               title
+               author
+               reliabilityScore
+             }
+           }
         }
       }
     `, { uuid: targetUuid }, fetch);

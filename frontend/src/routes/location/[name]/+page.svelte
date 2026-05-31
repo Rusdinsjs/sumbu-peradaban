@@ -320,13 +320,18 @@
 
           {#if loc.actors && loc.actors.length > 0}
             <div class="flex flex-col gap-2">
-              {#each loc.actors as actor}
-                <a href="/actor/{actor.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
+              {#each loc.actors as rel}
+                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-base">👤</span>
-                    <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
-                      {actor.name}
-                    </span>
+                    <div class="flex flex-col overflow-hidden">
+                      <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
+                        {rel.actor.name}
+                      </span>
+                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                        {rel.relationshipType}
+                      </span>
+                    </div>
                   </div>
                   <span class="text-[10px] text-gold-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
                 </a>
@@ -345,15 +350,18 @@
 
           {#if loc.sources && loc.sources.length > 0}
             <div class="flex flex-col gap-3">
-              {#each loc.sources as src}
-                <a href="/source/{src.sourceId}" class="group block p-3.5 bg-navy-950/60 hover:bg-navy-900 border border-border/5 rounded-2xl transition-all">
+              {#each loc.sources as rel}
+                <a href="/source/{rel.source.sourceId}" class="group block p-3.5 bg-navy-950/60 hover:bg-navy-900 border border-border/5 rounded-2xl transition-all">
                   <div class="flex justify-between items-start gap-2">
-                    <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors line-clamp-1">{src.title || 'Manuskrip Sejarah'}</span>
-                    {#if src.reliabilityScore !== null}
-                      <span class="text-[9px] font-bold text-emerald-400 font-mono">{(src.reliabilityScore * 100).toFixed(0)}%</span>
+                    <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors line-clamp-1">{rel.source.title || 'Manuskrip Sejarah'}</span>
+                    {#if rel.source.reliabilityScore !== null}
+                      <span class="text-[9px] font-bold text-emerald-400 font-mono">{(rel.source.reliabilityScore * 100).toFixed(0)}%</span>
                     {/if}
                   </div>
-                  <span class="text-[9px] text-text-muted block mt-1">{src.author || 'Penyusun Anonim'}</span>
+                  <div class="flex flex-col gap-0.5 mt-1">
+                    <span class="text-[9px] text-text-muted">{rel.source.author || 'Penyusun Anonim'}</span>
+                    <span class="text-[9px] text-emerald-400 font-semibold uppercase tracking-wider mt-0.5">{rel.relationshipType}</span>
+                  </div>
                 </a>
               {/each}
             </div>

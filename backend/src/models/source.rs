@@ -9,6 +9,7 @@ use crate::models::common::{MediaLink, MediaLinkInput};
 
 /// A scholarly source / reference stored in PostgreSQL.
 #[derive(Debug, Clone, SimpleObject)]
+#[graphql(complex)]
 pub struct Source {
     pub source_id: Uuid,
     pub domain: String,
