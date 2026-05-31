@@ -35,6 +35,8 @@ jobs:
       - name: Compile Backend (Release Mode)
         run: cargo build --release
         working-directory: ./backend
+        env:
+          SQLX_OFFLINE: true
 
       - name: Move Binary for Docker Context
         # Memindahkan hasil rakitan ke tempat yang bisa dijangkau Docker
