@@ -777,7 +777,7 @@ impl Event {
     }
 
     async fn sources(&self, ctx: &Context<'_>) -> Result<Vec<Source>> {
-        use sqlx::Row;
+
         let graph = ctx.data::<Graph>()?;
         let pool = ctx.data::<PgPool>()?;
         let mut result = graph.execute(
@@ -964,7 +964,7 @@ impl Actor {
 
     /// 5. Sources: Historical sources related to this actor (directly or via events).
     async fn sources(&self, ctx: &Context<'_>) -> Result<Vec<RelatedSource>> {
-        use sqlx::Row;
+
         let graph = ctx.data::<Graph>()?;
         let pool = ctx.data::<PgPool>()?;
         
@@ -1143,7 +1143,7 @@ impl Location {
 
     /// 5. Sources: Historical sources referring to this location (directly or via events).
     async fn sources(&self, ctx: &Context<'_>) -> Result<Vec<RelatedSource>> {
-        use sqlx::Row;
+
         let graph = ctx.data::<Graph>()?;
         let pool = ctx.data::<PgPool>()?;
         let mut result = graph.execute(
