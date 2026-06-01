@@ -347,29 +347,51 @@ class SumbuPeradabanClient:
             return
 
         with open(filepath, 'r') as f:
-            data = json.load(f)
+            content = json.load(f)
             
-        print(f"🚀 Memulai Batch Processing (UPSERT) untuk {len(data)} entri...")
-        for item in data:
-            # 1. Upsert Event
-            ev = item.get("event", {})
-            event_id = self.upsert_event(ev.get("title"), ev.get("description", ""), ev.get("year"))
+        # Support legacy format (list of events directly)
+        if isinstance(content, list):
+            batch_type = "EVENTS"
+            data = content
+        else:
+            batch_type = content.get("batch_type", "EVENTS").upper()
+            data = content.get("data", [])
             
-            if not event_id: continue
+        print(f"🚀 Memulai Batch Processing (Tahap: {batch_type}) untuk {len(data)} entri...")
+        
+        if batch_type == "ACTORS":
+            for item in data:
+                self.upsert_actor(item.get("name"), item.get("type", "INDIVIDUAL"), item.get("description", ""))
+        elif batch_type == "LOCATIONS":
+            for item in data:
+                self.upsert_location(item.get("name"), item.get("precision", "AREA"))
+        elif batch_type == "SOURCES":
+            # Note: create_source method would be needed for full automation, 
+            # but usually sources are managed via Admin UI.
+            print("⚠️ Injeksi otomatis untuk SOURCES (Rujukan) disarankan dilakukan melalui Admin Panel untuk menjaga kualitas akademik.")
+        elif batch_type == "EVENTS":
+            for item in data:
+                # 1. Upsert Event
+                ev = item.get("event", {})
+                event_id = self.upsert_event(ev.get("title"), ev.get("description", ""), ev.get("year"))
+                
+                if not event_id: continue
 
-            # 2. Upsert Actors
-            for actor in item.get("actors", []):
-                act_id = self.upsert_actor(actor.get("name"), actor.get("type", "INDIVIDUAL"))
-                if act_id: self.link_actor_to_event(act_id, event_id, actor.get("role", "Participant"))
+                # 2. Upsert Actors
+                for actor in item.get("actors", []):
+                    act_id = self.upsert_actor(actor.get("name"), actor.get("type", "INDIVIDUAL"))
+                    if act_id: self.link_actor_to_event(act_id, event_id, actor.get("role", "Participant"))
 
-            # 3. Upsert Locations
-            for loc in item.get("locations", []):
-                loc_id = self.upsert_location(loc.get("name"), loc.get("precision", "AREA"))
-                if loc_id: self.link_event_to_location(event_id, loc_id)
+                # 3. Upsert Locations
+                for loc in item.get("locations", []):
+                    loc_id = self.upsert_location(loc.get("name"), loc.get("precision", "AREA"))
+                    if loc_id: self.link_event_to_location(event_id, loc_id)
 
-            # 4. Link Sources
-            for src in item.get("sources", []):
-                self.link_event_to_source(event_id, src.get("id"), src.get("sub_refs", []))
-            
-            # 5. Quality Gate
-            self.validate_event(event_id)
+                # 4. Link Sources
+                for src in item.get("sources", []):
+                    self.link_event_to_source(event_id, src.get("id"), src.get("sub_refs", []))
+                
+                # 5. Quality Gate
+                self.validate_event(event_id)
+        else:
+            print(f"❌ Tipe batch '{batch_type}' tidak dikenali.")
