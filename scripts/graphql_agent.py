@@ -31,6 +31,7 @@ class SumbuPeradabanClient:
         self._actors_cache = []
         self._locations_cache = []
         self._events_cache = []
+        self._sources_cache = []
 
     def set_token(self, token):
         self.token = token
@@ -93,6 +94,12 @@ class SumbuPeradabanClient:
         self._events_cache = result.get("events", [])
         return self._events_cache
 
+    def get_all_sources(self, limit=500):
+        query = "query GetSources($limit: Int!) { sources(limit: $limit) { sourceId title referenceText domain } }"
+        result = self._execute(query, {"limit": limit})
+        self._sources_cache = result.get("sources", [])
+        return self._sources_cache
+
     def check_entity_exists(self, name, entity_type):
         """Memeriksa apakah entitas dengan nama tersebut sudah ada, mengembalikan UUID jika ada."""
         if not name: return None
@@ -109,6 +116,13 @@ class SumbuPeradabanClient:
             if not self._events_cache: self.get_all_events()
             for ev in self._events_cache:
                 if ev["title"].lower().strip() == name: return ev["uuid"]
+        elif entity_type == "SOURCE":
+            if not self._sources_cache: self.get_all_sources()
+            for src in self._sources_cache:
+                title = src.get("title")
+                ref = src.get("referenceText")
+                if title and title.lower().strip() == name: return src["sourceId"]
+                if not title and ref and ref.lower().strip() == name: return src["sourceId"]
         return None
 
     # --------------------------------------------------------------------------
@@ -165,6 +179,22 @@ class SumbuPeradabanClient:
             return result["createEvent"]["uuid"]
         except Exception:
             print(f"❌ Gagal membuat Event '{title}'")
+            return None
+
+    def create_source(self, input_data):
+        query = """
+        mutation CreateSource($input: CreateSourceInput!) {
+            createSource(input: $input) { sourceId title }
+        }
+        """
+        variables = {"input": input_data}
+        try:
+            result = self._execute(query, variables)
+            title = result['createSource'].get('title') or "Unknown"
+            print(f"📖 Source dibuat: {title} (UUID: {result['createSource']['sourceId']})")
+            return result["createSource"]["sourceId"]
+        except Exception as e:
+            print(f"❌ Gagal membuat Source: {e}")
             return None
 
     # --------------------------------------------------------------------------
@@ -228,6 +258,20 @@ class SumbuPeradabanClient:
             print(f"❌ Gagal update Event {uuid}")
             return None
 
+    def update_source(self, uuid, input_data):
+        query = """
+        mutation UpdateSource($sourceId: UUID!, $input: UpdateSourceInput!) {
+            updateSource(sourceId: $sourceId, input: $input) { sourceId title }
+        }
+        """
+        try:
+            self._execute(query, {"sourceId": uuid, "input": input_data})
+            print(f"🔄 Source diupdate: {uuid}")
+            return uuid
+        except Exception as e:
+            print(f"❌ Gagal update Source {uuid}: {e}")
+            return None
+
     # --------------------------------------------------------------------------
     # 4. UPSERT LOGIC (Idempotency)
     # --------------------------------------------------------------------------
@@ -259,6 +303,46 @@ class SumbuPeradabanClient:
         else:
             uuid = self.create_event(title, description, year)
             if uuid: self._events_cache.append({"uuid": uuid, "title": title})
+            return uuid
+
+    def upsert_source(self, item):
+        title = item.get("title")
+        reference_text = item.get("reference_text") or item.get("referenceText")
+        check_name = title if title else reference_text
+        
+        existing_uuid = self.check_entity_exists(check_name, "SOURCE") if check_name else None
+        
+        graphql_input = {}
+        if "domain" in item: graphql_input["domain"] = item["domain"]
+        else: graphql_input["domain"] = "General"
+        if "title" in item: graphql_input["title"] = item["title"]
+        if "author" in item: graphql_input["author"] = item["author"]
+        
+        pub_era = item.get("publication_era") or item.get("publicationEra")
+        if pub_era: graphql_input["publicationEra"] = pub_era
+        
+        if reference_text: graphql_input["referenceText"] = reference_text
+        else: graphql_input["referenceText"] = ""
+        
+        interp = item.get("interpretation_method") or item.get("interpretationMethod")
+        if interp: graphql_input["interpretationMethod"] = interp
+        
+        score = item.get("reliability_score") or item.get("reliabilityScore")
+        if score is not None: graphql_input["reliabilityScore"] = float(score)
+        
+        assess = item.get("reliability_assessment") or item.get("reliabilityAssessment")
+        if assess: graphql_input["reliabilityAssessment"] = assess
+        
+        if "media_links" in item: graphql_input["mediaLinks"] = item["media_links"]
+        elif "mediaLinks" in item: graphql_input["mediaLinks"] = item["mediaLinks"]
+
+        if existing_uuid:
+            print(f"⚠️ Source '{check_name}' sudah ada (UUID: {existing_uuid}). Melakukan update parsial.")
+            update_input = {k: v for k, v in graphql_input.items() if v}
+            return self.update_source(existing_uuid, update_input)
+        else:
+            uuid = self.create_source(graphql_input)
+            if uuid: self._sources_cache.append({"sourceId": uuid, "title": title, "referenceText": reference_text, "domain": graphql_input["domain"]})
             return uuid
 
     # --------------------------------------------------------------------------
@@ -366,9 +450,8 @@ class SumbuPeradabanClient:
             for item in data:
                 self.upsert_location(item.get("name"), item.get("precision", "AREA"))
         elif batch_type == "SOURCES":
-            # Note: create_source method would be needed for full automation, 
-            # but usually sources are managed via Admin UI.
-            print("⚠️ Injeksi otomatis untuk SOURCES (Rujukan) disarankan dilakukan melalui Admin Panel untuk menjaga kualitas akademik.")
+            for item in data:
+                self.upsert_source(item)
         elif batch_type == "EVENTS":
             for item in data:
                 # 1. Upsert Event
