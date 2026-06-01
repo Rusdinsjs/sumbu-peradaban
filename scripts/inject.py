@@ -41,22 +41,11 @@ def move_file(filepath, status="success"):
 
 def main():
     parser = argparse.ArgumentParser(description="Auto Injector Data Sumbu Peradaban untuk Agen Den")
-    parser.add_argument("file", help="Path file JSON yang akan diinput")
+    parser.add_argument("files", nargs="+", help="Path file JSON yang akan diinput (bisa lebih dari satu)")
     args = parser.parse_args()
 
-    filepath = args.file
-    
-    if not os.path.exists(filepath):
-        print(f"❌ Error: File '{filepath}' tidak ditemukan!")
-        sys.exit(1)
-
-    print("==================================================")
-    print(f"🚀 Memulai Auto Injection: {os.path.basename(filepath)}")
-    print("==================================================")
-
-    # Inisialisasi Klien
+    # Inisialisasi Klien dan Login (Cukup sekali)
     client = SumbuPeradabanClient(url=GRAPHQL_URL)
-
     try:
         print("🔐 Sedang melakukan login otomatis...")
         client.login(ADMIN_USERNAME, ADMIN_PASSWORD)
@@ -65,14 +54,28 @@ def main():
         print("💡 Tips: Setel Environment Variables SUMBU_ADMIN_USERNAME dan SUMBU_ADMIN_PASSWORD")
         sys.exit(1)
 
-    # Proses File
-    try:
-        client.process_json_batch(filepath)
-        print("\n✅ Eksekusi Selesai Tanpa Exception.")
-        move_file(filepath, status="success")
-    except Exception as e:
-        print(f"\n❌ Eksekusi Gagal karena Exception: {e}")
-        move_file(filepath, status="error")
+    # Proses Setiap File
+    has_error = False
+    for filepath in args.files:
+        if not os.path.exists(filepath):
+            print(f"❌ Error: File '{filepath}' tidak ditemukan! Melewati...")
+            has_error = True
+            continue
+
+        print("\n==================================================")
+        print(f"🚀 Memulai Auto Injection: {os.path.basename(filepath)}")
+        print("==================================================")
+
+        try:
+            client.process_json_batch(filepath)
+            print("\n✅ Eksekusi Selesai Tanpa Exception.")
+            move_file(filepath, status="success")
+        except Exception as e:
+            print(f"\n❌ Eksekusi Gagal karena Exception: {e}")
+            move_file(filepath, status="error")
+            has_error = True
+            
+    if has_error:
         sys.exit(1)
 
 if __name__ == "__main__":
