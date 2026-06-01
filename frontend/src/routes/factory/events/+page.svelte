@@ -79,7 +79,7 @@
           }
           actors { uuid name }
           locations { uuid name }
-          sources { sourceId referenceText }
+          sources { sourceId title referenceText }
         }
       `;
       const res = await gql(query) as any;
@@ -511,7 +511,7 @@
               >
                 <option value="">-- + Hubungkan Rujukan Kitab / Sumber --</option>
                 {#each sources.filter(s => !formData.selectedSources.includes(s.sourceId)) as src}
-                  <option value={src.sourceId}>{src.referenceText}</option>
+                  <option value={src.sourceId}>{src.title || 'Tanpa Judul'} - {src.referenceText.substring(0, 50)}...</option>
                 {/each}
               </select>
 
@@ -525,7 +525,7 @@
                         <!-- Source Card Header -->
                         <div class="flex flex-col md:flex-row md:justify-between md:items-center pb-3 border-b border-border/5 gap-2">
                           <span class="text-xs font-extrabold text-gold-400 flex items-center gap-2">
-                            📖 Rujukan Utama: <span class="text-text-primary font-normal">{src.referenceText}</span>
+                            📖 Rujukan Utama: <span class="text-text-primary font-normal">{src.title || 'Tanpa Judul'}</span>
                           </span>
                           <button 
                             type="button" 
