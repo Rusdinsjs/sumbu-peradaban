@@ -136,7 +136,7 @@ impl QueryRoot {
         offset: Option<i32>,
     ) -> Result<Vec<Event>> {
         let graph = ctx.data::<Graph>()?;
-        let limit = limit.unwrap_or(20);
+        let limit = limit.unwrap_or(1000);
         let offset = offset.unwrap_or(0);
 
         let mut result = graph
@@ -257,7 +257,7 @@ impl QueryRoot {
         offset: Option<i32>,
     ) -> Result<Vec<Actor>> {
         let graph = ctx.data::<Graph>()?;
-        let limit = limit.unwrap_or(20);
+        let limit = limit.unwrap_or(1000);
         let offset = offset.unwrap_or(0);
 
         let mut result = graph
@@ -337,7 +337,7 @@ impl QueryRoot {
         offset: Option<i32>,
     ) -> Result<Vec<Location>> {
         let graph = ctx.data::<Graph>()?;
-        let limit = limit.unwrap_or(20);
+        let limit = limit.unwrap_or(1000);
         let offset = offset.unwrap_or(0);
 
         let mut result = graph

@@ -12,6 +12,7 @@
   // Derived counts
   const draftEventsCount = $derived(events.filter(e => e.curationTier === 'DRAFT').length);
   const draftActorsCount = $derived(actors.filter(a => a.curationTier === 'DRAFT').length);
+  const draftLocationsCount = $derived(locations.filter(l => l.curationTier === 'DRAFT').length);
   
   const totalVerifiedCount = $derived(
     events.filter(e => e.curationTier !== 'DRAFT').length +
@@ -72,7 +73,7 @@
   </header>
 
   <!-- Stats Grid -->
-  <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+  <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
     <div class="glass p-6 rounded-2xl border border-gold-500/20 relative overflow-hidden group">
       <div class="absolute -right-4 -bottom-4 text-6xl opacity-10 group-hover:scale-110 transition-transform">📜</div>
       <h3 class="text-xs font-bold text-gold-400 uppercase tracking-wider mb-1">Peristiwa Tertunda</h3>
@@ -87,6 +88,13 @@
       <p class="text-[10px] text-text-muted mt-2">Tokoh baru menunggu validasi</p>
     </div>
 
+    <div class="glass p-6 rounded-2xl border border-amber-500/20 relative overflow-hidden group">
+      <div class="absolute -right-4 -bottom-4 text-6xl opacity-10 group-hover:scale-110 transition-transform">📍</div>
+      <h3 class="text-xs font-bold text-amber-400 uppercase tracking-wider mb-1">Lokasi Tertunda</h3>
+      <div class="text-4xl font-extrabold text-text-primary">{draftLocationsCount}</div>
+      <p class="text-[10px] text-text-muted mt-2">Lokasi baru menunggu kurasi</p>
+    </div>
+ 
     <div class="glass p-6 rounded-2xl border border-blue-500/20 relative overflow-hidden group">
       <div class="absolute -right-4 -bottom-4 text-6xl opacity-10 group-hover:scale-110 transition-transform">✅</div>
       <h3 class="text-xs font-bold text-blue-400 uppercase tracking-wider mb-1">Data Terverifikasi</h3>
