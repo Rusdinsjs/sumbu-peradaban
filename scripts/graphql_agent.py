@@ -128,57 +128,46 @@ class SumbuPeradabanClient:
     # --------------------------------------------------------------------------
     # 2. CREATE ENTITIES
     # --------------------------------------------------------------------------
-    def create_actor(self, name, actor_type="INDIVIDUAL", description=""):
+    def create_actor(self, input_data):
         query = """
         mutation CreateActor($input: CreateActorInput!) {
             createActor(input: $input) { uuid name actorType }
         }
         """
-        variables = {"input": {"name": name, "actorType": actor_type, "description": description}}
         try:
-            result = self._execute(query, variables)
+            result = self._execute(query, {"input": input_data})
             print(f"👤 Actor dibuat: {result['createActor']['name']} (UUID: {result['createActor']['uuid']})")
             return result["createActor"]["uuid"]
-        except Exception:
-            print(f"❌ Gagal membuat Actor '{name}'")
+        except Exception as e:
+            print(f"❌ Gagal membuat Actor '{input_data.get('name')}': {e}")
             return None
 
-    def create_location(self, name, precision="POINT", lat=None, lng=None):
+    def create_location(self, input_data):
         query = """
         mutation CreateLocation($input: CreateLocationInput!) {
             createLocation(input: $input) { uuid name precision }
         }
         """
-        variables = {"input": {"name": name, "precision": precision, "lat": lat, "lng": lng}}
         try:
-            result = self._execute(query, variables)
+            result = self._execute(query, {"input": input_data})
             print(f"🗺️ Location dibuat: {result['createLocation']['name']} (UUID: {result['createLocation']['uuid']})")
             return result["createLocation"]["uuid"]
-        except Exception:
-            print(f"❌ Gagal membuat Location '{name}'")
+        except Exception as e:
+            print(f"❌ Gagal membuat Location '{input_data.get('name')}': {e}")
             return None
 
-    def create_event(self, title, description="", year=None):
+    def create_event(self, input_data):
         query = """
         mutation CreateEvent($input: CreateEventInput!) {
             createEvent(input: $input) { uuid title }
         }
         """
-        variables = {
-            "input": {
-                "title": title,
-                "description": description,
-                "precision": "EXACT", 
-                "islamicDate": {"year": year or 0},
-                "gregorianDate": {"year": year or 0}
-            }
-        }
         try:
-            result = self._execute(query, variables)
+            result = self._execute(query, {"input": input_data})
             print(f"📜 Event dibuat: {result['createEvent']['title']} (UUID: {result['createEvent']['uuid']})")
             return result["createEvent"]["uuid"]
-        except Exception:
-            print(f"❌ Gagal membuat Event '{title}'")
+        except Exception as e:
+            print(f"❌ Gagal membuat Event '{input_data.get('title')}': {e}")
             return None
 
     def create_source(self, input_data):
@@ -200,62 +189,49 @@ class SumbuPeradabanClient:
     # --------------------------------------------------------------------------
     # 3. UPDATE ENTITIES
     # --------------------------------------------------------------------------
-    def update_actor(self, uuid, name=None, actor_type=None, description=None):
+    def update_actor(self, uuid, input_data):
+        if not input_data: return uuid
         query = """
         mutation UpdateActor($uuid: UUID!, $input: UpdateActorInput!) {
             updateActor(uuid: $uuid, input: $input) { uuid name }
         }
         """
-        input_data = {}
-        if name: input_data["name"] = name
-        if actor_type: input_data["actorType"] = actor_type
-        if description: input_data["description"] = description
-        if not input_data: return uuid # Nothing to update
-        
         try:
             self._execute(query, {"uuid": uuid, "input": input_data})
             print(f"🔄 Actor diupdate: {uuid}")
             return uuid
-        except Exception:
-            print(f"❌ Gagal update Actor {uuid}")
+        except Exception as e:
+            print(f"❌ Gagal update Actor {uuid}: {e}")
             return None
 
-    def update_location(self, uuid, name=None, precision=None):
+    def update_location(self, uuid, input_data):
+        if not input_data: return uuid
         query = """
         mutation UpdateLocation($uuid: UUID!, $input: UpdateLocationInput!) {
             updateLocation(uuid: $uuid, input: $input) { uuid name }
         }
         """
-        input_data = {}
-        if name: input_data["name"] = name
-        if precision: input_data["precision"] = precision
-        if not input_data: return uuid
-        
         try:
             self._execute(query, {"uuid": uuid, "input": input_data})
             print(f"🔄 Location diupdate: {uuid}")
             return uuid
-        except Exception:
-            print(f"❌ Gagal update Location {uuid}")
+        except Exception as e:
+            print(f"❌ Gagal update Location {uuid}: {e}")
             return None
 
-    def update_event(self, uuid, title=None, description=None):
+    def update_event(self, uuid, input_data):
+        if not input_data: return uuid
         query = """
         mutation UpdateEvent($uuid: UUID!, $input: UpdateEventInput!) {
             updateEvent(uuid: $uuid, input: $input) { uuid title }
         }
         """
-        input_data = {}
-        if title: input_data["title"] = title
-        if description: input_data["description"] = description
-        if not input_data: return uuid
-        
         try:
             self._execute(query, {"uuid": uuid, "input": input_data})
             print(f"🔄 Event diupdate: {uuid}")
             return uuid
-        except Exception:
-            print(f"❌ Gagal update Event {uuid}")
+        except Exception as e:
+            print(f"❌ Gagal update Event {uuid}: {e}")
             return None
 
     def update_source(self, uuid, input_data):
@@ -275,33 +251,73 @@ class SumbuPeradabanClient:
     # --------------------------------------------------------------------------
     # 4. UPSERT LOGIC (Idempotency)
     # --------------------------------------------------------------------------
-    def upsert_actor(self, name, actor_type="INDIVIDUAL", description=""):
+    def upsert_actor(self, item):
+        name = item.get("name")
+        if not name: return None
         existing_uuid = self.check_entity_exists(name, "ACTOR")
+        
+        graphql_input = {"name": name}
+        if "type" in item: graphql_input["actorType"] = item["type"]
+        if "description" in item: graphql_input["description"] = item["description"]
+        if "cultural_sphere" in item: graphql_input["culturalSphere"] = item["cultural_sphere"]
+        if "birth_year" in item: graphql_input["birthYear"] = item["birth_year"]
+        if "death_year" in item: graphql_input["deathYear"] = item["death_year"]
+        if "works" in item: graphql_input["works"] = item["works"]
+        if "roles" in item: graphql_input["roles"] = item["roles"]
+        
         if existing_uuid:
             print(f"⚠️ Actor '{name}' sudah ada (UUID: {existing_uuid}). Melakukan update parsial.")
-            return self.update_actor(existing_uuid, description=description)
+            return self.update_actor(existing_uuid, graphql_input)
         else:
-            uuid = self.create_actor(name, actor_type, description)
+            if "actorType" not in graphql_input: graphql_input["actorType"] = "INDIVIDUAL"
+            uuid = self.create_actor(graphql_input)
             if uuid: self._actors_cache.append({"uuid": uuid, "name": name})
             return uuid
 
-    def upsert_location(self, name, precision="POINT"):
+    def upsert_location(self, item):
+        name = item.get("name")
+        if not name: return None
         existing_uuid = self.check_entity_exists(name, "LOCATION")
+        
+        graphql_input = {"name": name}
+        if "precision" in item: graphql_input["precision"] = item["precision"]
+        if "lat" in item: graphql_input["lat"] = float(item["lat"])
+        if "lng" in item: graphql_input["lng"] = float(item["lng"])
+        if "geography_climate" in item: graphql_input["geographyClimate"] = item["geography_climate"]
+        if "historical_role" in item: graphql_input["historicalRole"] = item["historical_role"]
+        
         if existing_uuid:
             print(f"⚠️ Location '{name}' sudah ada (UUID: {existing_uuid}).")
-            return existing_uuid
+            return self.update_location(existing_uuid, graphql_input)
         else:
-            uuid = self.create_location(name, precision)
+            if "precision" not in graphql_input: graphql_input["precision"] = "POINT"
+            uuid = self.create_location(graphql_input)
             if uuid: self._locations_cache.append({"uuid": uuid, "name": name})
             return uuid
 
-    def upsert_event(self, title, description="", year=None):
+    def upsert_event(self, item):
+        title = item.get("title")
+        if not title: return None
         existing_uuid = self.check_entity_exists(title, "EVENT")
+        
+        graphql_input = {"title": title}
+        if "description" in item: graphql_input["description"] = item["description"]
+        if "precision" in item: graphql_input["precision"] = item["precision"]
+        
+        islamic_year = item.get("year") or item.get("islamic_year")
+        if islamic_year: graphql_input["islamicDate"] = {"year": islamic_year}
+        
+        gregorian_year = item.get("gregorian_year")
+        if gregorian_year: graphql_input["gregorianDate"] = {"year": gregorian_year}
+        
         if existing_uuid:
             print(f"⚠️ Event '{title}' sudah ada (UUID: {existing_uuid}). Melakukan update parsial.")
-            return self.update_event(existing_uuid, description=description)
+            return self.update_event(existing_uuid, graphql_input)
         else:
-            uuid = self.create_event(title, description, year)
+            if "precision" not in graphql_input: graphql_input["precision"] = "EXACT"
+            if "islamicDate" not in graphql_input: graphql_input["islamicDate"] = {"year": 0}
+            if "gregorianDate" not in graphql_input: graphql_input["gregorianDate"] = {"year": 0}
+            uuid = self.create_event(graphql_input)
             if uuid: self._events_cache.append({"uuid": uuid, "title": title})
             return uuid
 
@@ -445,10 +461,10 @@ class SumbuPeradabanClient:
         
         if batch_type == "ACTORS":
             for item in data:
-                self.upsert_actor(item.get("name"), item.get("type", "INDIVIDUAL"), item.get("description", ""))
+                self.upsert_actor(item)
         elif batch_type == "LOCATIONS":
             for item in data:
-                self.upsert_location(item.get("name"), item.get("precision", "AREA"))
+                self.upsert_location(item)
         elif batch_type == "SOURCES":
             for item in data:
                 self.upsert_source(item)
@@ -456,18 +472,18 @@ class SumbuPeradabanClient:
             for item in data:
                 # 1. Upsert Event
                 ev = item.get("event", {})
-                event_id = self.upsert_event(ev.get("title"), ev.get("description", ""), ev.get("year"))
+                event_id = self.upsert_event(ev)
                 
                 if not event_id: continue
 
                 # 2. Upsert Actors
                 for actor in item.get("actors", []):
-                    act_id = self.upsert_actor(actor.get("name"), actor.get("type", "INDIVIDUAL"))
+                    act_id = self.upsert_actor(actor)
                     if act_id: self.link_actor_to_event(act_id, event_id, actor.get("role", "Participant"))
 
                 # 3. Upsert Locations
                 for loc in item.get("locations", []):
-                    loc_id = self.upsert_location(loc.get("name"), loc.get("precision", "AREA"))
+                    loc_id = self.upsert_location(loc)
                     if loc_id: self.link_event_to_location(event_id, loc_id)
 
                 # 4. Link Sources

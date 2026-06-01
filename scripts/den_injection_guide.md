@@ -21,8 +21,13 @@ Pada tahap ini, Den harus membuat JSON berisi daftar Tokoh, Lokasi, atau Sumber 
   "data": [
     {
       "name": "Khalid bin Walid",
-      "type": "Sahabat Nabi",
-      "description": "Panglima militer legendaris."
+      "type": "INDIVIDUAL",
+      "description": "Panglima militer legendaris.",
+      "cultural_sphere": "Arabia",
+      "birth_year": 592,
+      "death_year": 642,
+      "works": [],
+      "roles": ["Panglima", "Sahabat Nabi"]
     }
   ]
 }
@@ -35,24 +40,31 @@ Pada tahap ini, Den harus membuat JSON berisi daftar Tokoh, Lokasi, atau Sumber 
   "data": [
     {
       "name": "Lembah Hunain",
-      "precision": "AREA"
+      "precision": "AREA",
+      "lat": 21.3666,
+      "lng": 40.0,
+      "geography_climate": "Lembah kering berbukit",
+      "historical_role": "Medan pertempuran strategis paska Fathu Makkah"
     }
   ]
 }
 ```
 
 ### C. Format JSON untuk Injeksi Sumber/Rujukan (`sources.json`)
-*(Catatan: Rujukan dibuat secara terpisah, karena sistem akan merespon dengan `sourceId` (UUID) yang wajib dicatat oleh Den untuk digunakan pada Tahap 2).*
+*(Catatan: Rujukan kini dapat diinjeksi secara otomatis. Sistem akan melakukan Upsert berdasarkan `title` atau `reference_text`).*
 ```json
 {
   "batch_type": "SOURCES",
   "data": [
     {
       "title": "Sirah Nabawiyah",
+      "reference_text": "Kutipan atau sinopsis singkat rujukan (Wajib)",
+      "domain": "Sejarah Klasik",
       "author": "Ibnu Hisham",
-      "domain": "Kitab Sejarah Klasik",
-      "text": "Teks kutipan asli dari kitab...",
-      "score": 0.95
+      "publication_era": "Abad ke-8 Masehi",
+      "interpretation_method": "Harfiah",
+      "reliability_score": 0.95,
+      "reliability_assessment": "Sangat diandalkan karena..."
     }
   ]
 }
@@ -72,10 +84,11 @@ Setelah entitas di atas eksis, buat file JSON untuk Peristiwa. Skrip akan otomat
       "event": {
         "title": "Perang Hunain",
         "description": "Pertempuran penting setelah Fathu Makkah.",
-        "year": 8
+        "year": 8,
+        "gregorian_year": 630
       },
       "actors": [
-        { "name": "Khalid bin Walid", "type": "Sahabat Nabi", "role": "Komandan Sayap Kanan" }
+        { "name": "Khalid bin Walid", "type": "INDIVIDUAL", "role": "Komandan Sayap Kanan" }
       ],
       "locations": [
         { "name": "Lembah Hunain", "precision": "AREA" }
