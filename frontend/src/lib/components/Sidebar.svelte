@@ -220,6 +220,14 @@
               <span class="nav-sub-label">Dashboard Kurasi</span>
             </a>
             <a
+              href="/factory/historian"
+              class="nav-sub-item"
+              class:active={isActive('/factory/historian')}
+            >
+              <span class="nav-sub-icon">🤖</span>
+              <span class="nav-sub-label">AI Historian (Med)</span>
+            </a>
+            <a
               href="/factory/actors"
               class="nav-sub-item"
               class:active={isActive('/factory/actors')}

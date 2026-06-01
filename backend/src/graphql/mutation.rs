@@ -1474,6 +1474,49 @@ impl MutationRoot {
     // Governance
     // -------------------------------------------------------------------------
 
+    pub async fn promote_entity(
+        &self,
+        ctx: &Context<'_>,
+        uuid: Uuid,
+        new_tier: CurationTier,
+    ) -> Result<bool> {
+        let claims = ctx.data_opt::<Claims>().ok_or_else(|| Error::new("Unauthorized: Please log in"))?;
+        if !claims.role.can_promote() {
+            return Err(Error::new("Forbidden: Only Reviewers and Administrators can approve and promote data tiers"));
+        }
+
+        let graph = ctx.data::<Graph>()?;
+        let pool = ctx.data::<PgPool>()?;
+
+        let tier_name = format!("{:?}", new_tier);
+        let mut res = graph
+            .execute(
+                neo_query("MATCH (n) WHERE n.uuid = $uuid SET n.curation_tier = $new_tier RETURN labels(n)[0] AS label")
+                    .param("uuid", uuid.to_string())
+                    .param("new_tier", tier_name),
+            )
+            .await?;
+
+        let label = if let Some(row) = res.next().await? {
+            let lbl: String = row.get("label")?;
+            lbl
+        } else {
+            return Err(async_graphql::Error::new("Entity not found in Graph with the given UUID"));
+        };
+
+        // Log this action to PostgreSQL Audit Log
+        sqlx::query(
+            "INSERT INTO audit_log (entity_type, entity_id, action, performed_by) \
+             VALUES ($1, $2, 'promote', 'Curator (BozzQ)')",
+        )
+        .bind(&label)
+        .bind(uuid)
+        .execute(pool)
+        .await?;
+
+        Ok(true)
+    }
+
     pub async fn promote_tier(
         &self,
         ctx: &Context<'_>,

@@ -29,6 +29,32 @@ fn row_to_source(r: &sqlx::postgres::PgRow) -> Result<Source> {
     })
 }
 
+#[derive(async_graphql::SimpleObject)]
+pub struct SearchResultItem {
+    pub uuid: String,
+    pub title: String,
+    pub description: Option<String>,
+    pub entity_type: String, // "event" | "actor" | "location" | "source"
+}
+
+#[derive(async_graphql::SimpleObject)]
+pub struct AuditLogItem {
+    pub id: i64,
+    pub entity_type: String,
+    pub entity_id: String,
+    pub action: String,
+    pub performed_by: String,
+    pub performed_at: String,
+}
+
+#[derive(async_graphql::SimpleObject)]
+pub struct SyncStatus {
+    pub postgres_connected: bool,
+    pub neo4j_connected: bool,
+    pub postgres_records_count: i64,
+    pub neo4j_nodes_count: i64,
+}
+
 #[derive(Default)]
 pub struct QueryRoot;
 
@@ -441,6 +467,145 @@ impl QueryRoot {
         }
 
         Ok(sources)
+    }
+
+    #[graphql(name = "searchAll")]
+    async fn search_all(
+        &self,
+        ctx: &Context<'_>,
+        query: String,
+    ) -> Result<Vec<SearchResultItem>> {
+        let graph = ctx.data::<Graph>()?;
+        let pool = ctx.data::<PgPool>()?;
+
+        let search_pattern = format!("(?i).*{}.*", query);
+        let mut results = Vec::new();
+
+        // 1. Search Neo4j for Events, Actors, Locations
+        let mut neo_res = graph.execute(
+            neo_query("MATCH (n) WHERE (n:Event OR n:Actor OR n:Location) AND (
+                (exists(n.title) AND n.title =~ $pattern) OR 
+                (exists(n.name) AND n.name =~ $pattern) OR 
+                (exists(n.description) AND n.description =~ $pattern)
+            ) RETURN n.uuid AS uuid, n.title AS title, n.name AS name, n.description AS description, labels(n)[0] AS label LIMIT 30")
+                .param("pattern", search_pattern)
+        ).await?;
+
+        while let Some(row) = neo_res.next().await? {
+            let uuid: String = row.get("uuid").unwrap_or_default();
+            let mut title: String = row.get("title").unwrap_or_default();
+            if title.is_empty() {
+                title = row.get("name").unwrap_or_default();
+            }
+            let description: Option<String> = row.get("description").ok();
+            let label: String = row.get("label").unwrap_or_default();
+            
+            results.push(SearchResultItem {
+                uuid,
+                title,
+                description,
+                entity_type: label.to_lowercase(),
+            });
+        }
+
+        // 2. Search Postgres for Sources
+        let pg_pattern = format!("%{}%", query);
+        let rows = sqlx::query(
+            "SELECT source_id, title, author, reference FROM sources \
+             WHERE title ILIKE $1 OR author ILIKE $1 OR reference ILIKE $1 \
+             LIMIT 15"
+        )
+        .bind(&pg_pattern)
+        .fetch_all(pool)
+        .await?;
+
+        for r in rows {
+            use sqlx::Row;
+            let uuid_val: uuid::Uuid = r.get("source_id");
+            let title_opt: Option<String> = r.get("title");
+            let author_opt: Option<String> = r.get("author");
+            let reference_text: String = r.get("reference");
+
+            let title = title_opt.unwrap_or_else(|| format!("Sumber oleh {}", author_opt.as_deref().unwrap_or("Anonim")));
+            
+            results.push(SearchResultItem {
+                uuid: uuid_val.to_string(),
+                title,
+                description: Some(reference_text),
+                entity_type: "source".to_string(),
+            });
+        }
+
+        Ok(results)
+    }
+
+    #[graphql(name = "auditLogs")]
+    async fn audit_logs(&self, ctx: &Context<'_>, limit: Option<i32>) -> Result<Vec<AuditLogItem>> {
+        let pool = ctx.data::<PgPool>()?;
+        let limit = limit.unwrap_or(50) as i64;
+
+        let rows = sqlx::query(
+            "SELECT id, entity_type, entity_id, action, performed_by, performed_at \
+             FROM audit_log \
+             ORDER BY performed_at DESC \
+             LIMIT $1"
+        )
+        .bind(limit)
+        .fetch_all(pool)
+        .await?;
+
+        let mut logs = Vec::new();
+        for r in rows {
+            use sqlx::Row;
+            let id: i64 = r.get("id");
+            let entity_type: String = r.get("entity_type");
+            let entity_id_uuid: uuid::Uuid = r.get("entity_id");
+            let action: String = r.get("action");
+            let performed_by: String = r.get("performed_by");
+            let performed_at_time: chrono::DateTime<chrono::Utc> = r.get("performed_at");
+
+            logs.push(AuditLogItem {
+                id,
+                entity_type,
+                entity_id: entity_id_uuid.to_string(),
+                action,
+                performed_by,
+                performed_at: performed_at_time.to_rfc3339(),
+            });
+        }
+
+        Ok(logs)
+    }
+
+    #[graphql(name = "syncStatus")]
+    async fn sync_status(&self, ctx: &Context<'_>) -> Result<SyncStatus> {
+        let pool = ctx.data::<PgPool>()?;
+        let graph = ctx.data::<Graph>()?;
+
+        // 1. Check PG connection & count
+        let pg_count_res: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM sources")
+            .fetch_one(pool)
+            .await
+            .unwrap_or((0,));
+
+        // 2. Check Neo4j connection & count
+        let mut neo_res = graph.execute(
+            neo_query("MATCH (n) RETURN COUNT(n) AS node_count")
+        ).await?;
+        
+        let neo4j_nodes_count = if let Some(row) = neo_res.next().await? {
+            let count: i64 = row.get("node_count")?;
+            count
+        } else {
+            0
+        };
+
+        Ok(SyncStatus {
+            postgres_connected: true,
+            neo4j_connected: true,
+            postgres_records_count: pg_count_res.0,
+            neo4j_nodes_count,
+        })
     }
 
     // -------------------------------------------------------------------------
