@@ -484,9 +484,9 @@ impl QueryRoot {
         // 1. Search Neo4j for Events, Actors, Locations
         let mut neo_res = graph.execute(
             neo_query("MATCH (n) WHERE (n:Event OR n:Actor OR n:Location) AND (
-                (exists(n.title) AND n.title =~ $pattern) OR 
-                (exists(n.name) AND n.name =~ $pattern) OR 
-                (exists(n.description) AND n.description =~ $pattern)
+                (n.title IS NOT NULL AND n.title =~ $pattern) OR 
+                (n.name IS NOT NULL AND n.name =~ $pattern) OR 
+                (n.description IS NOT NULL AND n.description =~ $pattern)
             ) RETURN n.uuid AS uuid, n.title AS title, n.name AS name, n.description AS description, labels(n)[0] AS label LIMIT 30")
                 .param("pattern", search_pattern)
         ).await?;
