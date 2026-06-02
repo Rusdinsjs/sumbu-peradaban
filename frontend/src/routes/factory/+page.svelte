@@ -81,9 +81,9 @@
       <p class="text-[10px] text-text-muted mt-2">Peristiwa berstatus Draft</p>
     </div>
     
-    <div class="glass p-6 rounded-2xl border border-emerald-500/20 relative overflow-hidden group">
+    <div class="glass p-6 rounded-2xl border border-verdigris-500/20 relative overflow-hidden group">
       <div class="absolute -right-4 -bottom-4 text-6xl opacity-10 group-hover:scale-110 transition-transform">👤</div>
-      <h3 class="text-xs font-bold text-emerald-400 uppercase tracking-wider mb-1">Tokoh Tertunda</h3>
+      <h3 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider mb-1">Tokoh Tertunda</h3>
       <div class="text-4xl font-extrabold text-text-primary">{draftActorsCount}</div>
       <p class="text-[10px] text-text-muted mt-2">Tokoh baru menunggu validasi</p>
     </div>
@@ -113,7 +113,7 @@
           Mode Admin Aktif
         </span>
       {:else}
-        <span class="px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold rounded-full">
+        <span class="px-3 py-1 bg-verdigris-500/10 border border-verdigris-500/30 text-verdigris-400 text-xs font-bold rounded-full">
           Mode Editor Aktif
         </span>
       {/if}

@@ -122,7 +122,7 @@
   <section class="graph-preview-section" class:animate-fade-in={graphVisible}>
     <div class="section-header">
       <h2 class="section-title">Peta Pengetahuan</h2>
-      <a href="/graph" class="section-link gradient-gold">
+      <a href="/graph" class="section-link gradient-rust">
         Lihat Selengkapnya →
       </a>
     </div>
@@ -151,8 +151,8 @@
     padding: 64px 24px 48px;
     border-radius: 20px;
     overflow: hidden;
-    background: linear-gradient(135deg, rgba(10, 15, 30, 0.9), rgba(20, 30, 60, 0.8));
-    border: 1px solid rgba(212, 168, 83, 0.15);
+    background: radial-gradient(circle at top, rgba(42, 36, 31, 0.9) 0%, rgba(18, 14, 12, 0.95) 100%);
+    border: 1px solid var(--color-border);
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -280,7 +280,7 @@
     padding: 4px 12px;
     border-radius: 999px;
     background: rgba(16, 185, 129, 0.15);
-    color: #10b981;
+    color: #5d8f8a;
     font-size: 0.75rem;
     font-weight: 600;
     text-transform: uppercase;
@@ -292,7 +292,7 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #10b981;
+    background: #5d8f8a;
     animation: pulse-dot 2s infinite;
   }
 

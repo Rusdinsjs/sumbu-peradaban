@@ -137,7 +137,7 @@
             <p class="text-[10px] text-text-secondary mt-0.5">${loc.type}</p>
           </div>
           ${loc.description ? `<p class="text-xs border-t border-border/10 pt-1.5 text-text-muted leading-relaxed">${loc.description}</p>` : ''}
-          <a href="/location/${loc.uuid || loc.id || encodeURIComponent(loc.name)}" data-sveltekit-reload class="mt-1 w-full py-1.5 rounded bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 text-[10px] font-bold text-center transition-colors block">
+          <a href="/location/${loc.uuid || loc.id || encodeURIComponent(loc.name)}" data-sveltekit-reload class="mt-1 w-full py-1.5 rounded bg-verdigris-500/10 hover:bg-verdigris-500/20 border border-verdigris-500/30 text-verdigris-400 text-[10px] font-bold text-center transition-colors block">
             Lihat Dimensi Lokasi →
           </a>
         </div>
@@ -170,7 +170,7 @@
   <div bind:this={mapContainer} class="w-full flex-1 relative z-0"></div>
   
   {#if !isLoaded}
-    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-navy-950/80 backdrop-blur-sm animate-pulse">
+    <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-iron-950/80 backdrop-blur-sm animate-pulse">
       <span class="w-8 h-8 border-4 border-gold-500 border-t-transparent rounded-full animate-spin"></span>
       <p class="text-xs text-gold-400 mt-4 font-bold tracking-widest uppercase">Memuat Peta Global...</p>
     </div>

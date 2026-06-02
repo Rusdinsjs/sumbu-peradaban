@@ -37,7 +37,7 @@
       return {
         label: 'Sahih / Kredibilitas Tinggi',
         tier: 'reviewed',
-        badgeClass: 'border-emerald-500/30 text-emerald-400 bg-emerald-950/20',
+        badgeClass: 'border-verdigris-500/30 text-verdigris-400 bg-verdigris-950/20',
         shield: '🛡️',
         desc: 'Sumber historis kredibel dengan bias minimal dan didukung oleh konsensus historiografi utama.'
       };
@@ -117,7 +117,7 @@
       </div>
 
       <!-- Kredibilitas Shield Badge -->
-      <div class="px-5 py-3 rounded-2xl bg-navy-950/60 border border-border/10 flex flex-row md:flex-col items-center gap-3 md:gap-1 text-center min-w-[130px] self-stretch md:self-auto relative z-10 justify-between sm:justify-center">
+      <div class="px-5 py-3 rounded-2xl bg-iron-950/60 border border-border/10 flex flex-row md:flex-col items-center gap-3 md:gap-1 text-center min-w-[130px] self-stretch md:self-auto relative z-10 justify-between sm:justify-center">
         <span class="text-2xl">{rel?.shield}</span>
         <div class="flex flex-col md:items-center">
           <span class="text-[9px] text-text-muted font-bold uppercase tracking-wider">Kredibilitas</span>
@@ -141,14 +141,14 @@
             <span>📜</span> Kutipan Naskah Primer (Reference Text)
           </h2>
           
-          <div class="p-6 bg-navy-950/50 border border-border/5 rounded-2xl font-serif text-sm sm:text-base text-text-primary italic leading-relaxed whitespace-pre-wrap">
+          <div class="p-6 bg-iron-950/50 border border-border/5 rounded-2xl font-serif text-sm sm:text-base text-text-primary italic leading-relaxed whitespace-pre-wrap">
             "{src.referenceText}"
           </div>
 
           {#if src.interpretationMethod}
             <div class="flex items-center gap-2 mt-2">
               <span class="text-[10px] text-text-muted">Metodologi Interpretasi:</span>
-              <span class="px-2 py-0.5 bg-navy-900 border border-border/10 rounded text-[10px] text-text-secondary font-mono">
+              <span class="px-2 py-0.5 bg-iron-900 border border-border/10 rounded text-[10px] text-text-secondary font-mono">
                 {src.interpretationMethod}
               </span>
             </div>
@@ -200,7 +200,7 @@
                 <span>Nilai Validitas Kontekstual</span>
                 <span>{(src.reliabilityScore * 100).toFixed(0)}%</span>
               </div>
-              <div class="h-2 w-full bg-navy-950 rounded-full overflow-hidden border border-border/5">
+              <div class="h-2 w-full bg-iron-950 rounded-full overflow-hidden border border-border/5">
                 <div class="h-full bg-blue-500 rounded-full" style="width: {src.reliabilityScore * 100}%"></div>
               </div>
             </div>
@@ -216,7 +216,7 @@
           {#if src.mediaLinks && src.mediaLinks.length > 0}
             <div class="flex flex-col gap-2">
               {#each src.mediaLinks as media}
-                <a href={media.url} target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-blue-500/20 rounded-2xl transition-all gap-3">
+                <a href={media.url} target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-blue-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-lg">
                       {#if media.mediaType === 'image'}
@@ -263,14 +263,14 @@
           {#if src.actors && src.actors.length > 0}
             <div class="flex flex-col gap-2">
               {#each src.actors as rel}
-                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
+                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-sm">👤</span>
                     <div class="flex flex-col overflow-hidden">
                       <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
                         {rel.actor.name}
                       </span>
-                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5">
                         {rel.relationshipType}
                       </span>
                     </div>
@@ -293,14 +293,14 @@
           {#if src.locations && src.locations.length > 0}
             <div class="flex flex-col gap-2">
               {#each src.locations as rel}
-                <a href="/location/{rel.location.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
+                <a href="/location/{rel.location.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-sm">📍</span>
                     <div class="flex flex-col overflow-hidden">
                       <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
                         {rel.location.name}
                       </span>
-                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5">
                         {rel.relationshipType}
                       </span>
                     </div>
@@ -323,14 +323,14 @@
           {#if src.events && src.events.length > 0}
             <div class="flex flex-col gap-2">
               {#each src.events as ev}
-                <a href="/event/{ev.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
+                <a href="/event/{ev.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-sm">📅</span>
                     <div class="flex flex-col overflow-hidden">
                       <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
                         {ev.title}
                       </span>
-                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5 font-mono">
+                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5 font-mono">
                         {ev.gregorianDate?.year ? `${ev.gregorianDate.year} M` : 'Kronologi Sejarah'}
                       </span>
                     </div>

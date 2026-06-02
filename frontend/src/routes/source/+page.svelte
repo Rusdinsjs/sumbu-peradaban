@@ -53,12 +53,12 @@
         type="text"
         bind:value={searchQuery}
         placeholder="Cari rujukan sejarah..."
-        class="w-full bg-navy-950/60 border border-border/15 rounded-xl px-4 py-2.5 text-xs text-text-primary placeholder-text-muted outline-none focus:border-violet-500/40 transition-colors"
+        class="w-full bg-iron-950/60 border border-border/15 rounded-xl px-4 py-2.5 text-xs text-text-primary placeholder-text-muted outline-none focus:border-violet-500/40 transition-colors"
       />
     </div>
     <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
       <span class="text-xs text-text-muted">{filteredSources.length} sumber tervalidasi</span>
-      <div class="flex items-center bg-navy-950/60 border border-border/10 rounded-lg p-1">
+      <div class="flex items-center bg-iron-950/60 border border-border/10 rounded-lg p-1">
         <button 
           class="p-1.5 rounded-md text-xs transition-colors {viewMode === 'grid' ? 'bg-violet-500/20 text-violet-400' : 'text-text-muted hover:text-text-primary'}"
           onclick={() => viewMode = 'grid'}
@@ -101,7 +101,7 @@
             <p class="text-xs text-text-secondary mt-0.5">{source.author}</p>
           </div>
 
-          <div class="p-3.5 rounded-xl bg-navy-950/40 border border-border/5 flex flex-col gap-1.5 text-[10px] mt-auto">
+          <div class="p-3.5 rounded-xl bg-iron-950/40 border border-border/5 flex flex-col gap-1.5 text-[10px] mt-auto">
             <div class="flex justify-between">
               <span class="text-text-muted">Klasifikasi:</span>
               <span class="text-text-primary font-medium">{source.type}</span>
@@ -112,7 +112,7 @@
             </div>
             <div class="flex justify-between">
               <span class="text-text-muted">Tingkat Kepercayaan:</span>
-              <span class="text-emerald-400 font-bold">{source.reliability}</span>
+              <span class="text-verdigris-400 font-bold">{source.reliability}</span>
             </div>
           </div>
         </a>
@@ -146,7 +146,7 @@
             </div>
             <div class="flex flex-col text-right">
               <span class="text-text-muted">Keandalan</span>
-              <span class="text-emerald-400 font-bold mt-0.5 font-mono">{source.reliability}</span>
+              <span class="text-verdigris-400 font-bold mt-0.5 font-mono">{source.reliability}</span>
             </div>
             <div class="flex-shrink-0 ml-auto md:ml-0">
               <CurationBadge tier={source.tier as any} size="sm" />

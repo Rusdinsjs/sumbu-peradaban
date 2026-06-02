@@ -115,8 +115,8 @@
 
     // Scene
     scene = new THREE.Scene();
-    scene.background = new THREE.Color('#060913');
-    scene.fog = new THREE.FogExp2('#060913', 0.003);
+    scene.background = new THREE.Color('#120e0c'); // Iron-900 / Surface
+    scene.fog = new THREE.FogExp2('#120e0c', 0.003);
 
     // Camera
     camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
@@ -144,30 +144,30 @@
     dirLight1.position.set(50, 150, 50);
     scene.add(dirLight1);
 
-    const pointLight = new THREE.PointLight('#d4a853', 1, 100);
+    const pointLight = new THREE.PointLight('#e4891b', 1, 100);
     pointLight.position.set(0, 0, 0);
     scene.add(pointLight);
 
     // ─── GRIDS & PLATES (SPACE-TIME COORDINATES) ────────────────
     // 1. Bottom Geography Ground Grid
-    const groundGrid = new THREE.GridHelper(160, 32, '#1e293b', '#0f172a');
+    const groundGrid = new THREE.GridHelper(160, 32, '#38302a', '#1c1815');
     groundGrid.position.y = -MAP_DEPTH / 2 - 5;
     scene.add(groundGrid);
 
     // 2. Space-Time Era Plates (Transparent floating sheets)
     const eras = [
-      { name: 'Era Klasik Kuno', year: -3000, color: '#f59e0b' },
-      { name: 'Era Kenabian Awal', year: -1500, color: '#f59e0b' },
-      { name: 'Era Kerasulan Akhir', year: 610, color: '#10b981' },
-      { name: 'Era Khilafah & Daulah', year: 1000, color: '#10b981' },
-      { name: 'Era Kolonial & Modern', year: 1900, color: '#3b82f6' }
+      { name: 'Era Klasik Kuno', year: -3000, color: '#e4891b' },
+      { name: 'Era Kenabian Awal', year: -1500, color: '#e4891b' },
+      { name: 'Era Kerasulan Akhir', year: 610, color: '#5d8f8a' },
+      { name: 'Era Khilafah & Daulah', year: 1000, color: '#5d8f8a' },
+      { name: 'Era Kolonial & Modern', year: 1900, color: '#3b3734' }
     ];
 
     eras.forEach(era => {
       const eraHeight = ((era.year - MIN_YEAR) / (MAX_YEAR - MIN_YEAR)) * MAP_DEPTH - MAP_DEPTH / 2;
       
       // Floating grid helper for visual reference
-      const eraGrid = new THREE.GridHelper(120, 12, era.color, '#1e293b');
+      const eraGrid = new THREE.GridHelper(120, 12, era.color, '#38302a');
       eraGrid.position.y = eraHeight;
       (eraGrid.material as THREE.Material).transparent = true;
       (eraGrid.material as THREE.Material).opacity = 0.15;
@@ -200,7 +200,7 @@
           if (hoveredObject) {
             // Restore color
             const originalData = hoveredObject.userData.data;
-            (hoveredObject as any).material.color.set(originalData.tier === 'canonical' ? '#d4a853' : '#a78bfa');
+            (hoveredObject as any).material.color.set(originalData.tier === 'canonical' ? '#e4891b' : '#a78bfa');
             (hoveredObject as any).material.emissive.set(originalData.tier === 'canonical' ? '#9a7024' : '#6d28d9');
           }
           
@@ -220,7 +220,7 @@
       } else {
         if (hoveredObject) {
           const originalData = hoveredObject.userData.data;
-          (hoveredObject as any).material.color.set(originalData.tier === 'canonical' ? '#d4a853' : '#a78bfa');
+          (hoveredObject as any).material.color.set(originalData.tier === 'canonical' ? '#e4891b' : '#a78bfa');
           (hoveredObject as any).material.emissive.set(originalData.tier === 'canonical' ? '#9a7024' : '#6d28d9');
           hoveredObject = null;
         }
@@ -317,7 +317,7 @@
       // Node Geometry (Octahedron for events)
       const geometry = new THREE.OctahedronGeometry(2.2, 0);
       const material = new THREE.MeshStandardMaterial({
-        color: ev.tier === 'canonical' ? '#d4a853' : '#a78bfa',
+        color: ev.tier === 'canonical' ? '#e4891b' : '#a78bfa',
         emissive: ev.tier === 'canonical' ? '#9a7024' : '#6d28d9',
         roughness: 0.2,
         metalness: 0.8
@@ -336,7 +336,7 @@
       
       const lineGeom = new THREE.BufferGeometry().setFromPoints(points);
       const lineMat = new THREE.LineDashedMaterial({
-        color: '#334155',
+        color: '#595551',
         dashSize: 2,
         gapSize: 2
       });
@@ -369,7 +369,7 @@
       const curveGeom = new THREE.BufferGeometry().setFromPoints(curvePoints);
       
       const curveMat = new THREE.LineBasicMaterial({
-        color: '#10b981',
+        color: '#5d8f8a',
         linewidth: 2
       });
       
@@ -378,7 +378,7 @@
 
       const latestPos = points[points.length - 1];
       const indicatorGeom = new THREE.SphereGeometry(0.8, 8, 8);
-      const indicatorMat = new THREE.MeshBasicMaterial({ color: '#10b981' });
+      const indicatorMat = new THREE.MeshBasicMaterial({ color: '#5d8f8a' });
       const indicator = new THREE.Mesh(indicatorGeom, indicatorMat);
       indicator.position.copy(latestPos);
       splineGroup.add(indicator);
@@ -406,7 +406,7 @@
         <span class="text-text-primary font-medium">Peristiwa (X, Y=Lokasi, Z=Waktu)</span>
       </div>
       <div class="flex items-center gap-2.5 text-[9px]">
-        <span class="w-3.5 h-0.5 bg-emerald-500 inline-block"></span>
+        <span class="w-3.5 h-0.5 bg-verdigris-500 inline-block"></span>
         <span class="text-text-primary font-medium">Jejak Trajektori Tokoh (Spline)</span>
       </div>
       <div class="flex items-center gap-2.5 text-[9px]">
@@ -421,10 +421,10 @@
         <span>💡</span> Kendali Navigasi 3D
       </span>
       <div class="grid grid-cols-2 gap-x-2 gap-y-1.5 text-[8px] text-text-muted">
-        <span class="flex items-center gap-1.5"><span class="bg-navy-900 px-1 py-0.5 rounded text-text-primary">Drag Kiri</span> Putar Orbit</span>
-        <span class="flex items-center gap-1.5"><span class="bg-navy-900 px-1 py-0.5 rounded text-text-primary">Drag Kanan</span> Geser (Pan)</span>
-        <span class="flex items-center gap-1.5"><span class="bg-navy-900 px-1 py-0.5 rounded text-text-primary">Scroll</span> Zoom In/Out</span>
-        <span class="flex items-center gap-1.5"><span class="bg-navy-900 px-1 py-0.5 rounded text-text-primary">Hover</span> Detail Node</span>
+        <span class="flex items-center gap-1.5"><span class="bg-iron-900 px-1 py-0.5 rounded text-text-primary">Drag Kiri</span> Putar Orbit</span>
+        <span class="flex items-center gap-1.5"><span class="bg-iron-900 px-1 py-0.5 rounded text-text-primary">Drag Kanan</span> Geser (Pan)</span>
+        <span class="flex items-center gap-1.5"><span class="bg-iron-900 px-1 py-0.5 rounded text-text-primary">Scroll</span> Zoom In/Out</span>
+        <span class="flex items-center gap-1.5"><span class="bg-iron-900 px-1 py-0.5 rounded text-text-primary">Hover</span> Detail Node</span>
       </div>
     </div>
   </div>
@@ -432,7 +432,7 @@
   <!-- Realtime 3D Tooltip -->
   {#if showTooltip}
     <div 
-      class="fixed z-50 pointer-events-none px-3 py-1.5 rounded bg-navy-950/95 border border-emerald-500/40 text-text-primary text-[10px] font-bold shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-all animate-fade-in"
+      class="fixed z-50 pointer-events-none px-3 py-1.5 rounded bg-iron-950/95 border border-verdigris-500/40 text-text-primary text-[10px] font-bold shadow-[0_4px_12px_rgba(0,0,0,0.5)] transition-all animate-fade-in"
       style="left: {tooltipX}px; top: {tooltipY}px;"
     >
       📌 {tooltipText}

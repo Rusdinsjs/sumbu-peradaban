@@ -50,7 +50,7 @@
   <!-- Subtle corner decoration -->
   <div
     class="absolute top-0 right-0 w-16 h-16 opacity-5"
-    style="background: radial-gradient(circle at top right, #d4a853, transparent 70%);"
+    style="background: radial-gradient(circle at top right, #e4891b, transparent 70%);"
   ></div>
 
   <div class="flex items-start gap-4 relative z-10">
@@ -67,7 +67,7 @@
       <p class="text-xs text-white/40 uppercase tracking-wider mb-1 font-medium">{label}</p>
       <p
         class="text-2xl font-bold tracking-tight"
-        style="background: linear-gradient(135deg, #d4a853, #f5d78e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
+        style="background: linear-gradient(135deg, #e4891b, #f5d78e); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;"
       >
         {typeof value === 'number' ? value.toLocaleString('id-ID') : value}
       </p>
@@ -75,7 +75,7 @@
       {#if trend}
         <p
           class="text-xs mt-1 font-medium"
-          style="color: {trendPositive ? '#10b981' : trendNegative ? '#ef4444' : '#6b7280'};"
+          style="color: {trendPositive ? '#5d8f8a' : trendNegative ? '#ef4444' : '#6b7280'};"
         >
           {trend}
         </p>

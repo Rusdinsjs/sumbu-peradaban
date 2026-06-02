@@ -40,7 +40,7 @@
 <div class="min-h-screen flex items-center justify-center p-6 relative overflow-hidden bg-background">
   <!-- Dynamic Orbs Background (Consistent with other pages) -->
   <div class="absolute -top-1/4 -right-1/4 w-[80vw] h-[80vw] max-w-3xl max-h-3xl rounded-full bg-gold-600/10 blur-[120px] mix-blend-screen pointer-events-none"></div>
-  <div class="absolute -bottom-1/4 -left-1/4 w-[60vw] h-[60vw] max-w-2xl max-h-2xl rounded-full bg-emerald-600/10 blur-[100px] mix-blend-screen pointer-events-none"></div>
+  <div class="absolute -bottom-1/4 -left-1/4 w-[60vw] h-[60vw] max-w-2xl max-h-2xl rounded-full bg-verdigris-600/10 blur-[100px] mix-blend-screen pointer-events-none"></div>
 
   <div class="glass p-8 md:p-10 rounded-3xl w-full max-w-md border border-border/20 shadow-2xl relative z-10 animate-fade-in-up">
     <div class="text-center mb-8">
@@ -90,10 +90,10 @@
       <button 
         type="submit" 
         disabled={isLoading}
-        class="mt-2 w-full bg-gold-600 hover:bg-gold-500 text-navy-950 font-bold py-3.5 px-6 rounded-xl transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        class="mt-2 w-full bg-gold-600 hover:bg-gold-500 text-iron-950 font-bold py-3.5 px-6 rounded-xl transition-all shadow-[0_0_20px_rgba(212,175,55,0.3)] hover:shadow-[0_0_30px_rgba(212,175,55,0.5)] flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
         {#if isLoading}
-          <span class="w-4 h-4 border-2 border-navy-950/30 border-t-navy-950 rounded-full animate-spin"></span>
+          <span class="w-4 h-4 border-2 border-iron-950/30 border-t-iron-950 rounded-full animate-spin"></span>
           Memproses...
         {:else}
           {isRegister ? 'Daftar' : 'Masuk (Login)'}

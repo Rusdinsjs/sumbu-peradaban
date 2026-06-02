@@ -250,22 +250,22 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div class="flex flex-col gap-1.5">
           <label for="sourceTitle" class="text-xs font-bold text-text-secondary">Judul Kitab / Buku</label>
-          <input id="sourceTitle" type="text" bind:value={formData.title} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Misal: Ar-Rahiq Al-Makhtum">
+          <input id="sourceTitle" type="text" bind:value={formData.title} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Misal: Ar-Rahiq Al-Makhtum">
         </div>
 
         <div class="flex flex-col gap-1.5">
           <label for="sourceAuthor" class="text-xs font-bold text-text-secondary">Nama Pengarang / Penulis</label>
-          <input id="sourceAuthor" type="text" bind:value={formData.author} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Misal: Syeikh Safiyjurrahman Al-Mubarakfuri">
+          <input id="sourceAuthor" type="text" bind:value={formData.author} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Misal: Syeikh Safiyjurrahman Al-Mubarakfuri">
         </div>
 
         <div class="flex flex-col gap-1.5">
           <label for="sourcePublicationEra" class="text-xs font-bold text-text-secondary">Era Publikasi / Penulisan</label>
-          <input id="sourcePublicationEra" type="text" bind:value={formData.publicationEra} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Misal: Abad 14 Hijriyah / Modern">
+          <input id="sourcePublicationEra" type="text" bind:value={formData.publicationEra} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Misal: Abad 14 Hijriyah / Modern">
         </div>
 
         <div class="flex flex-col gap-1.5">
           <label for="sourceDomain" class="text-xs font-bold text-text-secondary">Domain Studi</label>
-          <select id="sourceDomain" bind:value={formData.domain} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors">
+          <select id="sourceDomain" bind:value={formData.domain} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors">
             <option value="Sejarah">Sejarah Umum (Tarikh)</option>
             <option value="Teks Suci">Teks Suci / Wahyu</option>
             <option value="Hadits">Hadits / Sanad</option>
@@ -276,25 +276,25 @@
 
         <div class="flex flex-col gap-1.5">
           <label for="sourceInterpretationMethod" class="text-xs font-bold text-text-secondary">Metode Interpretasi</label>
-          <input id="sourceInterpretationMethod" type="text" bind:value={formData.interpretationMethod} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Misal: Kritik Historis, Analisis Sanad">
+          <input id="sourceInterpretationMethod" type="text" bind:value={formData.interpretationMethod} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Misal: Kritik Historis, Analisis Sanad">
         </div>
 
         <div class="flex flex-col gap-1.5">
           <label for="sourceReliabilityScore" class="text-xs font-bold text-text-secondary">Skor Keandalan (0.00 - 1.00) - {formData.reliabilityScore || '0.85'}</label>
           <div class="flex items-center gap-3">
             <input id="sourceReliabilityScore" type="range" min="0" max="1" step="0.05" bind:value={formData.reliabilityScore} class="flex-1 accent-blue-400">
-            <input aria-label="Numeric Reliability Score" type="number" step="0.01" min="0" max="1" bind:value={formData.reliabilityScore} class="w-20 bg-navy-950/60 border border-border/10 rounded-lg p-2 text-center text-xs text-text-primary focus:border-blue-500/50 outline-none">
+            <input aria-label="Numeric Reliability Score" type="number" step="0.01" min="0" max="1" bind:value={formData.reliabilityScore} class="w-20 bg-iron-950/60 border border-border/10 rounded-lg p-2 text-center text-xs text-text-primary focus:border-blue-500/50 outline-none">
           </div>
         </div>
 
         <div class="flex flex-col gap-1.5 md:col-span-2">
           <label for="sourceReferenceText" class="text-xs font-bold text-text-secondary">Teks Kutipan / Referensi Primer *</label>
-          <textarea id="sourceReferenceText" bind:value={formData.referenceText} rows="3" class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors font-serif" placeholder="Tuliskan kutipan naskah sejarah asli, terjemahan, atau bait kronik sejarah yang dikutip..."></textarea>
+          <textarea id="sourceReferenceText" bind:value={formData.referenceText} rows="3" class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors font-serif" placeholder="Tuliskan kutipan naskah sejarah asli, terjemahan, atau bait kronik sejarah yang dikutip..."></textarea>
         </div>
 
         <div class="flex flex-col gap-1.5 md:col-span-2">
           <label for="sourceReliabilityAssessment" class="text-xs font-bold text-text-secondary">Analisis Kritik Intern & Ekstern (Kesahihan Kualitatif)</label>
-          <textarea id="sourceReliabilityAssessment" bind:value={formData.reliabilityAssessment} rows="3" class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Berikan tinjauan ilmiah mengenai keakuratan sanad, ketersambungan periwayatan, serta orisinalitas naskah ini..."></textarea>
+          <textarea id="sourceReliabilityAssessment" bind:value={formData.reliabilityAssessment} rows="3" class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Berikan tinjauan ilmiah mengenai keakuratan sanad, ketersambungan periwayatan, serta orisinalitas naskah ini..."></textarea>
         </div>
 
         <!-- Media Links Section -->
@@ -303,10 +303,10 @@
             <span>🎥</span> Berkas Scan Naskah & Media Pendukung (Gambar, Rekaman, PDF, Dokumen)
           </span>
           
-          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-navy-950/40 p-3 rounded-lg border border-border/5">
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-3 bg-iron-950/40 p-3 rounded-lg border border-border/5">
             <div class="flex flex-col gap-1">
               <label for="newMediaType" class="text-[10px] font-bold text-text-secondary">Tipe Berkas</label>
-              <select id="newMediaType" bind:value={newMedia.mediaType} class="bg-navy-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-blue-500/50 outline-none">
+              <select id="newMediaType" bind:value={newMedia.mediaType} class="bg-iron-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-blue-500/50 outline-none">
                 <option value="image">Gambar / Scan (Image)</option>
                 <option value="audio">Rekaman / Audio (Audio)</option>
                 <option value="video">Dokumenter Video (Video)</option>
@@ -316,13 +316,13 @@
             
             <div class="flex flex-col gap-1 sm:col-span-2">
               <label for="newMediaUrl" class="text-[10px] font-bold text-text-secondary">Tautan URL Berkas</label>
-              <input id="newMediaUrl" type="text" bind:value={newMedia.url} class="bg-navy-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-blue-500/50 outline-none" placeholder="https://host.com/manuskrip-kuno.jpg">
+              <input id="newMediaUrl" type="text" bind:value={newMedia.url} class="bg-iron-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-blue-500/50 outline-none" placeholder="https://host.com/manuskrip-kuno.jpg">
             </div>
             
             <div class="flex flex-col gap-1">
               <label for="newMediaTitle" class="text-[10px] font-bold text-text-secondary">Label / Judul</label>
               <div class="flex gap-2">
-                <input id="newMediaTitle" type="text" bind:value={newMedia.title} class="flex-1 bg-navy-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-blue-500/50 outline-none" placeholder="Lembaran Kitab Asli" onkeydown={(e) => e.key === 'Enter' && addMediaLink()}>
+                <input id="newMediaTitle" type="text" bind:value={newMedia.title} class="flex-1 bg-iron-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-blue-500/50 outline-none" placeholder="Lembaran Kitab Asli" onkeydown={(e) => e.key === 'Enter' && addMediaLink()}>
                 <button type="button" onclick={addMediaLink} class="px-3 bg-blue-500/20 hover:bg-blue-500/30 text-blue-400 text-xs font-bold rounded border border-blue-500/25 transition-all">Sematkan</button>
               </div>
             </div>
@@ -330,9 +330,9 @@
           {#if formData.mediaLinks.length > 0}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 mt-2">
               {#each formData.mediaLinks as media, idx}
-                <div class="flex items-center justify-between p-2.5 bg-navy-900/60 border border-border/10 rounded-lg text-xs gap-3" transition:fade>
+                <div class="flex items-center justify-between p-2.5 bg-iron-900/60 border border-border/10 rounded-lg text-xs gap-3" transition:fade>
                   <div class="flex items-center gap-2 overflow-hidden">
-                    <span class="px-2 py-0.5 bg-navy-950 rounded text-[9px] uppercase border border-border/10 text-blue-400 font-mono">
+                    <span class="px-2 py-0.5 bg-iron-950 rounded text-[9px] uppercase border border-border/10 text-blue-400 font-mono">
                       {media.mediaType}
                     </span>
                     <div class="flex flex-col overflow-hidden">
@@ -352,7 +352,7 @@
 
       <div class="flex justify-end gap-3 mt-8">
         <button onclick={() => showForm = false} class="px-5 py-2.5 text-xs font-bold text-text-secondary hover:text-text-primary transition-colors">Batal</button>
-        <button onclick={saveSource} disabled={isSaving} class="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-navy-950 text-xs font-extrabold rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50">
+        <button onclick={saveSource} disabled={isSaving} class="px-6 py-2.5 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-400 hover:to-blue-500 text-iron-950 text-xs font-extrabold rounded-xl transition-all shadow-lg shadow-blue-500/20 disabled:opacity-50">
           {isSaving ? 'Menyimpan...' : 'Simpan Rujukan'}
         </button>
       </div>
@@ -363,7 +363,7 @@
   <div class="glass rounded-2xl border border-border/10 overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-left text-xs">
-        <thead class="bg-navy-950/40 border-b border-border/10">
+        <thead class="bg-iron-950/40 border-b border-border/10">
           <tr>
             <th class="px-6 py-4 font-bold text-text-secondary">Kitab / Rujukan Utama</th>
             <th class="px-6 py-4 font-bold text-text-secondary">Domain</th>
@@ -380,7 +380,7 @@
             <tr><td colspan="6" class="px-6 py-8 text-center text-text-muted">Belum ada data rujukan.</td></tr>
           {:else}
             {#each sources as src}
-              <tr class="hover:bg-navy-950/20 transition-colors">
+              <tr class="hover:bg-iron-950/20 transition-colors">
                 <td class="px-6 py-4 font-bold text-text-primary max-w-xs" title={src.title || src.referenceText}>
                   <div class="flex flex-col">
                     <span class="text-blue-400 font-bold">{src.title || 'Tanpa Judul'}</span>
@@ -388,7 +388,7 @@
                   </div>
                 </td>
                 <td class="px-6 py-4 text-text-secondary">
-                  <span class="px-2 py-1 bg-navy-950/50 rounded text-[10px] uppercase border border-border/10">{src.domain}</span>
+                  <span class="px-2 py-1 bg-iron-950/50 rounded text-[10px] uppercase border border-border/10">{src.domain}</span>
                 </td>
                 <td class="px-6 py-4 text-text-secondary">
                   <div class="flex flex-col">
@@ -400,7 +400,7 @@
                 <td class="px-6 py-4 text-text-secondary font-mono">
                   {#if src.reliabilityScore !== null}
                     <div class="flex items-center gap-1.5">
-                      <div class="h-2 w-12 bg-navy-900 rounded-full overflow-hidden border border-border/5">
+                      <div class="h-2 w-12 bg-iron-900 rounded-full overflow-hidden border border-border/5">
                         <div class="h-full bg-blue-500" style="width: {src.reliabilityScore * 100}%"></div>
                       </div>
                       <span>{(src.reliabilityScore * 100).toFixed(0)}%</span>

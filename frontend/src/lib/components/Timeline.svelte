@@ -139,7 +139,7 @@
     width: 12px;
     height: 12px;
     border-radius: 50%;
-    background: #d4a853;
+    background: #e4891b;
     border: 3px solid rgba(13, 17, 23, 0.9);
     box-shadow: 0 0 10px rgba(212, 168, 83, 0.5);
     z-index: 2;
@@ -149,7 +149,7 @@
   .year-label {
     font-size: 11px;
     font-weight: 800;
-    color: #d4a853;
+    color: #e4891b;
     white-space: nowrap;
     margin-top: 6px;
     text-align: center;
@@ -282,7 +282,7 @@
   }
 
   .chip-actor {
-    color: #10b981;
+    color: #5d8f8a;
     background: rgba(16, 185, 129, 0.06);
     border-color: rgba(16, 185, 129, 0.12);
   }
@@ -310,7 +310,7 @@
   .detail-link {
     font-size: 10px;
     font-weight: 700;
-    color: #d4a853;
+    color: #e4891b;
     text-decoration: none;
     transition: color 0.2s ease;
   }

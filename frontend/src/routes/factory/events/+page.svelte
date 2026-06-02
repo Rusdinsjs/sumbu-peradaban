@@ -251,7 +251,7 @@
 <div class="w-full flex flex-col gap-6 animate-fade-in pb-12 p-8 max-w-6xl mx-auto relative">
   <!-- Toast Notification -->
   {#if notification}
-    <div class="fixed top-8 right-8 z-[100] animate-fade-in flex items-center gap-4 px-6 py-4 rounded-xl shadow-2xl glass {notification.type === 'success' ? 'border-emerald-500/50 text-emerald-400 bg-emerald-950/50' : 'border-red-500/50 text-red-400 bg-red-950/50'}">
+    <div class="fixed top-8 right-8 z-[100] animate-fade-in flex items-center gap-4 px-6 py-4 rounded-xl shadow-2xl glass {notification.type === 'success' ? 'border-verdigris-500/50 text-verdigris-400 bg-verdigris-950/50' : 'border-red-500/50 text-red-400 bg-red-950/50'}">
       <span class="text-2xl">{notification.type === 'success' ? '✅' : '❌'}</span>
       <div>
         <p class="font-bold text-sm text-text-primary">{notification.type === 'success' ? 'Sukses' : 'Gagal'}</p>
@@ -272,7 +272,7 @@
       </p>
     </div>
     
-    <div class="flex bg-navy-950/50 p-1.5 rounded-xl border border-border/10">
+    <div class="flex bg-iron-950/50 p-1.5 rounded-xl border border-border/10">
       <button class="px-5 py-2 rounded-lg text-xs font-bold transition-all {activeTab === 'manual' ? 'bg-gold-500/20 text-gold-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}" onclick={() => {activeTab = 'manual'; showForm=false;}}>📝 Data Master (CRUD)</button>
       <button class="px-5 py-2 rounded-lg text-xs font-bold transition-all {activeTab === 'ai' ? 'bg-gold-500/20 text-gold-400 shadow-sm' : 'text-text-muted hover:text-text-primary'}" onclick={() => activeTab = 'ai'}>🤖 AI Extractor</button>
     </div>
@@ -282,7 +282,7 @@
     {#if !showForm}
       <div class="flex justify-between items-center mb-2 mt-2">
         <h2 class="text-lg font-bold text-text-primary">Daftar Peristiwa ({events.length})</h2>
-        <button onclick={openCreateForm} class="px-5 py-2 rounded-xl gradient-gold text-surface font-bold text-xs hover:shadow-[0_0_15px_rgba(212,168,83,0.4)] transition-all flex items-center gap-2">
+        <button onclick={openCreateForm} class="px-5 py-2 rounded-xl gradient-rust text-surface font-bold text-xs hover:shadow-[0_0_15px_rgba(212,168,83,0.4)] transition-all flex items-center gap-2">
           <span>+</span> Tambah Peristiwa
         </button>
       </div>
@@ -317,10 +317,10 @@
                     <td class="px-6 py-4 text-xs">
                       {evt.gregorianDate?.year ? `${evt.gregorianDate.year} M` : '-'} / {evt.islamicDate?.year ? `${evt.islamicDate.year} H` : '-'}
                     </td>
-                    <td class="px-6 py-4 text-xs font-mono bg-navy-950/30 inline-block mt-3 ml-6 rounded px-2">{evt.precision}</td>
+                    <td class="px-6 py-4 text-xs font-mono bg-iron-950/30 inline-block mt-3 ml-6 rounded px-2">{evt.precision}</td>
                     <td class="px-6 py-4 text-right">
                       <div class="flex items-center justify-end gap-2">
-                        <a href="/event/{evt.uuid}" target="_blank" class="text-emerald-400 hover:text-emerald-300 font-bold px-3 py-1 bg-emerald-500/10 rounded-lg transition-colors flex items-center gap-1">
+                        <a href="/event/{evt.uuid}" target="_blank" class="text-verdigris-400 hover:text-verdigris-300 font-bold px-3 py-1 bg-verdigris-500/10 rounded-lg transition-colors flex items-center gap-1">
                           <span class="text-sm">👁️</span> View
                         </a>
                         <button onclick={() => openEditForm(evt)} class="text-gold-400 hover:text-gold-300 font-bold px-3 py-1 bg-gold-500/10 rounded-lg transition-colors">Edit</button>
@@ -341,7 +341,7 @@
         
         <div class="flex flex-col gap-6">
           <!-- Group 1: Data Dasar Peristiwa (Full Width) -->
-          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-5 bg-navy-950/20">
+          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-5 bg-iron-950/20">
             <h3 class="text-sm font-bold text-gold-400 flex items-center gap-2 border-b border-border/5 pb-2.5">
               <span>🗂️</span> 1. Data Dasar Peristiwa
             </h3>
@@ -350,12 +350,12 @@
               <div class="flex flex-col gap-4">
                 <div class="flex flex-col gap-1.5">
                   <label for="f-title" class="text-xs font-bold text-text-secondary">Judul Peristiwa *</label>
-                  <input id="f-title" bind:value={formData.title} placeholder="Contoh: Pembukaan Kota Makkah (Fathu Makkah)" class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full" />
+                  <input id="f-title" bind:value={formData.title} placeholder="Contoh: Pembukaan Kota Makkah (Fathu Makkah)" class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full" />
                 </div>
 
                 <div class="flex flex-col gap-1.5">
                   <label for="f-desc" class="text-xs font-bold text-text-secondary">Deskripsi Historis *</label>
-                  <textarea id="f-desc" bind:value={formData.description} rows="5" placeholder="Tuliskan kronologi singkat, konteks sosio-politik, dan dampak peradaban..." class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full resize-y"></textarea>
+                  <textarea id="f-desc" bind:value={formData.description} rows="5" placeholder="Tuliskan kronologi singkat, konteks sosio-politik, dan dampak peradaban..." class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full resize-y"></textarea>
                 </div>
               </div>
 
@@ -363,17 +363,17 @@
                 <div class="grid grid-cols-2 gap-4">
                   <div class="flex flex-col gap-1.5">
                     <label for="f-masehi" class="text-xs font-bold text-text-secondary">Tahun Masehi</label>
-                    <input id="f-masehi" type="number" bind:value={formData.gregorianYear} placeholder="Contoh: 630" class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none" />
+                    <input id="f-masehi" type="number" bind:value={formData.gregorianYear} placeholder="Contoh: 630" class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none" />
                   </div>
                   <div class="flex flex-col gap-1.5">
                     <label for="f-hijri" class="text-xs font-bold text-text-secondary">Tahun Hijriah</label>
-                    <input id="f-hijri" type="number" bind:value={formData.hijriYear} placeholder="Contoh: 8" class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none" />
+                    <input id="f-hijri" type="number" bind:value={formData.hijriYear} placeholder="Contoh: 8" class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none" />
                   </div>
                 </div>
                 
                 <div class="flex flex-col gap-1.5">
                   <label for="f-prec" class="text-xs font-bold text-text-secondary">Presisi Waktu</label>
-                  <select id="f-prec" bind:value={formData.precision} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none">
+                  <select id="f-prec" bind:value={formData.precision} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none">
                     <option value="EXACT">Tepat Waktu (Exact)</option>
                     <option value="YEAR">Kira-kira Tahun (Year)</option>
                     <option value="DECADE">Kira-kira Dekade (Decade)</option>
@@ -383,8 +383,8 @@
                 <!-- Global Connection / Pivot Toggle -->
                 <div class="flex flex-col gap-1.5 mt-2">
                   <label class="text-xs font-bold text-text-secondary">Status Hubungan Global</label>
-                  <label class="flex items-center gap-3 p-3 rounded-lg bg-navy-950/40 border border-border/5 hover:border-gold-500/20 transition-all cursor-pointer">
-                    <input type="checkbox" bind:checked={formData.isPivot} class="rounded text-gold-500 focus:ring-gold-500/30 bg-navy-950 border-border/10" />
+                  <label class="flex items-center gap-3 p-3 rounded-lg bg-iron-950/40 border border-border/5 hover:border-gold-500/20 transition-all cursor-pointer">
+                    <input type="checkbox" bind:checked={formData.isPivot} class="rounded text-gold-500 focus:ring-gold-500/30 bg-iron-950 border-border/10" />
                     <div>
                       <span class="text-xs font-bold text-text-primary block">Tandai sebagai Pivot Peradaban Global</span>
                       <span class="text-[10px] text-text-muted">Peristiwa ini terhubung dengan dinamika sosial-politik lintas benua di luar dunia Islam.</span>
@@ -396,7 +396,7 @@
           </div>
 
           <!-- Group 2: Relasi Tokoh Terkait (Actors) - Full Width -->
-          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 bg-navy-950/20">
+          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 bg-iron-950/20">
             <div class="flex justify-between items-center border-b border-border/5 pb-2.5">
               <h3 class="text-sm font-bold text-gold-400 flex items-center gap-2">
                 <span>👤</span> 2. Tokoh / Pelaku Sejarah Terlibat
@@ -407,7 +407,7 @@
             <div class="flex flex-col gap-3">
               <!-- Selection dropdown -->
               <select 
-                class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full"
+                class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full"
                 onchange={(e) => {
                   const val = (e.target as HTMLSelectElement).value;
                   if (val && !formData.selectedActors.includes(val)) {
@@ -424,7 +424,7 @@
 
               <!-- Badges list -->
               {#if formData.selectedActors.length > 0}
-                <div class="flex flex-wrap gap-2 p-2.5 bg-navy-950/30 border border-border/5 rounded-xl min-h-[45px] items-center">
+                <div class="flex flex-wrap gap-2 p-2.5 bg-iron-950/30 border border-border/5 rounded-xl min-h-[45px] items-center">
                   {#each formData.selectedActors as actorUuid}
                     {@const actor = actors.find(a => a.uuid === actorUuid)}
                     {#if actor}
@@ -436,23 +436,23 @@
                   {/each}
                 </div>
               {:else}
-                <p class="text-[11px] text-text-muted italic p-3 text-center border border-dashed border-border/10 rounded-xl bg-navy-950/10">Belum ada tokoh yang dihubungkan ke peristiwa ini.</p>
+                <p class="text-[11px] text-text-muted italic p-3 text-center border border-dashed border-border/10 rounded-xl bg-iron-950/10">Belum ada tokoh yang dihubungkan ke peristiwa ini.</p>
               {/if}
             </div>
           </div>
 
           <!-- Group 3: Relasi Lokasi Kejadian (Locations) - Full Width -->
-          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 bg-navy-950/20">
+          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 bg-iron-950/20">
             <div class="flex justify-between items-center border-b border-border/5 pb-2.5">
-              <h3 class="text-sm font-bold text-emerald-400 flex items-center gap-2">
+              <h3 class="text-sm font-bold text-verdigris-400 flex items-center gap-2">
                 <span>🗺️</span> 3. Lokasi Geografis Utama
               </h3>
-              <a href="/factory/locations" target="_blank" class="text-[10px] text-emerald-400 hover:text-emerald-300 font-bold flex items-center gap-1">Kelola Lokasi ↗</a>
+              <a href="/factory/locations" target="_blank" class="text-[10px] text-verdigris-400 hover:text-verdigris-300 font-bold flex items-center gap-1">Kelola Lokasi ↗</a>
             </div>
             
             <div class="flex flex-col gap-3">
               <select 
-                class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full"
+                class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full"
                 onchange={(e) => {
                   const val = (e.target as HTMLSelectElement).value;
                   if (val && !formData.selectedLocations.includes(val)) {
@@ -468,11 +468,11 @@
               </select>
 
               {#if formData.selectedLocations.length > 0}
-                <div class="flex flex-wrap gap-2 p-2.5 bg-navy-950/30 border border-border/5 rounded-xl min-h-[45px] items-center">
+                <div class="flex flex-wrap gap-2 p-2.5 bg-iron-950/30 border border-border/5 rounded-xl min-h-[45px] items-center">
                   {#each formData.selectedLocations as locUuid}
                     {@const loc = locations.find(l => l.uuid === locUuid)}
                     {#if loc}
-                      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 rounded-full text-xs font-bold animate-fade-in">
+                      <span class="inline-flex items-center gap-1.5 px-3 py-1 bg-verdigris-500/10 border border-verdigris-500/30 text-verdigris-400 rounded-full text-xs font-bold animate-fade-in">
                         {loc.name}
                         <button type="button" onclick={() => formData.selectedLocations = formData.selectedLocations.filter(id => id !== locUuid)} class="hover:text-red-400 transition-colors ml-1 font-bold" title="Hapus">✕</button>
                       </span>
@@ -480,13 +480,13 @@
                   {/each}
                 </div>
               {:else}
-                <p class="text-[11px] text-text-muted italic p-3 text-center border border-dashed border-border/10 rounded-xl bg-navy-950/10">Belum ada lokasi kejadian yang ditentukan.</p>
+                <p class="text-[11px] text-text-muted italic p-3 text-center border border-dashed border-border/10 rounded-xl bg-iron-950/10">Belum ada lokasi kejadian yang ditentukan.</p>
               {/if}
             </div>
           </div>
 
           <!-- Group 4: Rujukan & Bukti Validitas (Sources & Sub-References) - Full Width -->
-          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 bg-navy-950/20">
+          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 bg-iron-950/20">
             <div class="flex justify-between items-center border-b border-border/5 pb-2.5">
               <h3 class="text-sm font-bold text-gold-400 flex items-center gap-2">
                 <span>📄</span> 4. Rujukan Sumber Kitab & Sub-Rujukan Pembuktian
@@ -497,7 +497,7 @@
             <div class="flex flex-col gap-4">
               <!-- Select Dropdown -->
               <select 
-                class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full animate-fade-in"
+                class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-xs text-text-primary focus:border-gold-500/30 outline-none w-full animate-fade-in"
                 onchange={(e) => {
                   const val = (e.target as HTMLSelectElement).value;
                   if (val && !formData.selectedSources.includes(val)) {
@@ -521,7 +521,7 @@
                   {#each formData.selectedSources as sourceId}
                     {@const src = sources.find(s => s.sourceId === sourceId)}
                     {#if src}
-                      <div class="glass p-5 rounded-xl border border-border/10 bg-navy-950/40 flex flex-col gap-4 animate-fade-in">
+                      <div class="glass p-5 rounded-xl border border-border/10 bg-iron-950/40 flex flex-col gap-4 animate-fade-in">
                         <!-- Source Card Header -->
                         <div class="flex flex-col md:flex-row md:justify-between md:items-center pb-3 border-b border-border/5 gap-2">
                           <span class="text-xs font-extrabold text-gold-400 flex items-center gap-2">
@@ -546,10 +546,10 @@
                           </span>
                           
                           {#if (formData.subReferences[sourceId] || []).length > 0}
-                            <div class="overflow-x-auto rounded-xl border border-border/10 bg-navy-950/60">
+                            <div class="overflow-x-auto rounded-xl border border-border/10 bg-iron-950/60">
                               <table class="w-full text-left border-collapse text-xs">
                                 <thead>
-                                  <tr class="bg-navy-950/90 border-b border-border/10 text-gold-400/80 font-bold uppercase tracking-wider text-[9px]">
+                                  <tr class="bg-iron-950/90 border-b border-border/10 text-gold-400/80 font-bold uppercase tracking-wider text-[9px]">
                                     <th class="px-4 py-3 w-1/4">Bab / Surat / Volume</th>
                                     <th class="px-4 py-3 w-1/5">Halaman / Ayat / Nomor</th>
                                     <th class="px-4 py-3">Kutipan & Catatan Ulasan / Tafsir</th>
@@ -558,7 +558,7 @@
                                 </thead>
                                 <tbody class="divide-y divide-border/5">
                                   {#each formData.subReferences[sourceId] as sub, idx}
-                                    <tr class="hover:bg-navy-900/10 transition-colors">
+                                    <tr class="hover:bg-iron-900/10 transition-colors">
                                       <!-- Col 1: Section (Bab/Surat) -->
                                       <td class="p-3">
                                         <input 
@@ -605,7 +605,7 @@
                               </table>
                             </div>
                           {:else}
-                            <p class="text-[11px] text-text-muted italic p-4 text-center border border-dashed border-border/10 rounded-xl bg-navy-950/20">Belum ada rincian sub-rujukan yang ditambahkan. Silakan klik tombol di bawah untuk menambah rincian.</p>
+                            <p class="text-[11px] text-text-muted italic p-4 text-center border border-dashed border-border/10 rounded-xl bg-iron-950/20">Belum ada rincian sub-rujukan yang ditambahkan. Silakan klik tombol di bawah untuk menambah rincian.</p>
                           {/if}
 
                           <!-- Add Row Button -->
@@ -634,7 +634,7 @@
         <!-- Actions -->
         <div class="mt-8 pt-6 border-t border-border/10 flex justify-end gap-4">
           <button onclick={() => showForm = false} class="px-6 py-2.5 rounded-xl border border-border/10 text-text-primary font-bold text-xs hover:bg-surface-lighter transition-all">Batal</button>
-          <button onclick={saveEvent} disabled={isSaving || !formData.title} class="px-8 py-2.5 rounded-xl gradient-gold text-surface font-bold text-xs hover:shadow-[0_0_15px_rgba(212,168,83,0.4)] disabled:opacity-50 flex items-center gap-2">
+          <button onclick={saveEvent} disabled={isSaving || !formData.title} class="px-8 py-2.5 rounded-xl gradient-rust text-surface font-bold text-xs hover:shadow-[0_0_15px_rgba(212,168,83,0.4)] disabled:opacity-50 flex items-center gap-2">
             {#if isSaving} <span class="animate-spin w-3 h-3 border-2 border-surface border-t-transparent rounded-full"></span> {/if}
             Simpan Peristiwa
           </button>
@@ -647,8 +647,8 @@
       <div class="flex justify-between items-center">
         <label for="h-input" class="text-xs font-bold text-text-secondary uppercase">Naskah Sejarah Mentah</label>
       </div>
-      <textarea id="h-input" bind:value={textInput} rows="6" class="w-full bg-navy-950/60 border border-border/10 rounded-xl p-4 text-xs text-text-primary" placeholder="Teks catatan sejarah..."></textarea>
-      <button onclick={startProcessing} disabled={isProcessingAI || !textInput} class="self-end px-8 py-3 rounded-xl gradient-gold text-surface font-bold text-xs">Jalankan AI Konsensus</button>
+      <textarea id="h-input" bind:value={textInput} rows="6" class="w-full bg-iron-950/60 border border-border/10 rounded-xl p-4 text-xs text-text-primary" placeholder="Teks catatan sejarah..."></textarea>
+      <button onclick={startProcessing} disabled={isProcessingAI || !textInput} class="self-end px-8 py-3 rounded-xl gradient-rust text-surface font-bold text-xs">Jalankan AI Konsensus</button>
     </div>
   {/if}
 </div>

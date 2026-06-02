@@ -49,9 +49,9 @@
   <div class="profile-menu-container fixed top-4 right-4 z-50">
     <button 
       onclick={toggleDropdown}
-      class="flex items-center gap-3 bg-navy-900/60 backdrop-blur-md border border-border/10 rounded-full pl-2 pr-4 py-1.5 shadow-lg hover:bg-navy-900/80 transition-all group"
+      class="flex items-center gap-3 bg-iron-900/60 backdrop-blur-md border border-border/10 rounded-full pl-2 pr-4 py-1.5 shadow-lg hover:bg-iron-900/80 transition-all group"
     >
-      <div class="w-8 h-8 rounded-full bg-navy-950 border border-border/20 overflow-hidden flex items-center justify-center flex-shrink-0">
+      <div class="w-8 h-8 rounded-full bg-iron-950 border border-border/20 overflow-hidden flex items-center justify-center flex-shrink-0">
         {#if userAvatar}
           <img src={userAvatar} alt="Avatar" class="w-full h-full object-cover" />
         {:else}
@@ -70,7 +70,7 @@
     {#if dropdownOpen}
       <div 
         transition:slide={{ duration: 200, axis: 'y' }}
-        class="absolute right-0 top-full mt-2 w-48 bg-navy-900/90 backdrop-blur-xl border border-border/10 rounded-xl shadow-2xl py-2 overflow-hidden"
+        class="absolute right-0 top-full mt-2 w-48 bg-iron-900/90 backdrop-blur-xl border border-border/10 rounded-xl shadow-2xl py-2 overflow-hidden"
       >
         <div class="px-4 py-2 border-b border-border/10 mb-1 sm:hidden">
           <p class="text-sm font-bold text-text-primary">{auth.user?.username || 'User'}</p>

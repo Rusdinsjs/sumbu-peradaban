@@ -151,7 +151,7 @@
         <div>
           <span class="text-[10px] font-bold text-text-secondary uppercase tracking-widest block">PostgreSQL Status</span>
           <div class="flex items-center gap-2 mt-2">
-            <span class="w-2.5 h-2.5 rounded-full {pgConnected ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500'}"></span>
+            <span class="w-2.5 h-2.5 rounded-full {pgConnected ? 'bg-verdigris-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500'}"></span>
             <span class="text-xs font-bold text-text-primary">{pgConnected ? 'Terhubung (OK)' : 'Terputus'}</span>
           </div>
         </div>
@@ -166,7 +166,7 @@
         <div>
           <span class="text-[10px] font-bold text-text-secondary uppercase tracking-widest block">Neo4j Graph Status</span>
           <div class="flex items-center gap-2 mt-2">
-            <span class="w-2.5 h-2.5 rounded-full {neoConnected ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500'}"></span>
+            <span class="w-2.5 h-2.5 rounded-full {neoConnected ? 'bg-verdigris-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-red-500'}"></span>
             <span class="text-xs font-bold text-text-primary">{neoConnected ? 'Terhubung (OK)' : 'Terputus'}</span>
           </div>
         </div>
@@ -187,11 +187,11 @@
         <div class="flex gap-4 mt-4 border-t border-border/5 pt-3">
           <div>
             <span class="text-[9px] text-text-muted uppercase">Deduplikasi</span>
-            <span class="text-xs font-bold text-emerald-400 block">100% Aktif</span>
+            <span class="text-xs font-bold text-verdigris-400 block">100% Aktif</span>
           </div>
           <div>
             <span class="text-[9px] text-text-muted uppercase">Upsert Topology</span>
-            <span class="text-xs font-bold text-emerald-400 block">Dua-Fase Enforced</span>
+            <span class="text-xs font-bold text-verdigris-400 block">Dua-Fase Enforced</span>
           </div>
           <div>
             <span class="text-[9px] text-text-muted uppercase">Kecepatan Sync</span>
@@ -218,7 +218,7 @@
               </div>
             {:else}
               {#each logs as log}
-                <div class="p-3 rounded-xl border border-border/5 bg-navy-950/40 flex justify-between items-start gap-4">
+                <div class="p-3 rounded-xl border border-border/5 bg-iron-950/40 flex justify-between items-start gap-4">
                   <div class="flex flex-col gap-1 text-left">
                     <div class="flex items-center gap-2">
                       <span class="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded bg-white/5 text-gold-400">
@@ -248,7 +248,7 @@
             <div class="flex flex-col gap-2">
               <span class="text-[10px] text-text-muted block">Pilih Entitas Sejarah:</span>
               <select 
-                class="w-full bg-navy-950/80 border border-border/10 rounded-xl px-3 py-2.5 text-xs text-text-primary outline-none focus:border-gold-500/40"
+                class="w-full bg-iron-950/80 border border-border/10 rounded-xl px-3 py-2.5 text-xs text-text-primary outline-none focus:border-gold-500/40"
                 bind:value={selectedEntityUuid}
                 onchange={(e) => handleEntitySelect((e.target as HTMLSelectElement).value)}
               >
@@ -260,7 +260,7 @@
 
             <div class="flex flex-col gap-2 flex-1">
               <span class="text-[10px] text-text-muted block mt-2">Payload JSON Data Mentah (DB):</span>
-              <pre class="bg-navy-950/90 border border-border/15 p-4 rounded-xl text-[10px] font-mono text-emerald-400 overflow-x-auto max-h-[300px] leading-relaxed select-all">{selectedEntityRaw}</pre>
+              <pre class="bg-iron-950/90 border border-border/15 p-4 rounded-xl text-[10px] font-mono text-verdigris-400 overflow-x-auto max-h-[300px] leading-relaxed select-all">{selectedEntityRaw}</pre>
             </div>
           </div>
 

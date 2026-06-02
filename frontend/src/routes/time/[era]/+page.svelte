@@ -51,11 +51,11 @@
 
     <!-- Statistics -->
     <div class="flex gap-2">
-      <div class="px-4 py-2 rounded-xl bg-navy-950/60 border border-border/10 text-center min-w-[80px]">
+      <div class="px-4 py-2 rounded-xl bg-iron-950/60 border border-border/10 text-center min-w-[80px]">
         <div class="text-[9px] text-text-secondary font-bold uppercase tracking-wider">Aktor Aktif</div>
         <div class="text-xs font-bold text-text-primary mt-0.5">{era.scaleStats.activeActors}</div>
       </div>
-      <div class="px-4 py-2 rounded-xl bg-navy-950/60 border border-border/10 text-center min-w-[80px]">
+      <div class="px-4 py-2 rounded-xl bg-iron-950/60 border border-border/10 text-center min-w-[80px]">
         <div class="text-[9px] text-text-secondary font-bold uppercase tracking-wider">Aliansi Baru</div>
         <div class="text-xs font-bold text-text-primary mt-0.5">{era.scaleStats.newAlliances}</div>
       </div>
@@ -84,7 +84,7 @@
 
         <div class="flex flex-col gap-4">
           {#each era.regionalEvents as re}
-            <div class="p-4 rounded-xl bg-navy-950/60 border border-border/10 hover:border-gold-500/10 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
+            <div class="p-4 rounded-xl bg-iron-950/60 border border-border/10 hover:border-gold-500/10 transition-all flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div class="flex-1">
                 <span class="text-[10px] font-bold text-gold-400 bg-gold-500/10 px-2 py-0.5 rounded">
                   {re.region}

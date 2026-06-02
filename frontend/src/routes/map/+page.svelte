@@ -257,20 +257,20 @@
               <div class="pl-2 flex flex-col gap-3 mt-1" transition:slide={{ duration: 250 }}>
                 {#each region.provinces as prov}
                   <div class="flex flex-col gap-1.5">
-                    <span class="text-[10px] font-bold text-emerald-400 uppercase tracking-wider">{prov.name}</span>
+                    <span class="text-[10px] font-bold text-verdigris-400 uppercase tracking-wider">{prov.name}</span>
                     
                     <div class="pl-4 flex flex-col gap-1 border-l border-border/10 ml-1.5">
                       {#each prov.items as loc}
                         {@const locEvents = locationEventMap.get(loc.name)}
                         <button
                           onclick={() => handleLocClick(loc)}
-                          class="px-3 py-2 rounded-lg bg-navy-950/40 hover:bg-navy-900/80 border border-transparent hover:border-gold-500/20 transition-all cursor-pointer text-left w-full group flex flex-col"
+                          class="px-3 py-2 rounded-lg bg-iron-950/40 hover:bg-iron-900/80 border border-transparent hover:border-gold-500/20 transition-all cursor-pointer text-left w-full group flex flex-col"
                         >
                           <span class="text-[11px] font-medium text-text-primary group-hover:text-gold-400 transition-colors flex items-center gap-2">
                             <span class="w-1 h-1 bg-gold-500 rounded-full shadow-[0_0_4px_rgba(212,168,83,0.8)]"></span>
                             {loc.name}
                             {#if locEvents && locEvents.length > 0}
-                              <span class="text-[8px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-1.5 py-0 rounded ml-auto">{locEvents.length}</span>
+                              <span class="text-[8px] font-bold text-verdigris-400 bg-verdigris-500/10 border border-verdigris-500/20 px-1.5 py-0 rounded ml-auto">{locEvents.length}</span>
                             {/if}
                           </span>
                           {#if loc.type}
@@ -285,7 +285,7 @@
             {/if}
           </div>
         {:else}
-          <div class="p-3 rounded-xl bg-navy-950/60 border border-border/10 text-center">
+          <div class="p-3 rounded-xl bg-iron-950/60 border border-border/10 text-center">
             <p class="text-xs text-text-muted">Gagal memuat struktur wilayah geopolitik.</p>
           </div>
         {/each}

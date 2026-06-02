@@ -7,7 +7,7 @@
 
 <div class="w-full flex flex-col gap-6 animate-fade-in pb-12">
   <!-- Back link -->
-  <a href="/actor" class="text-xs text-emerald-400 hover:text-emerald-300 transition-colors font-bold flex items-center gap-1.5 self-start">
+  <a href="/actor" class="text-xs text-verdigris-400 hover:text-verdigris-300 transition-colors font-bold flex items-center gap-1.5 self-start">
     ← Kembali ke Direktori Tokoh
   </a>
 
@@ -16,18 +16,18 @@
       <span class="text-4xl">👤</span>
       <h2 class="text-lg font-bold text-text-primary">Data Tokoh Tidak Ditemukan</h2>
       <p class="text-xs text-text-muted">Entitas tokoh sejarah tidak terdaftar atau telah dihapus.</p>
-      <a href="/actor" class="mt-2 px-5 py-2.5 bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-400 text-xs font-bold rounded-xl border border-emerald-500/20 transition-all">
+      <a href="/actor" class="mt-2 px-5 py-2.5 bg-verdigris-500/10 hover:bg-verdigris-500/20 text-verdigris-400 text-xs font-bold rounded-xl border border-verdigris-500/20 transition-all">
         Kembali ke Direktori
       </a>
     </div>
   {:else}
     <!-- Main Card Header -->
-    <div class="glass p-8 rounded-3xl border border-emerald-500/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+    <div class="glass p-8 rounded-3xl border border-verdigris-500/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
       <!-- Ambient light effect -->
-      <div class="absolute -top-12 -left-12 w-48 h-48 bg-emerald-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute -top-12 -left-12 w-48 h-48 bg-verdigris-500/10 rounded-full blur-3xl"></div>
       
       <div class="flex items-start sm:items-center gap-5 relative z-10">
-        <div class="w-20 h-20 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 flex items-center justify-center text-4xl shadow-[0_0_20px_rgba(16,185,129,0.15)] flex-shrink-0">
+        <div class="w-20 h-20 rounded-2xl bg-verdigris-500/10 border border-verdigris-500/25 flex items-center justify-center text-4xl shadow-[0_0_20px_rgba(16,185,129,0.15)] flex-shrink-0">
           {#if actor.actorType === 'Nabi & Rasul' || actor.actorType === 'Khulafaur Rasyidin'}
             👑
           {:else if actor.actorType === 'Sahabat Nabi'}
@@ -41,7 +41,7 @@
         
         <div class="flex flex-col gap-1">
           <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2 py-0.5 bg-emerald-500/15 text-emerald-400 border border-emerald-500/20 text-[9px] font-extrabold uppercase rounded tracking-wider">
+            <span class="px-2 py-0.5 bg-verdigris-500/15 text-verdigris-400 border border-verdigris-500/20 text-[9px] font-extrabold uppercase rounded tracking-wider">
               {actor.actorType}
             </span>
             <CurationBadge tier={actor.curationTier} size="sm" />
@@ -52,17 +52,17 @@
           </h1>
           
           <p class="text-xs text-text-secondary font-medium mt-0.5">
-            Wilayah Pengaruh: <span class="text-emerald-400 font-bold">{actor.culturalSphere}</span>
+            Wilayah Pengaruh: <span class="text-verdigris-400 font-bold">{actor.culturalSphere}</span>
           </p>
         </div>
       </div>
 
       <!-- Life Span Badge -->
-      <div class="px-5 py-3 rounded-2xl bg-navy-950/60 border border-border/10 flex flex-row md:flex-col items-center gap-3 md:gap-1 text-center min-w-[130px] self-stretch md:self-auto relative z-10 justify-between sm:justify-center">
+      <div class="px-5 py-3 rounded-2xl bg-iron-950/60 border border-border/10 flex flex-row md:flex-col items-center gap-3 md:gap-1 text-center min-w-[130px] self-stretch md:self-auto relative z-10 justify-between sm:justify-center">
         <span class="text-2xl">⏳</span>
         <div class="flex flex-col md:items-center">
           <span class="text-[9px] text-text-muted font-bold uppercase tracking-wider">Masa Hidup</span>
-          <span class="text-xs font-black text-emerald-400 font-mono">
+          <span class="text-xs font-black text-verdigris-400 font-mono">
             {actor.birthYear !== null ? `${actor.birthYear} H` : '?'} - {actor.deathYear !== null ? `${actor.deathYear} H` : '?'}
           </span>
         </div>
@@ -76,7 +76,7 @@
         
         <!-- Biography Description -->
         <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
             <span>📜</span> Biografi & Deskripsi Tokoh
           </h2>
           <p class="text-xs text-text-secondary leading-relaxed whitespace-pre-wrap font-normal">
@@ -86,7 +86,7 @@
 
         <!-- Works and Contributions -->
         <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-5">
-          <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider">
+          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider">
             💼 Peran & Karya Intelektual (Mahakarya)
           </h2>
           
@@ -97,7 +97,7 @@
               {#if actor.roles && actor.roles.length > 0}
                 <div class="flex flex-wrap gap-1.5">
                   {#each actor.roles as role}
-                    <span class="px-2.5 py-1 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs">{role}</span>
+                    <span class="px-2.5 py-1 rounded-xl bg-verdigris-500/10 border border-verdigris-500/20 text-verdigris-300 text-xs">{role}</span>
                   {/each}
                 </div>
               {:else}
@@ -123,7 +123,7 @@
 
         <!-- Timeline of Events -->
         <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-6">
-          <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
             <span>📅</span> Linimasa Keterlibatan Peristiwa Sejarah
           </h2>
 
@@ -132,13 +132,13 @@
               {#each actor.timeline as ev}
                 <div class="relative group">
                   <!-- Node Dot -->
-                  <span class="absolute -left-[31px] top-1.5 w-3 h-3 bg-emerald-500 rounded-full border-2 border-surface shadow-[0_0_6px_rgba(16,185,129,0.8)] group-hover:scale-110 transition-transform"></span>
+                  <span class="absolute -left-[31px] top-1.5 w-3 h-3 bg-verdigris-500 rounded-full border-2 border-surface shadow-[0_0_6px_rgba(16,185,129,0.8)] group-hover:scale-110 transition-transform"></span>
                   
                   <div>
-                    <span class="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded font-mono">
+                    <span class="text-[9px] font-bold text-verdigris-400 bg-verdigris-500/10 px-2 py-0.5 rounded font-mono">
                       {ev.gregorianDate.year} M
                     </span>
-                    <a href="/event/{ev.uuid}" class="block text-xs font-bold text-text-primary hover:text-emerald-400 mt-2 transition-colors">
+                    <a href="/event/{ev.uuid}" class="block text-xs font-bold text-text-primary hover:text-verdigris-400 mt-2 transition-colors">
                       {ev.title}
                     </a>
                     {#if ev.description}
@@ -159,26 +159,26 @@
         
         <!-- Companions Network -->
         <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
             <span>🕸️</span> Jejaring Tokoh Terkait
           </h2>
 
           {#if actor.relatedActors && actor.relatedActors.length > 0}
             <div class="flex flex-col gap-2">
               {#each actor.relatedActors as rel}
-                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-emerald-500/20 rounded-2xl transition-all gap-3">
+                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-verdigris-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-base">👤</span>
                     <div class="flex flex-col overflow-hidden">
-                      <span class="text-[11px] font-bold text-text-primary group-hover:text-emerald-400 transition-colors truncate">
+                      <span class="text-[11px] font-bold text-text-primary group-hover:text-verdigris-400 transition-colors truncate">
                         {rel.actor.name}
                       </span>
-                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5">
                         {rel.relationshipType}
                       </span>
                     </div>
                   </div>
-                  <span class="text-[10px] text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
+                  <span class="text-[10px] text-verdigris-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
                 </a>
               {/each}
             </div>
@@ -189,26 +189,26 @@
 
         <!-- Related Locations -->
         <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
             <span>🌍</span> Tempat yang Terkait
           </h2>
 
           {#if actor.visitedLocations && actor.visitedLocations.length > 0}
             <div class="flex flex-col gap-2">
               {#each actor.visitedLocations as rel}
-                <a href="/location/{rel.location.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-emerald-500/20 rounded-2xl transition-all gap-3">
+                <a href="/location/{rel.location.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-verdigris-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-base">📍</span>
                     <div class="flex flex-col overflow-hidden">
-                      <span class="text-[11px] font-bold text-text-primary group-hover:text-emerald-400 transition-colors truncate">
+                      <span class="text-[11px] font-bold text-text-primary group-hover:text-verdigris-400 transition-colors truncate">
                         {rel.location.name}
                       </span>
-                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5">
                         {rel.relationshipType}
                       </span>
                     </div>
                   </div>
-                  <span class="text-[10px] text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
+                  <span class="text-[10px] text-verdigris-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
                 </a>
               {/each}
             </div>
@@ -219,23 +219,23 @@
 
         <!-- Sources validation -->
         <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
             <span>📚</span> Sumber & Validasi Rujukan
           </h2>
 
           {#if actor.sources && actor.sources.length > 0}
             <div class="flex flex-col gap-3">
               {#each actor.sources as rel}
-                <a href="/source/{rel.source.sourceId}" class="group block p-3.5 bg-navy-950/60 hover:bg-navy-900 border border-border/5 rounded-2xl transition-all">
+                <a href="/source/{rel.source.sourceId}" class="group block p-3.5 bg-iron-950/60 hover:bg-iron-900 border border-border/5 rounded-2xl transition-all">
                   <div class="flex justify-between items-start gap-2">
-                    <span class="text-[11px] font-bold text-text-primary group-hover:text-emerald-400 transition-colors line-clamp-1">{rel.source.title || 'Manuskrip Sejarah'}</span>
+                    <span class="text-[11px] font-bold text-text-primary group-hover:text-verdigris-400 transition-colors line-clamp-1">{rel.source.title || 'Manuskrip Sejarah'}</span>
                     {#if rel.source.reliabilityScore !== null}
-                      <span class="text-[9px] font-bold text-emerald-400 font-mono">{(rel.source.reliabilityScore * 100).toFixed(0)}%</span>
+                      <span class="text-[9px] font-bold text-verdigris-400 font-mono">{(rel.source.reliabilityScore * 100).toFixed(0)}%</span>
                     {/if}
                   </div>
                   <div class="flex flex-col gap-0.5 mt-1">
                     <span class="text-[9px] text-text-muted">{rel.source.author || 'Penyusun Anonim'}</span>
-                    <span class="text-[9px] text-emerald-400 font-semibold uppercase tracking-wider mt-0.5">{rel.relationshipType}</span>
+                    <span class="text-[9px] text-verdigris-400 font-semibold uppercase tracking-wider mt-0.5">{rel.relationshipType}</span>
                   </div>
                 </a>
               {/each}
@@ -247,14 +247,14 @@
 
         <!-- Media Scans -->
         <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
             <span>🎥</span> Berkas Media Pendukung
           </h2>
 
           {#if actor.mediaLinks && actor.mediaLinks.length > 0}
             <div class="flex flex-col gap-2">
               {#each actor.mediaLinks as media}
-                <a href={media.url} target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-emerald-500/20 rounded-2xl transition-all gap-3">
+                <a href={media.url} target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-verdigris-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-lg">
                       {#if media.mediaType === 'image'}
@@ -266,7 +266,7 @@
                       {/if}
                     </span>
                     <div class="flex flex-col overflow-hidden">
-                      <span class="text-[11px] font-bold text-text-primary group-hover:text-emerald-400 transition-colors truncate">
+                      <span class="text-[11px] font-bold text-text-primary group-hover:text-verdigris-400 transition-colors truncate">
                         {media.title || 'Lihat Berkas'}
                       </span>
                       <span class="text-[9px] text-text-muted uppercase tracking-wider mt-0.5">
@@ -274,7 +274,7 @@
                       </span>
                     </div>
                   </div>
-                  <span class="text-[10px] text-emerald-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
+                  <span class="text-[10px] text-verdigris-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
                 </a>
               {/each}
             </div>

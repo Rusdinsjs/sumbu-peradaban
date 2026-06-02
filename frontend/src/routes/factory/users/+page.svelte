@@ -137,10 +137,10 @@
     </div>
   {/if}
 
-  <div class="bg-navy-900/40 backdrop-blur-md border border-red-500/10 rounded-xl shadow-2xl overflow-hidden">
+  <div class="bg-iron-900/40 backdrop-blur-md border border-red-500/10 rounded-xl shadow-2xl overflow-hidden">
     <div class="overflow-x-auto">
       <table class="w-full text-left text-sm">
-        <thead class="bg-navy-950/40 border-b border-red-500/10 text-red-400/80">
+        <thead class="bg-iron-950/40 border-b border-red-500/10 text-red-400/80">
           <tr>
             <th class="px-6 py-4 font-bold">Username</th>
             <th class="px-6 py-4 font-bold">Nama Lengkap</th>
@@ -160,12 +160,12 @@
             </tr>
           {:else}
             {#each users as user}
-              <tr class="hover:bg-navy-950/20 transition-colors">
+              <tr class="hover:bg-iron-950/20 transition-colors">
                 <td class="px-6 py-4 font-bold text-text-primary">{user.username}</td>
                 <td class="px-6 py-4 text-text-secondary">{user.fullName || '-'}</td>
                 <td class="px-6 py-4 text-text-secondary">{user.email || '-'}</td>
                 <td class="px-6 py-4 text-text-secondary">
-                  <span class="px-2 py-1 bg-navy-950/50 rounded text-xs font-bold uppercase border border-border/10">
+                  <span class="px-2 py-1 bg-iron-950/50 rounded text-xs font-bold uppercase border border-border/10">
                     {user.role}
                   </span>
                 </td>
@@ -186,8 +186,8 @@
 
 {#if isFormOpen}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div class="absolute inset-0 bg-navy-950/80 backdrop-blur-sm" onclick={() => isFormOpen = false}></div>
-    <div class="bg-navy-900 border border-red-500/20 rounded-2xl shadow-2xl w-full max-w-lg relative z-10 flex flex-col max-h-[90vh]">
+    <div class="absolute inset-0 bg-iron-950/80 backdrop-blur-sm" onclick={() => isFormOpen = false}></div>
+    <div class="bg-iron-900 border border-red-500/20 rounded-2xl shadow-2xl w-full max-w-lg relative z-10 flex flex-col max-h-[90vh]">
       <div class="p-6 border-b border-white/5 flex justify-between items-center flex-shrink-0">
         <h2 class="text-xl font-black text-red-400">{isEditMode ? 'Edit User' : 'Tambah User Baru'}</h2>
         <button onclick={() => isFormOpen = false} class="text-text-secondary hover:text-white transition-colors">
@@ -204,22 +204,22 @@
 
         <div class="flex flex-col gap-1.5">
           <label class="text-xs font-bold text-text-secondary">Username *</label>
-          <input type="text" bind:value={formData.username} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-red-500/50 outline-none" placeholder="Contoh: ahmad123">
+          <input type="text" bind:value={formData.username} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-red-500/50 outline-none" placeholder="Contoh: ahmad123">
         </div>
         
         <div class="flex flex-col gap-1.5">
           <label class="text-xs font-bold text-text-secondary">Nama Lengkap</label>
-          <input type="text" bind:value={formData.fullName} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-red-500/50 outline-none" placeholder="Contoh: Ahmad Abdullah">
+          <input type="text" bind:value={formData.fullName} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-red-500/50 outline-none" placeholder="Contoh: Ahmad Abdullah">
         </div>
         
         <div class="flex flex-col gap-1.5">
           <label class="text-xs font-bold text-text-secondary">Email</label>
-          <input type="email" bind:value={formData.email} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-red-500/50 outline-none" placeholder="ahmad@example.com">
+          <input type="email" bind:value={formData.email} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-red-500/50 outline-none" placeholder="ahmad@example.com">
         </div>
 
         <div class="flex flex-col gap-1.5">
           <label class="text-xs font-bold text-text-secondary">Role *</label>
-          <select bind:value={formData.role} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-red-500/50 outline-none">
+          <select bind:value={formData.role} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-red-500/50 outline-none">
             <option value="Visitor">Visitor</option>
             <option value="Contributor">Contributor</option>
             <option value="Editor">Editor</option>
@@ -230,11 +230,11 @@
 
         <div class="flex flex-col gap-1.5">
           <label class="text-xs font-bold text-text-secondary">{isEditMode ? 'Kata Sandi (Kosongkan jika tidak diubah)' : 'Kata Sandi *'}</label>
-          <input type="password" bind:value={formData.password} class="bg-navy-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-red-500/50 outline-none" placeholder="********">
+          <input type="password" bind:value={formData.password} class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-red-500/50 outline-none" placeholder="********">
         </div>
       </div>
 
-      <div class="p-6 border-t border-white/5 bg-navy-950/50 flex justify-end gap-3 flex-shrink-0">
+      <div class="p-6 border-t border-white/5 bg-iron-950/50 flex justify-end gap-3 flex-shrink-0">
         <button onclick={() => isFormOpen = false} class="px-4 py-2 text-sm font-bold text-text-secondary hover:text-white transition-colors">
           Batal
         </button>

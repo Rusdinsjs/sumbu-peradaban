@@ -203,7 +203,7 @@
             {#each queue as item}
               <button
                 onclick={() => { selectedId = item.id; reset(); }}
-                class="w-full p-4 rounded-xl text-left border transition-all flex flex-col gap-2 bg-navy-950/60 {selectedId === item.id ? 'border-gold-500/40 bg-navy-900/40' : 'border-border/10 hover:border-gold-500/20'}"
+                class="w-full p-4 rounded-xl text-left border transition-all flex flex-col gap-2 bg-iron-950/60 {selectedId === item.id ? 'border-gold-500/40 bg-iron-900/40' : 'border-border/10 hover:border-gold-500/20'}"
               >
                 <div class="flex justify-between items-center">
                   <span class="text-[10px] uppercase font-bold tracking-wider text-text-muted">{item.type}</span>
@@ -234,20 +234,20 @@
               </div>
 
               <!-- Real Description -->
-              <div class="p-3.5 rounded-xl bg-navy-950/60 border border-border/10">
+              <div class="p-3.5 rounded-xl bg-iron-950/60 border border-border/10">
                 <span class="text-[10px] text-text-secondary block font-bold">Catatan Narasi / Deskripsi:</span>
                 <p class="text-xs font-medium text-text-primary mt-1.5 leading-relaxed">{selectedItem.description}</p>
               </div>
 
               <!-- Details checklist -->
               <div class="flex flex-col gap-3">
-                <div class="p-3.5 rounded-xl bg-navy-950/60 border border-border/10">
+                <div class="p-3.5 rounded-xl bg-iron-950/60 border border-border/10">
                   <span class="text-[10px] text-text-secondary block">Metode Interpretasi:</span>
                   <span class="text-xs font-medium text-text-primary mt-1 block">Silang data naskah sejarah Al-Tabari & Ibn Kathir</span>
                 </div>
-                <div class="p-3.5 rounded-xl bg-navy-950/60 border border-border/10">
+                <div class="p-3.5 rounded-xl bg-iron-950/60 border border-border/10">
                   <span class="text-[10px] text-text-secondary block">Ambang Batas Kepercayaan (Consensus Score):</span>
-                  <span class="text-xs font-extrabold text-emerald-400 mt-1 block">89% Valid</span>
+                  <span class="text-xs font-extrabold text-verdigris-400 mt-1 block">89% Valid</span>
                 </div>
               </div>
 
@@ -264,8 +264,8 @@
             </div>
 
             {#if isApproved}
-              <div class="p-4 rounded-xl bg-emerald-500/15 border border-emerald-500/20 text-center animate-fade-in">
-                <p class="text-xs font-bold text-emerald-400">Entitas berhasil dipromosikan ke Tier berikutnya! ✅</p>
+              <div class="p-4 rounded-xl bg-verdigris-500/15 border border-verdigris-500/20 text-center animate-fade-in">
+                <p class="text-xs font-bold text-verdigris-400">Entitas berhasil dipromosikan ke Tier berikutnya! ✅</p>
               </div>
             {:else}
               <!-- Actions -->
@@ -273,7 +273,7 @@
                 <button
                   onclick={approve}
                   disabled={isSaving}
-                  class="flex-1 py-3 rounded-xl gradient-gold text-surface font-bold text-xs hover:shadow-[0_0_15px_rgba(212,168,83,0.4)] disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                  class="flex-1 py-3 rounded-xl gradient-rust text-surface font-bold text-xs hover:shadow-[0_0_15px_rgba(212,168,83,0.4)] disabled:opacity-50 transition-all flex items-center justify-center gap-2"
                 >
                   {#if isSaving}
                     <span class="animate-spin w-3 h-3 border-2 border-surface border-t-transparent rounded-full"></span>
@@ -283,7 +283,7 @@
                 <button
                   onclick={markMultiplePerspectives}
                   disabled={isSaving}
-                  class="flex-1 py-3 rounded-xl glass border border-amber-500/20 text-gold-500 font-bold text-xs hover:bg-navy-900 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
+                  class="flex-1 py-3 rounded-xl glass border border-amber-500/20 text-gold-500 font-bold text-xs hover:bg-iron-900 disabled:opacity-50 transition-all flex items-center justify-center gap-2"
                 >
                   Tandai Sebagai "Perspektif Ganda"
                 </button>

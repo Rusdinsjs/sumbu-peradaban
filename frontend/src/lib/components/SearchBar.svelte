@@ -69,7 +69,7 @@
   {#if isFocused}
     <div
       class="absolute -inset-0.5 rounded-2xl opacity-30 blur-sm transition-opacity duration-500"
-      style="background: linear-gradient(135deg, #d4a853, #f59e0b, #d4a853);"
+      style="background: linear-gradient(135deg, #e4891b, #f59e0b, #e4891b);"
     ></div>
   {/if}
 
@@ -86,7 +86,7 @@
     <!-- Search Icon -->
     <span
       class="text-lg transition-all duration-300"
-      style="color: {isFocused ? '#d4a853' : 'rgba(255,255,255,0.3)'};"
+      style="color: {isFocused ? '#e4891b' : 'rgba(255,255,255,0.3)'};"
     >🔍</span>
 
     <!-- Input -->
@@ -155,7 +155,7 @@
               </div>
               
               <!-- Tag with Entity Type -->
-              <span class="text-[9px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded bg-navy-950/60 text-gold-400 border border-gold-500/20 whitespace-nowrap">
+              <span class="text-[9px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded bg-iron-950/60 text-gold-400 border border-gold-500/20 whitespace-nowrap">
                 {item.entityType === 'source' ? 'Sumber' : item.entityType === 'actor' ? 'Tokoh' : item.entityType === 'event' ? 'Peristiwa' : 'Lokasi'}
               </span>
             </a>

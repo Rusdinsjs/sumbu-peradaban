@@ -39,16 +39,16 @@
   // Islamic-inspired dark theme colors
   const colors = {
     bg: "#0a0f1e",
-    event: "#d4a853", // Gold
-    actor: "#10b981", // Emerald
+    event: "#e4891b", // Gold
+    actor: "#5d8f8a", // Emerald
     location: "#f59e0b", // Amber
     source: "#8b5cf6", // Violet
     edge: "#4a5568", // Muted slate
     text: "#f1f5f9",
     draft: "#6b7280",
     verified: "#3b82f6",
-    reviewed: "#d4a853",
-    canonical: "#10b981",
+    reviewed: "#e4891b",
+    canonical: "#5d8f8a",
   };
 
   const categoryLabels: Record<
@@ -495,7 +495,7 @@
     <button
       class="px-2 py-1 text-xs rounded transition-all {currentLayout === 'cose'
         ? 'bg-gold-500 text-surface'
-        : 'text-text-secondary hover:bg-navy-800'}"
+        : 'text-text-secondary hover:bg-iron-800'}"
       onclick={() => updateLayout("cose")}
     >
       Cose
@@ -504,7 +504,7 @@
       class="px-2 py-1 text-xs rounded transition-all {currentLayout ===
       'circle'
         ? 'bg-gold-500 text-surface'
-        : 'text-text-secondary hover:bg-navy-800'}"
+        : 'text-text-secondary hover:bg-iron-800'}"
       onclick={() => updateLayout("circle")}
     >
       Circle
@@ -512,7 +512,7 @@
     <button
       class="px-2 py-1 text-xs rounded transition-all {currentLayout === 'grid'
         ? 'bg-gold-500 text-surface'
-        : 'text-text-secondary hover:bg-navy-800'}"
+        : 'text-text-secondary hover:bg-iron-800'}"
       onclick={() => updateLayout("grid")}
     >
       Grid
@@ -598,7 +598,7 @@
         {#each searchResults as result}
           <button
             onclick={() => selectSearchResult(result)}
-            class="w-full text-left px-3 py-2.5 hover:bg-navy-800/60 transition-colors flex items-center gap-3 border-b border-border/5 last:border-0"
+            class="w-full text-left px-3 py-2.5 hover:bg-iron-800/60 transition-colors flex items-center gap-3 border-b border-border/5 last:border-0"
           >
             <span
               class="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold flex-shrink-0"

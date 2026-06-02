@@ -106,7 +106,7 @@
         <div class="text-[10px] text-gold-500 font-bold">HIJRIAH</div>
         <div class="text-sm font-extrabold text-gold-400">{event.hijriYear}</div>
       </div>
-      <div class="px-4 py-2 rounded-xl bg-navy-950/60 border border-border/10 text-center min-w-[70px]">
+      <div class="px-4 py-2 rounded-xl bg-iron-950/60 border border-border/10 text-center min-w-[70px]">
         <div class="text-[10px] text-text-secondary font-bold">GREGORIAN</div>
         <div class="text-sm font-extrabold text-text-primary">{event.gregorianYear}</div>
       </div>
@@ -127,10 +127,10 @@
 
       <!-- Expansion Hook (Global Connection) -->
       {#if event.globalHook.is_connected_to_global}
-        <div class="glass p-5 rounded-2xl border border-emerald-500/20 bg-emerald-950/10 flex gap-4">
+        <div class="glass p-5 rounded-2xl border border-verdigris-500/20 bg-verdigris-950/10 flex gap-4">
           <div class="text-xl">🌍</div>
           <div>
-            <h3 class="text-xs font-bold text-emerald-400">Hubungan Sejarah Global (Pivot Sumbu)</h3>
+            <h3 class="text-xs font-bold text-verdigris-400">Hubungan Sejarah Global (Pivot Sumbu)</h3>
             <p class="text-xs text-text-secondary mt-1 leading-relaxed">
               Kategori Keterhubungan: <span class="text-gold-400 font-bold">{event.globalHook.global_pivot_category}</span>
             </p>
@@ -143,7 +143,7 @@
         <h2 class="text-sm font-bold text-gold-400">Kredibilitas Sumber & Pembuktian (Dimension 4)</h2>
         <div class="flex flex-col gap-3">
           {#each event.sources as src}
-            <div class="p-4 rounded-xl bg-navy-950/60 border border-border/10 flex flex-col gap-3">
+            <div class="p-4 rounded-xl bg-iron-950/60 border border-border/10 flex flex-col gap-3">
               <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-3">
                 <div>
                   <div class="flex items-center gap-2">
@@ -158,7 +158,7 @@
                 </div>
                 <div class="text-right flex-shrink-0">
                   <span class="text-[10px] text-text-secondary block">Reliability Score</span>
-                  <span class="text-xs font-extrabold text-emerald-400">{(src.score * 100).toFixed(0)}% Match</span>
+                  <span class="text-xs font-extrabold text-verdigris-400">{(src.score * 100).toFixed(0)}% Match</span>
                 </div>
               </div>
 
@@ -171,7 +171,7 @@
                   <div class="overflow-x-auto rounded-lg border border-border/10 bg-surface/40">
                     <table class="w-full text-left border-collapse text-xs">
                       <thead>
-                        <tr class="bg-navy-950/60 border-b border-border/10 text-gold-400/80 font-bold uppercase tracking-wider text-[9px]">
+                        <tr class="bg-iron-950/60 border-b border-border/10 text-gold-400/80 font-bold uppercase tracking-wider text-[9px]">
                           <th class="px-4 py-2 w-1/3">Bab / Surat / Volume</th>
                           <th class="px-4 py-2 w-1/4">Halaman / Ayat / Nomor</th>
                           <th class="px-4 py-2">Kutipan & Catatan Ulasan / Tafsir</th>
@@ -179,9 +179,9 @@
                       </thead>
                       <tbody class="divide-y divide-border/5">
                         {#each src.subReferences as sub}
-                          <tr class="hover:bg-navy-900/20 transition-colors">
+                          <tr class="hover:bg-iron-900/20 transition-colors">
                             <td class="px-4 py-2.5 font-bold text-text-primary font-serif">{sub.section || '-'}</td>
-                            <td class="px-4 py-2.5 font-mono text-emerald-400 font-bold">{sub.point || '-'}</td>
+                            <td class="px-4 py-2.5 font-mono text-verdigris-400 font-bold">{sub.point || '-'}</td>
                             <td class="px-4 py-2.5 text-text-secondary leading-relaxed font-light italic">{sub.note || '-'}</td>
                           </tr>
                         {/each}
@@ -203,12 +203,12 @@
         <h2 class="text-sm font-bold text-gold-400">Aktor Terkait</h2>
         <div class="flex flex-col gap-3">
           {#each event.actors as actor}
-            <a href="/actor/{actor.uuid}" class="p-3.5 rounded-xl bg-navy-950/60 border border-border/10 hover:border-emerald-500/20 hover:bg-emerald-500/5 transition-all flex justify-between items-center group">
+            <a href="/actor/{actor.uuid}" class="p-3.5 rounded-xl bg-iron-950/60 border border-border/10 hover:border-verdigris-500/20 hover:bg-verdigris-500/5 transition-all flex justify-between items-center group">
               <div>
-                <h4 class="text-xs font-bold text-text-primary group-hover:text-emerald-400 transition-colors">{actor.name}</h4>
+                <h4 class="text-xs font-bold text-text-primary group-hover:text-verdigris-400 transition-colors">{actor.name}</h4>
                 <p class="text-[10px] text-text-muted mt-0.5">{actor.role}</p>
               </div>
-              <span class="text-xs text-emerald-500 group-hover:translate-x-1 transition-transform">→</span>
+              <span class="text-xs text-verdigris-500 group-hover:translate-x-1 transition-transform">→</span>
             </a>
           {/each}
         </div>
@@ -219,7 +219,7 @@
         <h2 class="text-sm font-bold text-gold-400">Lokasi Terkait</h2>
         <div class="flex flex-col gap-3">
           {#each event.locations as loc}
-            <a href="/location/{loc.uuid}" class="p-3.5 rounded-xl bg-navy-950/60 border border-border/10 hover:border-amber-500/20 hover:bg-amber-500/5 transition-all flex flex-col gap-1 group">
+            <a href="/location/{loc.uuid}" class="p-3.5 rounded-xl bg-iron-950/60 border border-border/10 hover:border-amber-500/20 hover:bg-amber-500/5 transition-all flex flex-col gap-1 group">
               <h4 class="text-xs font-bold text-text-primary group-hover:text-amber-400 transition-colors">{loc.name}</h4>
               <p class="text-[10px] text-text-muted">{loc.type}</p>
               <p class="text-[9px] text-text-muted mt-1 font-mono">{loc.lat.toFixed(4)}° N, {loc.lng.toFixed(4)}° E</p>

@@ -162,13 +162,13 @@
           
           <p class="text-xs text-text-secondary font-medium mt-0.5">
             Wilayah/Kawasan: <span class="text-gold-400 font-bold">{loc.ancientName}</span> — 
-            Koordinat: <span class="text-emerald-400 font-mono font-bold">{loc.lat.toFixed(4)}° N, {loc.lng.toFixed(4)}° E</span>
+            Koordinat: <span class="text-verdigris-400 font-mono font-bold">{loc.lat.toFixed(4)}° N, {loc.lng.toFixed(4)}° E</span>
           </p>
         </div>
       </div>
 
       <!-- Strategic Value Badge -->
-      <div class="px-5 py-3 rounded-2xl bg-navy-950/60 border border-border/10 flex flex-row md:flex-col items-center gap-3 md:gap-1 text-center min-w-[130px] self-stretch md:self-auto relative z-10 justify-between sm:justify-center">
+      <div class="px-5 py-3 rounded-2xl bg-iron-950/60 border border-border/10 flex flex-row md:flex-col items-center gap-3 md:gap-1 text-center min-w-[130px] self-stretch md:self-auto relative z-10 justify-between sm:justify-center">
         <span class="text-2xl">🏆</span>
         <div class="flex flex-col md:items-center">
           <span class="text-[9px] text-text-muted font-bold uppercase tracking-wider">Signifikansi</span>
@@ -190,7 +190,7 @@
           <p class="text-xs text-text-secondary leading-relaxed whitespace-pre-wrap font-normal">
             {loc.description}
           </p>
-          <div class="p-4 rounded-2xl bg-navy-950/60 border border-border/10 mt-2">
+          <div class="p-4 rounded-2xl bg-iron-950/60 border border-border/10 mt-2">
             <span class="text-[10px] uppercase font-bold text-gold-400 block mb-1.5">Nilai Strategis Militer & Ekonomi:</span>
             <p class="text-xs text-text-muted leading-relaxed font-normal">{loc.strategicValue}</p>
           </div>
@@ -198,7 +198,7 @@
 
         <!-- Demographics -->
         <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-3">
-          <h2 class="text-xs font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-2">
+          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
             <span>👥</span> Demografi & Kependudukan Historis
           </h2>
           {#if loc.demographics}
@@ -284,8 +284,8 @@
             class="w-full h-[220px] rounded-2xl overflow-hidden border border-border/15 relative z-0 shadow-inner group/map text-left block cursor-zoom-in"
           >
             <!-- Hover effect visual overlay -->
-            <div class="absolute inset-0 bg-navy-950/0 group-hover/map:bg-navy-950/20 transition-colors z-10 flex items-center justify-center pointer-events-none">
-              <span class="bg-navy-900/90 text-gold-400 border border-gold-500/30 text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/map:opacity-100 transition-opacity shadow-lg">
+            <div class="absolute inset-0 bg-iron-950/0 group-hover/map:bg-iron-950/20 transition-colors z-10 flex items-center justify-center pointer-events-none">
+              <span class="bg-iron-900/90 text-gold-400 border border-gold-500/30 text-[10px] font-bold px-3 py-1.5 rounded-lg opacity-0 group-hover/map:opacity-100 transition-opacity shadow-lg">
                 🔍 Perbesar Peta
               </span>
             </div>
@@ -305,7 +305,7 @@
           </button>
           
           <div class="flex justify-between items-center text-[10px] text-text-muted border-t border-border/10 pt-3">
-            <span>Koordinat: <strong class="text-emerald-400 font-mono">{loc.lat.toFixed(4)}° N, {loc.lng.toFixed(4)}° E</strong></span>
+            <span>Koordinat: <strong class="text-verdigris-400 font-mono">{loc.lat.toFixed(4)}° N, {loc.lng.toFixed(4)}° E</strong></span>
             <a href="/map" class="text-gold-500 hover:text-gold-400 font-bold transition-colors">
               Peta Utama →
             </a>
@@ -321,14 +321,14 @@
           {#if loc.actors && loc.actors.length > 0}
             <div class="flex flex-col gap-2">
               {#each loc.actors as rel}
-                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
+                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-base">👤</span>
                     <div class="flex flex-col overflow-hidden">
                       <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
                         {rel.actor.name}
                       </span>
-                      <span class="text-[9px] text-emerald-400 font-bold uppercase tracking-wider mt-0.5">
+                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5">
                         {rel.relationshipType}
                       </span>
                     </div>
@@ -351,16 +351,16 @@
           {#if loc.sources && loc.sources.length > 0}
             <div class="flex flex-col gap-3">
               {#each loc.sources as rel}
-                <a href="/source/{rel.source.sourceId}" class="group block p-3.5 bg-navy-950/60 hover:bg-navy-900 border border-border/5 rounded-2xl transition-all">
+                <a href="/source/{rel.source.sourceId}" class="group block p-3.5 bg-iron-950/60 hover:bg-iron-900 border border-border/5 rounded-2xl transition-all">
                   <div class="flex justify-between items-start gap-2">
                     <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors line-clamp-1">{rel.source.title || 'Manuskrip Sejarah'}</span>
                     {#if rel.source.reliabilityScore !== null}
-                      <span class="text-[9px] font-bold text-emerald-400 font-mono">{(rel.source.reliabilityScore * 100).toFixed(0)}%</span>
+                      <span class="text-[9px] font-bold text-verdigris-400 font-mono">{(rel.source.reliabilityScore * 100).toFixed(0)}%</span>
                     {/if}
                   </div>
                   <div class="flex flex-col gap-0.5 mt-1">
                     <span class="text-[9px] text-text-muted">{rel.source.author || 'Penyusun Anonim'}</span>
-                    <span class="text-[9px] text-emerald-400 font-semibold uppercase tracking-wider mt-0.5">{rel.relationshipType}</span>
+                    <span class="text-[9px] text-verdigris-400 font-semibold uppercase tracking-wider mt-0.5">{rel.relationshipType}</span>
                   </div>
                 </a>
               {/each}
@@ -379,7 +379,7 @@
           {#if loc.mediaLinks && loc.mediaLinks.length > 0}
             <div class="flex flex-col gap-2">
               {#each loc.mediaLinks as media}
-                <a href={media.url} target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between p-3 bg-navy-950/60 hover:bg-navy-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
+                <a href={media.url} target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
                   <div class="flex items-center gap-2.5 overflow-hidden">
                     <span class="text-lg">
                       {#if media.mediaType === 'image'}
@@ -417,7 +417,7 @@
   <!-- svelte-ignore a11y_click_events_have_key_events -->
   <!-- svelte-ignore a11y_no_static_element_interactions -->
   <div 
-    class="fixed inset-0 z-50 flex items-center justify-center bg-navy-950/85 backdrop-blur-md animate-fade-in p-4"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-iron-950/85 backdrop-blur-md animate-fade-in p-4"
     onclick={() => isMapModalOpen = false}
   >
     <div 
@@ -433,7 +433,7 @@
           <p class="text-[9px] text-text-muted mt-0.5">Navigasi geospasial klasik interaktif — Geser dan gulir untuk menjelajahi area.</p>
         </div>
         <button 
-          class="w-7 h-7 rounded-lg bg-navy-900 border border-border/10 hover:border-gold-500/40 text-text-muted hover:text-gold-400 flex items-center justify-center font-bold transition-all text-xs cursor-pointer"
+          class="w-7 h-7 rounded-lg bg-iron-900 border border-border/10 hover:border-gold-500/40 text-text-muted hover:text-gold-400 flex items-center justify-center font-bold transition-all text-xs cursor-pointer"
           onclick={() => isMapModalOpen = false}
         >
           ✕
@@ -458,7 +458,7 @@
       <!-- Modal Footer Info -->
       <div class="flex justify-between items-center mt-3 text-[9px] text-text-muted">
         <span>Klasifikasi: <span class="text-amber-400 font-bold">{loc.type}</span></span>
-        <span>Koordinat Akurat: <span class="text-emerald-400 font-mono font-bold">{loc.lat.toFixed(6)}° N, {loc.lng.toFixed(6)}° E</span></span>
+        <span>Koordinat Akurat: <span class="text-verdigris-400 font-mono font-bold">{loc.lat.toFixed(6)}° N, {loc.lng.toFixed(6)}° E</span></span>
       </div>
     </div>
   </div>

@@ -2,6 +2,24 @@
   import { page } from "$app/state";
   import { slide } from "svelte/transition";
   import { auth } from "$lib/stores/auth.svelte";
+  import { 
+    Compass, 
+    Network, 
+    Landmark, 
+    Users, 
+    Map as MapIcon, 
+    Clock, 
+    BookOpen, 
+    Anvil, 
+    LineChart, 
+    Bot, 
+    UserCog, 
+    MapPin, 
+    Library, 
+    ScrollText, 
+    Shield, 
+    PenTool 
+  } from "lucide-svelte";
 
   let currentPath = $derived(page.url.pathname);
   let { collapsed = $bindable(false) } = $props<{ collapsed?: boolean }>();
@@ -86,13 +104,13 @@
       <svg width="200" height="12" viewBox="0 0 200 12" fill="none">
         <path
           d="M0 6 L20 0 L40 6 L60 0 L80 6 L100 0 L120 6 L140 0 L160 6 L180 0 L200 6"
-          stroke="#d4a853"
+          stroke="#e4891b"
           stroke-width="0.5"
           fill="none"
         />
         <path
           d="M0 6 L20 12 L40 6 L60 12 L80 6 L100 12 L120 6 L140 12 L160 6 L180 12 L200 6"
-          stroke="#d4a853"
+          stroke="#e4891b"
           stroke-width="0.5"
           fill="none"
         />
@@ -109,7 +127,7 @@
       class:active={isActive('/')}
       title={collapsed ? "Dashboard" : ""}
     >
-      <span class="nav-icon">🏠</span>
+      <Compass size={20} class="nav-icon nav-icon-relief" />
       {#if !collapsed}
         <span class="nav-label">Dashboard</span>
       {/if}
@@ -125,7 +143,7 @@
       class:active={isActive('/graph')}
       title={collapsed ? "Graph Explorer" : ""}
     >
-      <span class="nav-icon">🕸️</span>
+      <Network size={20} class="nav-icon nav-icon-relief" />
       {#if !collapsed}
         <span class="nav-label">Graph Explorer</span>
       {/if}
@@ -142,7 +160,7 @@
         class:active={isActive('/actor') || isActive('/map') || isActive('/timeline') || isActive('/source')}
         title={collapsed ? "Entitas Sejarah" : ""}
       >
-        <span class="nav-icon">🏛️</span>
+        <Landmark size={20} class="nav-icon nav-icon-relief" />
         {#if !collapsed}
           <span class="nav-label">Entitas Sejarah</span>
           <span class="dropdown-arrow" class:rotated={entitasOpen}>▼</span>
@@ -159,7 +177,7 @@
             class="nav-sub-item"
             class:active={isActive('/actor')}
           >
-            <span class="nav-sub-icon">👥</span>
+            <Users size={16} class="nav-sub-icon nav-sub-icon-relief" />
             <span class="nav-sub-label">Pelaku Sejarah</span>
           </a>
           <a
@@ -167,7 +185,7 @@
             class="nav-sub-item"
             class:active={isActive('/map')}
           >
-            <span class="nav-sub-icon">🗺️</span>
+            <MapIcon size={16} class="nav-sub-icon nav-sub-icon-relief" />
             <span class="nav-sub-label">Peta Sejarah</span>
           </a>
           <a
@@ -175,7 +193,7 @@
             class="nav-sub-item"
             class:active={isActive('/timeline')}
           >
-            <span class="nav-sub-icon">📅</span>
+            <Clock size={16} class="nav-sub-icon nav-sub-icon-relief" />
             <span class="nav-sub-label">Timeline</span>
           </a>
           <a
@@ -183,7 +201,7 @@
             class="nav-sub-item"
             class:active={isActive('/source')}
           >
-            <span class="nav-sub-icon">📄</span>
+            <BookOpen size={16} class="nav-sub-icon nav-sub-icon-relief" />
             <span class="nav-sub-label">Kitab Rujukan</span>
           </a>
         </div>
@@ -199,7 +217,7 @@
           class:active={isActive('/factory')}
           title={collapsed ? "Data Factory" : ""}
         >
-          <span class="nav-icon">⚙️</span>
+          <Anvil size={20} class="nav-icon nav-icon-relief" />
           {#if !collapsed}
             <span class="nav-label">Data Factory</span>
             <span class="dropdown-arrow" class:rotated={factoryOpen}>▼</span>
@@ -216,7 +234,7 @@
               class="nav-sub-item"
               class:active={currentPath === '/factory'}
             >
-              <span class="nav-sub-icon">📊</span>
+              <LineChart size={16} class="nav-sub-icon nav-sub-icon-relief" />
               <span class="nav-sub-label">Dashboard Kurasi</span>
             </a>
             <a
@@ -224,7 +242,7 @@
               class="nav-sub-item"
               class:active={isActive('/factory/historian')}
             >
-              <span class="nav-sub-icon">🤖</span>
+              <Bot size={16} class="nav-sub-icon nav-sub-icon-relief" />
               <span class="nav-sub-label">AI Historian (Med)</span>
             </a>
             <a
@@ -232,7 +250,7 @@
               class="nav-sub-item"
               class:active={isActive('/factory/actors')}
             >
-              <span class="nav-sub-icon">👤</span>
+              <UserCog size={16} class="nav-sub-icon nav-sub-icon-relief" />
               <span class="nav-sub-label">Manajemen Tokoh</span>
             </a>
             <a
@@ -240,7 +258,7 @@
               class="nav-sub-item"
               class:active={isActive('/factory/locations')}
             >
-              <span class="nav-sub-icon">🗺️</span>
+              <MapPin size={16} class="nav-sub-icon nav-sub-icon-relief" />
               <span class="nav-sub-label">Manajemen Lokasi</span>
             </a>
             <a
@@ -248,7 +266,7 @@
               class="nav-sub-item"
               class:active={isActive('/factory/sources')}
             >
-              <span class="nav-sub-icon">📄</span>
+              <Library size={16} class="nav-sub-icon nav-sub-icon-relief" />
               <span class="nav-sub-label">Manajemen Rujukan</span>
             </a>
             <a
@@ -256,7 +274,7 @@
               class="nav-sub-item"
               class:active={isActive('/factory/events')}
             >
-              <span class="nav-sub-icon">📜</span>
+              <ScrollText size={16} class="nav-sub-icon nav-sub-icon-relief" />
               <span class="nav-sub-label">Manajemen Peristiwa</span>
             </a>
             
@@ -269,7 +287,7 @@
               style="color: rgba(248, 113, 113, 0.8);"
               class:active={isActive('/settings/profile')}
             >
-              <span class="nav-sub-icon">🛡️</span>
+              <Shield size={16} class="nav-sub-icon nav-sub-icon-relief" style="color: rgba(248, 113, 113, 0.8);" />
               <span class="nav-sub-label">My Profile</span>
             </a>
             {#if auth.isAdmin}
@@ -279,7 +297,7 @@
                 style="color: rgba(248, 113, 113, 0.8);"
                 class:active={isActive('/factory/users')}
               >
-                <span class="nav-sub-icon">👥</span>
+                <Users size={16} class="nav-sub-icon nav-sub-icon-relief" style="color: rgba(248, 113, 113, 0.8);" />
                 <span class="nav-sub-label">Manajemen User</span>
               </a>
             {/if}
@@ -296,7 +314,7 @@
       class:active={isActive('/curator')}
       title={collapsed ? "Curator" : ""}
     >
-      <span class="nav-icon">👤</span>
+      <PenTool size={20} class="nav-icon nav-icon-relief" />
       {#if !collapsed}
         <span class="nav-label">Curator</span>
       {/if}
@@ -313,13 +331,13 @@
         <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
           <polygon
             points="20,2 26,14 38,16 29,25 31,38 20,32 9,38 11,25 2,16 14,14"
-            stroke="#d4a853"
+            stroke="#e4891b"
             stroke-width="0.5"
             fill="none"
           />
           <polygon
             points="20,8 24,16 32,17 26,23 28,32 20,28 12,32 14,23 8,17 16,16"
-            stroke="#d4a853"
+            stroke="#e4891b"
             stroke-width="0.3"
             fill="none"
           />
@@ -339,8 +357,8 @@
     z-index: 50;
     display: flex;
     flex-direction: column;
-    border-right: 1px solid rgba(255, 255, 255, 0.05);
-    background: rgba(10, 15, 30, 0.85);
+    border-right: 1px solid rgba(158, 74, 43, 0.15); /* Rust border */
+    background: rgba(28, 24, 21, 0.85); /* Iron surface elevated */
     backdrop-filter: blur(24px);
     -webkit-backdrop-filter: blur(24px);
     width: 260px;
@@ -359,9 +377,9 @@
     width: 28px;
     height: 28px;
     border-radius: 50%;
-    background: rgba(10, 15, 30, 0.95);
-    border: 1px solid rgba(212, 168, 83, 0.25);
-    color: #d4a853;
+    background: rgba(28, 24, 21, 0.95);
+    border: 1px solid rgba(158, 74, 43, 0.25);
+    color: #e4891b;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -371,8 +389,8 @@
   }
 
   .toggle-btn:hover {
-    background: rgba(212, 168, 83, 0.15);
-    border-color: #d4a853;
+    background: rgba(158, 74, 43, 0.15);
+    border-color: #e4891b;
     transform: scale(1.1);
   }
 
@@ -386,7 +404,7 @@
 
   .logo-area {
     padding: 24px 16px 20px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+    border-bottom: 1px solid rgba(158, 74, 43, 0.15);
     overflow: hidden;
   }
 
@@ -416,7 +434,7 @@
     font-size: 1.1rem;
     font-weight: 700;
     letter-spacing: 0.04em;
-    background: linear-gradient(135deg, #d4a853, #f5d78e, #d4a853);
+    background: linear-gradient(135deg, #e4891b, #f5d78e, #e4891b);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -464,13 +482,13 @@
 
   .nav-item:hover {
     color: rgba(255, 255, 255, 0.8);
-    background: rgba(212, 168, 83, 0.03);
+    background: rgba(158, 74, 43, 0.05); /* rust */
   }
 
   .nav-item.active {
-    color: #d4a853;
-    background: rgba(212, 168, 83, 0.08);
-    border-left-color: #d4a853;
+    color: #e4891b;
+    background: rgba(158, 74, 43, 0.1);
+    border-left-color: #e4891b;
   }
 
   .sidebar.collapsed .nav-item {
@@ -500,8 +518,8 @@
     width: 6px;
     height: 6px;
     border-radius: 50%;
-    background: #d4a853;
-    box-shadow: 0 0 8px rgba(212, 168, 83, 0.6);
+    background: #e4891b;
+    box-shadow: 0 0 8px rgba(228, 137, 27, 0.6);
   }
 
   .sidebar.collapsed .active-dot {
@@ -515,7 +533,7 @@
 
   .bottom-section {
     padding: 16px 24px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(158, 74, 43, 0.15);
   }
 
   .bottom-star {
@@ -565,7 +583,7 @@
     padding-left: 20px;
     margin-top: 2px;
     margin-bottom: 4px;
-    border-left: 1px solid rgba(255, 255, 255, 0.05);
+    border-left: 1px solid rgba(158, 74, 43, 0.15);
     margin-left: 28px;
   }
 
@@ -584,16 +602,49 @@
 
   .nav-sub-item:hover {
     color: rgba(255, 255, 255, 0.8);
-    background: rgba(212, 168, 83, 0.02);
+    background: rgba(158, 74, 43, 0.05);
   }
 
   .nav-sub-item.active {
-    color: #d4a853;
-    background: rgba(212, 168, 83, 0.05);
+    color: #e4891b;
+    background: rgba(158, 74, 43, 0.1);
     font-weight: 600;
   }
 
   .nav-sub-icon {
     font-size: 0.95rem;
+    flex-shrink: 0;
+  }
+
+  /* Relief/Engraved Styling for SVG Icons */
+  :global(.nav-icon-relief) {
+    color: #a3725b; /* Muted rust */
+    filter: drop-shadow(1px 1px 0px rgba(255, 255, 255, 0.05)) drop-shadow(-1px -1px 0px rgba(0, 0, 0, 0.9));
+    transition: all 0.2s ease;
+  }
+
+  .nav-item:hover :global(.nav-icon-relief) {
+    color: #d88942;
+    filter: drop-shadow(0 0 5px rgba(228, 137, 27, 0.3)) drop-shadow(1px 1px 0px rgba(255, 255, 255, 0.05)) drop-shadow(-1px -1px 0px rgba(0, 0, 0, 0.9));
+  }
+
+  .nav-item.active :global(.nav-icon-relief) {
+    color: #e4891b;
+    filter: drop-shadow(0 0 8px rgba(228, 137, 27, 0.5)) drop-shadow(1px 1px 0px rgba(255, 255, 255, 0.05)) drop-shadow(-1px -1px 0px rgba(0, 0, 0, 0.9));
+  }
+
+  :global(.nav-sub-icon-relief) {
+    color: rgba(255, 255, 255, 0.25);
+    filter: drop-shadow(1px 1px 0px rgba(255, 255, 255, 0.05)) drop-shadow(-1px -1px 0px rgba(0, 0, 0, 0.9));
+    transition: all 0.2s ease;
+  }
+
+  .nav-sub-item:hover :global(.nav-sub-icon-relief) {
+    color: rgba(255, 255, 255, 0.8);
+  }
+
+  .nav-sub-item.active :global(.nav-sub-icon-relief) {
+    color: #e4891b;
+    filter: drop-shadow(0 0 5px rgba(228, 137, 27, 0.4)) drop-shadow(1px 1px 0px rgba(255, 255, 255, 0.05)) drop-shadow(-1px -1px 0px rgba(0, 0, 0, 0.9));
   }
 </style>
