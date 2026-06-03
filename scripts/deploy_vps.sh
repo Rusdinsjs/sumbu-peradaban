@@ -16,7 +16,7 @@ ssh ubuntu@43.134.17.13 << 'EOF'
   sudo docker compose -f docker-compose.prod.yml pull backend
   
   echo "⚡ Merestart Kontainer secara halus (Zero Downtime)..."
-  sudo docker compose -f docker-compose.prod.yml up -d
+  sudo docker compose -f docker-compose.prod.yml up -d --build frontend
   
   echo "🧹 Membersihkan sisa image lama..."
   sudo docker image prune -f

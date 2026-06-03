@@ -74,6 +74,8 @@ services:
       PUBLIC_API_URL: ${PUBLIC_API_URL:-https://super.sjsgroup.site}
       PUBLIC_MAPBOX_TOKEN: ${PUBLIC_MAPBOX_TOKEN:-}
       ORIGIN: ${ORIGIN:-https://super.sjsgroup.site}
+    volumes:
+      - frontend_uploads:/app/static/uploads
     depends_on:
       - backend
     networks:
@@ -104,6 +106,7 @@ volumes:
   neo4j_plugins:
   caddy_data:
   caddy_config:
+  frontend_uploads:
 
 networks:
   sumbu-net:

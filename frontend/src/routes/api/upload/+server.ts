@@ -1,6 +1,6 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
-import { writeFileSync } from 'fs';
+import { writeFileSync, existsSync, mkdirSync } from 'fs';
 import { join } from 'path';
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -21,6 +21,11 @@ export const POST: RequestHandler = async ({ request }) => {
     // Save to static/uploads
     // Using process.cwd() as SvelteKit execution root
     const uploadDir = join(process.cwd(), 'static', 'uploads');
+    
+    if (!existsSync(uploadDir)) {
+      mkdirSync(uploadDir, { recursive: true });
+    }
+    
     const filePath = join(uploadDir, filename);
     
     writeFileSync(filePath, buffer);
