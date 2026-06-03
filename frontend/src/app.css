@@ -85,8 +85,11 @@ body {
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  /* Subtle grunge/noise overlay */
-  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  /* Subtle grunge/noise overlay + Islamic Pattern */
+  background-image: 
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%239e4a2b' stroke-width='1.2' stroke-opacity='0.15'%3E%3Crect x='-15' y='-15' width='30' height='30'/%3E%3Crect x='-15' y='-15' width='30' height='30' transform='rotate(45 0 0)'/%3E%3Crect x='25' y='25' width='30' height='30'/%3E%3Crect x='25' y='25' width='30' height='30' transform='rotate(45 40 40)'/%3E%3Crect x='65' y='-15' width='30' height='30'/%3E%3Crect x='65' y='-15' width='30' height='30' transform='rotate(45 80 0)'/%3E%3Crect x='-15' y='65' width='30' height='30'/%3E%3Crect x='-15' y='65' width='30' height='30' transform='rotate(45 0 80)'/%3E%3Crect x='65' y='65' width='30' height='30'/%3E%3Crect x='65' y='65' width='30' height='30' transform='rotate(45 80 80)'/%3E%3Cline x1='15' y1='15' x2='25' y2='25'/%3E%3Cline x1='65' y1='15' x2='55' y2='25'/%3E%3Cline x1='15' y1='65' x2='25' y2='55'/%3E%3Cline x1='65' y1='65' x2='55' y2='55'/%3E%3C/g%3E%3C/svg%3E"),
+    url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.03'/%3E%3C/svg%3E");
+  background-attachment: fixed;
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -138,8 +141,8 @@ h1, h2, h3, h4, h5, h6 {
 /* ── Geometric/Mechanical Pattern (SVG Background) ──────── */
 
 .pattern-islamic {
-  /* Adapted to look a bit more like brass clockwork or geometric engraving */
-  background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239e4a2b' fill-opacity='0.05'%3E%3Cpath d='M30 0L60 30L30 60L0 30z M30 6L54 30L30 54L6 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  /* Elegant 8-pointed star Islamic geometry (Rub el Hizb) */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%239e4a2b' stroke-width='1.2' stroke-opacity='0.15'%3E%3Crect x='-15' y='-15' width='30' height='30'/%3E%3Crect x='-15' y='-15' width='30' height='30' transform='rotate(45 0 0)'/%3E%3Crect x='25' y='25' width='30' height='30'/%3E%3Crect x='25' y='25' width='30' height='30' transform='rotate(45 40 40)'/%3E%3Crect x='65' y='-15' width='30' height='30'/%3E%3Crect x='65' y='-15' width='30' height='30' transform='rotate(45 80 0)'/%3E%3Crect x='-15' y='65' width='30' height='30'/%3E%3Crect x='-15' y='65' width='30' height='30' transform='rotate(45 0 80)'/%3E%3Crect x='65' y='65' width='30' height='30'/%3E%3Crect x='65' y='65' width='30' height='30' transform='rotate(45 80 80)'/%3E%3Cline x1='15' y1='15' x2='25' y2='25'/%3E%3Cline x1='65' y1='15' x2='55' y2='25'/%3E%3Cline x1='15' y1='65' x2='25' y2='55'/%3E%3Cline x1='65' y1='65' x2='55' y2='55'/%3E%3C/g%3E%3C/svg%3E");
 }
 
 /* ── Animations ──────────────────────────────────────── */

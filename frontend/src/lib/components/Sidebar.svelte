@@ -88,7 +88,9 @@
   <!-- Logo Area -->
   <div class="logo-area">
     <a href="/" class="logo-link group">
-      <span class="logo-glyph">{collapsed ? "𝌭" : "𝌭"}</span>
+      <div class="logo-image-container">
+        <img src="/logo.png" alt="Sumbu Peradaban Logo" class="logo-image" />
+      </div>
       {#if !collapsed}
         <div class="logo-text">
           <h1 class="logo-title">Sumbu Peradaban</h1>
@@ -415,14 +417,29 @@
     text-decoration: none;
   }
 
-  .logo-glyph {
-    font-size: 1.5rem;
-    transition: transform 0.3s;
+  .logo-image-container {
+    width: 36px;
+    height: 36px;
     flex-shrink: 0;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 1px solid rgba(228, 137, 27, 0.4);
+    box-shadow: 0 0 10px rgba(228, 137, 27, 0.2);
+    transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #1c1815;
   }
 
-  .logo-link:hover .logo-glyph {
-    transform: rotate(12deg);
+  .logo-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center 35%; /* Focus on the top center emblem */
+  }
+
+  .logo-link:hover .logo-image-container {
+    transform: rotate(45deg) scale(1.05);
+    box-shadow: 0 0 15px rgba(228, 137, 27, 0.4);
+    border-color: rgba(228, 137, 27, 0.8);
   }
 
   .logo-text {
@@ -441,9 +458,9 @@
   }
 
   .logo-subtitle {
-    font-size: 10px;
+    font-size: 9px; /* Reduced by ~90% */
     color: rgba(255, 255, 255, 0.3);
-    letter-spacing: 0.2em;
+    letter-spacing: 0.12em; /* Rapatkan spasi antar huruf */
     text-transform: uppercase;
   }
 

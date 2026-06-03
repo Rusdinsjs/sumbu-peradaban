@@ -1,81 +1,160 @@
 <script lang="ts">
-  import SearchBar from '$lib/components/SearchBar.svelte';
-  import StatCard from '$lib/components/StatCard.svelte';
-  import CurationBadge from '$lib/components/CurationBadge.svelte';
-  import GraphExplorer from '$lib/components/GraphExplorer.svelte';
-  import { onMount } from 'svelte';
+  import SearchBar from "$lib/components/SearchBar.svelte";
+  import StatCard from "$lib/components/StatCard.svelte";
+  import CurationBadge from "$lib/components/CurationBadge.svelte";
+  import GraphExplorer from "$lib/components/GraphExplorer.svelte";
+  import { onMount } from "svelte";
 
   let { data } = $props<{ data: any }>();
-  
+
   let visible = $state(false);
   let heroVisible = $state(false);
   let statsVisible = $state(false);
   let activityVisible = $state(false);
   let graphVisible = $state(false);
 
-  let dbData = $derived(data.dashboardData || { events: [], actors: [], locations: [], sources: [] });
+  let dbData = $derived(
+    data.dashboardData || {
+      events: [],
+      actors: [],
+      locations: [],
+      sources: [],
+    },
+  );
 
   let stats = $derived([
-    { icon: '📜', label: 'Total Peristiwa', value: dbData.events ? dbData.events.length.toString() : '0', trend: 'Live Data' },
-    { icon: '👥', label: 'Total Tokoh', value: dbData.actors ? dbData.actors.length.toString() : '0', trend: 'Live Data' },
-    { icon: '🌍', label: 'Total Lokasi', value: dbData.locations ? dbData.locations.length.toString() : '0', trend: 'Live Data' },
-    { icon: '📚', label: 'Total Sumber', value: dbData.sources ? dbData.sources.length.toString() : '0', trend: 'Live Data' }
+    {
+      icon: "📜",
+      label: "Total Peristiwa",
+      value: dbData.events ? dbData.events.length.toString() : "0",
+      trend: "Live Data",
+    },
+    {
+      icon: "👥",
+      label: "Total Tokoh",
+      value: dbData.actors ? dbData.actors.length.toString() : "0",
+      trend: "Live Data",
+    },
+    {
+      icon: "🌍",
+      label: "Total Lokasi",
+      value: dbData.locations ? dbData.locations.length.toString() : "0",
+      trend: "Live Data",
+    },
+    {
+      icon: "📚",
+      label: "Total Sumber",
+      value: dbData.sources ? dbData.sources.length.toString() : "0",
+      trend: "Live Data",
+    },
   ]);
-  
+
   // Mix real data with some mock time for presentation purposes since audit log isn't fetched yet
-  let recentActivity = $derived([
-    ...(dbData.events || []).map((e: any, i: number) => ({
-      id: `e-${i}`, time: 'Baru saja', action: 'Data Historis', entity: e.title, type: 'event' as const, tier: (e.curationTier?.toLowerCase() || 'draft') as any
-    })),
-    ...(dbData.actors || []).map((a: any, i: number) => ({
-      id: `a-${i}`, time: '1 jam lalu', action: 'Tokoh', entity: a.name, type: 'actor' as const, tier: (a.curationTier?.toLowerCase() || 'draft') as any
-    })),
-    ...(dbData.locations || []).map((l: any, i: number) => ({
-      id: `l-${i}`, time: 'Hari ini', action: 'Lokasi', entity: l.name, type: 'location' as const, tier: (l.curationTier?.toLowerCase() || 'draft') as any
-    }))
-  ].slice(0, 5));
+  let recentActivity = $derived(
+    [
+      ...(dbData.events || []).map((e: any, i: number) => ({
+        id: `e-${i}`,
+        time: "Baru saja",
+        action: "Data Historis",
+        entity: e.title,
+        type: "event" as const,
+        tier: (e.curationTier?.toLowerCase() || "draft") as any,
+      })),
+      ...(dbData.actors || []).map((a: any, i: number) => ({
+        id: `a-${i}`,
+        time: "1 jam lalu",
+        action: "Tokoh",
+        entity: a.name,
+        type: "actor" as const,
+        tier: (a.curationTier?.toLowerCase() || "draft") as any,
+      })),
+      ...(dbData.locations || []).map((l: any, i: number) => ({
+        id: `l-${i}`,
+        time: "Hari ini",
+        action: "Lokasi",
+        entity: l.name,
+        type: "location" as const,
+        tier: (l.curationTier?.toLowerCase() || "draft") as any,
+      })),
+    ].slice(0, 5),
+  );
 
   // Fallback if no real data
-  let finalActivity = $derived(recentActivity.length > 0 ? recentActivity : [
-    { id: 'd1', time: '2 menit lalu', action: 'Ditambahkan', entity: 'Perang Badar', type: 'event' as const, tier: 'verified' as any },
-    { id: 'd2', time: '15 menit lalu', action: 'Diperbarui', entity: 'Khalid bin Walid', type: 'actor' as const, tier: 'reviewed' as any }
-  ]);
+  let finalActivity = $derived(
+    recentActivity.length > 0
+      ? recentActivity
+      : [
+          {
+            id: "d1",
+            time: "2 menit lalu",
+            action: "Ditambahkan",
+            entity: "Perang Badar",
+            type: "event" as const,
+            tier: "verified" as any,
+          },
+          {
+            id: "d2",
+            time: "15 menit lalu",
+            action: "Diperbarui",
+            entity: "Khalid bin Walid",
+            type: "actor" as const,
+            tier: "reviewed" as any,
+          },
+        ],
+  );
 
   const typeIcons: Record<string, string> = {
-    event: '📜',
-    actor: '👤',
-    location: '📍'
+    event: "📜",
+    actor: "👤",
+    location: "📍",
   };
 
   onMount(() => {
     // Staggered entrance animations
-    setTimeout(() => { heroVisible = true; }, 100);
-    setTimeout(() => { statsVisible = true; }, 400);
-    setTimeout(() => { activityVisible = true; }, 700);
-    setTimeout(() => { graphVisible = true; }, 1000);
+    setTimeout(() => {
+      heroVisible = true;
+    }, 100);
+    setTimeout(() => {
+      statsVisible = true;
+    }, 400);
+    setTimeout(() => {
+      activityVisible = true;
+    }, 700);
+    setTimeout(() => {
+      graphVisible = true;
+    }, 1000);
     visible = true;
   });
 </script>
 
 <svelte:head>
   <title>Sumbu Peradaban — Peta Pengetahuan Dunia</title>
-  <meta name="description" content="Membaca Dunia dari Sumbu Peradaban. Visualisasi graf pengetahuan sejarah Islam dan dunia." />
+  <meta
+    name="description"
+    content="Membaca Dunia dari Sumbu Peradaban. Visualisasi graf pengetahuan sejarah Islam dan dunia."
+  />
 </svelte:head>
+
+<div class="dashboard-bg" class:animate-fade-in={heroVisible}>
+  <div class="hero-pattern"></div>
+  <div class="hero-glow"></div>
+</div>
 
 <div class="dashboard">
   <!-- Hero Section -->
   <section class="hero" class:animate-fade-in={heroVisible}>
-    <div class="hero-pattern"></div>
     <div class="hero-content">
-      <p class="hero-arabic">محور الحضارة</p>
+      <div class="hero-logo-container">
+        <img src="/logo.png" alt="Logo Sumbu Peradaban" class="hero-logo" />
+      </div>
       <h1 class="hero-title text-gradient-gold">Sumbu Peradaban</h1>
       <p class="hero-subtitle">Membaca Dunia dari Sumbu Peradaban</p>
       <p class="hero-description">
-        Visualisasi graf pengetahuan yang menghubungkan peristiwa, tokoh, dan lokasi
-        sepanjang sejarah peradaban — dengan sejarah Islam sebagai sumbu utama.
+        Visualisasi graf pengetahuan yang menghubungkan peristiwa, tokoh, dan
+        lokasi sepanjang sejarah peradaban — dengan sejarah Islam sebagai sumbu
+        utama.
       </p>
     </div>
-    <div class="hero-glow"></div>
   </section>
 
   <!-- Search Section -->
@@ -144,15 +223,57 @@
     padding-bottom: 48px;
   }
 
+  /* Full Page Background */
+  .dashboard-bg {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    z-index: -1;
+    background: radial-gradient(
+      ellipse at center,
+      rgba(38, 30, 24, 0.95) 0%,
+      rgba(18, 14, 12, 1) 100%
+    );
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+  }
+
+  .dashboard-bg.animate-fade-in {
+    opacity: 1;
+  }
+
+  .hero-pattern {
+    position: absolute;
+    inset: 0;
+    /* Elegant 8-pointed star Islamic geometry (Rub el Hizb) */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='80' viewBox='0 0 80 80'%3E%3Cg fill='none' stroke='%239e4a2b' stroke-width='1.2' stroke-opacity='0.15'%3E%3Crect x='-15' y='-15' width='30' height='30'/%3E%3Crect x='-15' y='-15' width='30' height='30' transform='rotate(45 0 0)'/%3E%3Crect x='25' y='25' width='30' height='30'/%3E%3Crect x='25' y='25' width='30' height='30' transform='rotate(45 40 40)'/%3E%3Crect x='65' y='-15' width='30' height='30'/%3E%3Crect x='65' y='-15' width='30' height='30' transform='rotate(45 80 0)'/%3E%3Crect x='-15' y='65' width='30' height='30'/%3E%3Crect x='-15' y='65' width='30' height='30' transform='rotate(45 0 80)'/%3E%3Crect x='65' y='65' width='30' height='30'/%3E%3Crect x='65' y='65' width='30' height='30' transform='rotate(45 80 80)'/%3E%3Cline x1='15' y1='15' x2='25' y2='25'/%3E%3Cline x1='65' y1='15' x2='55' y2='25'/%3E%3Cline x1='15' y1='65' x2='25' y2='55'/%3E%3Cline x1='65' y1='65' x2='55' y2='55'/%3E%3C/g%3E%3C/svg%3E");
+    pointer-events: none;
+  }
+
+  .hero-glow {
+    position: absolute;
+    top: -10%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(
+      circle,
+      rgba(212, 168, 83, 0.08) 0%,
+      transparent 70%
+    );
+    pointer-events: none;
+  }
+
   /* Hero */
   .hero {
     position: relative;
     text-align: center;
-    padding: 64px 24px 48px;
-    border-radius: 20px;
-    overflow: hidden;
-    background: radial-gradient(circle at top, rgba(42, 36, 31, 0.9) 0%, rgba(18, 14, 12, 0.95) 100%);
-    border: 1px solid var(--color-border);
+    padding: 80px 24px 20px;
+    border: none;
+    background: transparent;
     opacity: 0;
     transform: translateY(20px);
     transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
@@ -163,35 +284,34 @@
     transform: translateY(0);
   }
 
-  .hero-pattern {
-    position: absolute;
-    inset: 0;
-    background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23d4a853' fill-opacity='0.04'%3E%3Cpath d='M30 0L60 30L30 60L0 30z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    pointer-events: none;
-  }
-
-  .hero-glow {
-    position: absolute;
-    top: -50%;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 600px;
-    height: 600px;
-    background: radial-gradient(circle, rgba(212, 168, 83, 0.08) 0%, transparent 70%);
-    pointer-events: none;
-  }
-
   .hero-content {
     position: relative;
     z-index: 1;
   }
 
-  .hero-arabic {
-    font-family: 'Amiri', serif;
-    font-size: 2rem;
-    color: rgba(212, 168, 83, 0.4);
-    margin-bottom: 8px;
-    letter-spacing: 4px;
+  .hero-logo-container {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 24px;
+    perspective: 1000px;
+  }
+
+  .hero-logo {
+    width: 200px;
+    height: 200px;
+    object-fit: cover;
+    object-position: center 35%; /* Auto-crop the emblem */
+    border-radius: 50%;
+    border: 2px solid rgba(228, 137, 27, 0.3);
+    box-shadow: 0 0 40px rgba(228, 137, 27, 0.2);
+    transition: all 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    background: #1c1815;
+  }
+
+  .hero-logo:hover {
+    transform: rotate(45deg) scale(1.05);
+    border-color: rgba(228, 137, 27, 0.6);
+    box-shadow: 0 0 40px rgba(228, 137, 27, 0.3);
   }
 
   .hero-title {
@@ -288,7 +408,7 @@
   }
 
   .section-badge::before {
-    content: '';
+    content: "";
     width: 6px;
     height: 6px;
     border-radius: 50%;
@@ -297,8 +417,13 @@
   }
 
   @keyframes pulse-dot {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.3; }
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.3;
+    }
   }
 
   .section-link {

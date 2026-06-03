@@ -18,7 +18,7 @@
 <style>
   .app-layout {
     min-height: 100vh;
-    background-color: var(--color-surface);
+    background-color: transparent;
   }
 
   .main-content {
