@@ -327,8 +327,8 @@
       mesh: THREE.Mesh;
     }> = [];
 
-    // Track how many events at each location to spread them out
-    const locationCounts: Record<string, number> = {};
+    // Track how many events at exactly the same location AND same year
+    const overlapCounts: Record<string, number> = {};
 
     // Create Event Nodes
     events.forEach((ev: TimelineEvent) => {
@@ -344,13 +344,15 @@
         locKey = matchedKey || locName;
       }
 
-      const count = locationCounts[locKey] || 0;
-      locationCounts[locKey] = count + 1;
+      // Only offset if they share the exact same location AND year
+      const overlapKey = `${locKey}_${ev.yearSort}`;
+      const count = overlapCounts[overlapKey] || 0;
+      overlapCounts[overlapKey] = count + 1;
 
-      // Add spatial distance/jitter for events in the same location (Spread out in a circle)
+      // Add spatial distance/jitter for events in the exact same location AND time
       if (count > 0) {
-        const radius = 3.5 + Math.floor(count / 6) * 1.5; // Radius expands if many events
-        const angle = count * ((Math.PI * 2) / 6); // Hexagonal spread
+        const radius = 2.5 + Math.floor(count / 6) * 1.5; 
+        const angle = count * ((Math.PI * 2) / 6); 
         pos.x += Math.cos(angle) * radius;
         pos.z += Math.sin(angle) * radius;
       }
