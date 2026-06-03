@@ -159,7 +159,12 @@
     const realGraphData = data.fullGraphData || { nodes: [], edges: [] };
 
     if (!searchQuery.trim() || searchQuery.trim().length < 2) {
-      return [...realGraphData.nodes, ...realGraphData.edges];
+      // Pastikan edges hanya mengarah ke nodes yang benar-benar ada (mencegah error Cytoscape)
+      const validNodeIds = new Set(realGraphData.nodes.map((n: any) => n.data.id));
+      const validEdges = realGraphData.edges.filter((e: any) => 
+        validNodeIds.has(e.data.source) && validNodeIds.has(e.data.target)
+      );
+      return [...realGraphData.nodes, ...validEdges];
     }
 
     const q = searchQuery.toLowerCase();
@@ -183,8 +188,14 @@
     });
 
     const finalNodes = realGraphData.nodes.filter((n: any) => matchedNodeIds.has(n.data.id));
+    
+    // Pastikan valid
+    const finalNodeIds = new Set(finalNodes.map((n: any) => n.data.id));
+    const finalEdges = filteredEdges.filter((e: any) => 
+      finalNodeIds.has(e.data.source) && finalNodeIds.has(e.data.target)
+    );
 
-    return [...finalNodes, ...filteredEdges];
+    return [...finalNodes, ...finalEdges];
   });
 
   // ─── DYNAMIC DATA CORRESPONDENCE ENGINE ───────────────────────
