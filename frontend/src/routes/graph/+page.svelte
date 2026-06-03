@@ -308,7 +308,7 @@
       class="w-full h-full glass rounded-2xl border border-border/10 overflow-hidden flex flex-col transition-all duration-300 min-h-[300px]"
     >
       <!-- Sub-header Menu for Toggle View Engine -->
-      <div class="p-3 border-b border-border/10 bg-surface/30 flex justify-between items-center">
+      <div class="p-3 border-b border-border/10 bg-surface/30 flex justify-between items-center pr-48 md:pr-56">
         <div class="flex flex-col">
           <h3 class="text-[10px] font-bold text-text-secondary uppercase tracking-wider">
             Visualisasi Sumbu Peradaban
