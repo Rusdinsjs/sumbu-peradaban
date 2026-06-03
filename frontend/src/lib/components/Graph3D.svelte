@@ -372,60 +372,10 @@
 
       eventNodes.push({ ev, pos, mesh });
 
-      // Ground Projection Line (Dashed vertical line to ground grid)
-      const points = [];
-      points.push(new THREE.Vector3(pos.x, -MAP_DEPTH / 2 - 5, pos.z));
-      points.push(pos);
-
-      const lineGeom = new THREE.BufferGeometry().setFromPoints(points);
-      const lineMat = new THREE.LineDashedMaterial({
-        color: "#595551",
-        dashSize: 2,
-        gapSize: 2,
-      });
-      const projLine = new THREE.Line(lineGeom, lineMat);
-      projLine.computeLineDistances();
-      projectionLinesGroup.add(projLine);
+      // Garis proyeksi bumi dihapus karena alasan estetika
     });
 
-    // Create Actor Splines (neon spline tracing events)
-    const actorTrajectories: Record<string, THREE.Vector3[]> = {};
-
-    eventNodes.forEach((node) => {
-      node.ev.actors?.forEach((actor) => {
-        if (!actorTrajectories[actor.name]) {
-          actorTrajectories[actor.name] = [];
-        }
-        actorTrajectories[actor.name].push(node.pos);
-      });
-    });
-
-    // Sort spline points chronologically
-    Object.keys(actorTrajectories).forEach((actorName) => {
-      const points = actorTrajectories[actorName];
-      if (points.length < 2) return;
-
-      points.sort((a, b) => a.y - b.y);
-
-      const curve = new THREE.CatmullRomCurve3(points);
-      const curvePoints = curve.getPoints(50);
-      const curveGeom = new THREE.BufferGeometry().setFromPoints(curvePoints);
-
-      const curveMat = new THREE.LineBasicMaterial({
-        color: "#fbbf24", // Gold penyala for splines
-        linewidth: 2,
-      });
-
-      const spline = new THREE.Line(curveGeom, curveMat);
-      splineGroup.add(spline);
-
-      const latestPos = points[points.length - 1];
-      const indicatorGeom = new THREE.SphereGeometry(0.8, 8, 8);
-      const indicatorMat = new THREE.MeshBasicMaterial({ color: "#fbbf24" }); // Gold penyala
-      const indicator = new THREE.Mesh(indicatorGeom, indicatorMat);
-      indicator.position.copy(latestPos);
-      splineGroup.add(indicator);
-    });
+    // Jejak Trajektori tokoh dihapus karena alasan estetika
   });
 </script>
 
@@ -455,22 +405,7 @@
           >Peristiwa (X, Y=Lokasi, Z=Waktu)</span
         >
       </div>
-      <div class="flex items-center gap-2.5 text-[9px]">
-        <span
-          class="w-3.5 h-0.5 bg-yellow-400 inline-block shadow-[0_0_5px_rgba(251,191,36,0.6)]"
-        ></span>
-        <span class="text-text-primary font-medium"
-          >Jejak Trajektori Tokoh (Spline)</span
-        >
-      </div>
-      <div class="flex items-center gap-2.5 text-[9px]">
-        <span
-          class="w-3.5 h-0.5 border-t border-dashed border-slate-500 inline-block"
-        ></span>
-        <span class="text-text-primary font-medium"
-          >Proyeksi Geografis Bumi</span
-        >
-      </div>
+      <!-- Legend spline dan proyeksi dihapus -->
     </div>
 
     <!-- Navigation Section -->
