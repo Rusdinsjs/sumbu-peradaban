@@ -276,6 +276,7 @@ impl MutationRoot {
 
         let precision_str = format!("{:?}", input.precision);
         let default_tier = format!("{:?}", CurationTier::Draft);
+        let media_links_json = serde_json::to_string(&input.media_links.clone().unwrap_or_default()).unwrap_or_else(|_| "[]".to_string());
 
         graph
             .run(
@@ -294,7 +295,8 @@ impl MutationRoot {
                     precision: $precision,
                     curation_tier: $curation_tier,
                     is_connected_to_global: $is_connected,
-                    global_pivot_category: $pivot_cat
+                    global_pivot_category: $pivot_cat,
+                    media_links: $media_links
                 })",
                 )
                 .param("uuid", uuid.to_string())
@@ -316,7 +318,8 @@ impl MutationRoot {
                     "is_connected",
                     input.is_connected_to_global.unwrap_or(false),
                 )
-                .param("pivot_cat", input.global_pivot_category.clone()),
+                .param("pivot_cat", input.global_pivot_category.clone())
+                .param("media_links", media_links_json),
             )
             .await?;
 
@@ -341,6 +344,15 @@ impl MutationRoot {
                 is_connected_to_global: input.is_connected_to_global.unwrap_or(false),
                 global_pivot_category: input.global_pivot_category,
             },
+            media_links: input.media_links.map(|v| {
+                v.into_iter()
+                    .map(|item| MediaLink {
+                        media_type: item.media_type,
+                        url: item.url,
+                        title: item.title,
+                    })
+                    .collect()
+            }),
         })
     }
 
@@ -460,6 +472,16 @@ impl MutationRoot {
                 )
                 .await?;
         }
+        if let Some(media_links) = input.media_links {
+            let media_links_json = serde_json::to_string(&media_links).unwrap_or_else(|_| "[]".to_string());
+            graph
+                .run(
+                    neo_query("MATCH (e:Event {uuid: $uuid}) SET e.media_links = $ml")
+                        .param("uuid", uuid.to_string())
+                        .param("ml", media_links_json),
+                )
+                .await?;
+        }
 
         // Just returning a dummy constructed event or refetching
         // We'll refetch it so we return accurate updated data
@@ -480,7 +502,8 @@ impl MutationRoot {
                 e.precision AS precision, 
                 e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
-                e.global_pivot_category AS global_pivot_category",
+                e.global_pivot_category AS global_pivot_category,
+                e.media_links AS media_links",
                 )
                 .param("uuid", uuid.to_string()),
             )
@@ -499,6 +522,8 @@ impl MutationRoot {
             let gregorian_day: Option<i32> = row.get("gregorian_day").ok();
             let is_connected: bool = row.get("is_connected_to_global").unwrap_or(false);
             let pivot_cat: Option<String> = row.get("global_pivot_category").ok();
+            let media_links_str: Option<String> = row.get("media_links").ok();
+            let media_links: Option<Vec<MediaLink>> = media_links_str.and_then(|s| serde_json::from_str(&s).ok());
 
             return Ok(Event {
                 uuid,
@@ -521,6 +546,7 @@ impl MutationRoot {
                     is_connected_to_global: is_connected,
                     global_pivot_category: pivot_cat,
                 },
+                media_links,
             });
         }
 

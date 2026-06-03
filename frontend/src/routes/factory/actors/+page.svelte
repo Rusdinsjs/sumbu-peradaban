@@ -6,6 +6,21 @@
   let actors = $state<any[]>([]);
   let isLoading = $state(true);
   
+  let searchQuery = $state('');
+  let filterType = $state('all');
+  let sortBy = $state('name-asc');
+
+  let filteredActors = $derived(actors.filter(actor => {
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = actor.name.toLowerCase().includes(searchLower) || (actor.culturalSphere && actor.culturalSphere.toLowerCase().includes(searchLower));
+    const matchesFilter = filterType === 'all' || actor.actorType === filterType;
+    return matchesSearch && matchesFilter;
+  }).sort((a, b) => {
+    if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
+    if (sortBy === 'name-desc') return b.name.localeCompare(a.name);
+    return 0;
+  }));
+  
   let showForm = $state(false);
   let formMode = $state('create'); // 'create' | 'edit'
   let notification = $state<{type: 'success' | 'error', message: string} | null>(null);
@@ -266,15 +281,30 @@
     </div>
   {/if}
 
-  <!-- Header -->
-  <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-    <div>
-      <h1 class="text-2xl font-extrabold text-gold-400">Manajemen Tokoh (Actor)</h1>
-      <p class="text-xs text-text-secondary mt-1">Kelola entitas pelaku sejarah dan hubungkan pustaka karya serta berkas media pendukung.</p>
+  <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-extrabold text-gold-400">Manajemen Tokoh (Actor)</h1>
+        <p class="text-xs text-text-secondary mt-1">Kelola entitas pelaku sejarah dan hubungkan pustaka karya serta berkas media pendukung.</p>
+      </div>
+      <button onclick={openCreateForm} class="px-5 py-2.5 bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 text-xs font-bold rounded-xl border border-gold-500/20 transition-all flex items-center gap-2 whitespace-nowrap">
+        <span>➕</span> Tambah Tokoh
+      </button>
     </div>
-    <button onclick={openCreateForm} class="px-5 py-2.5 bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 text-xs font-bold rounded-xl border border-gold-500/20 transition-all flex items-center gap-2">
-      <span>➕</span> Tambah Tokoh
-    </button>
+
+    <div class="flex flex-col md:flex-row gap-3 pt-4 border-t border-border/10">
+      <input type="text" bind:value={searchQuery} placeholder="Cari nama atau kultural..." class="flex-1 bg-iron-950/60 border border-border/10 rounded-lg p-2.5 text-xs text-text-primary focus:border-gold-500/50 outline-none" />
+      <select bind:value={filterType} class="bg-iron-950/60 border border-border/10 rounded-lg p-2.5 text-xs text-text-primary focus:border-gold-500/50 outline-none min-w-[150px]">
+        <option value="all">Semua Tipe</option>
+        <option value="Individual">Individu</option>
+        <option value="Group">Kelompok</option>
+        <option value="Dynasty">Dinasti</option>
+      </select>
+      <select bind:value={sortBy} class="bg-iron-950/60 border border-border/10 rounded-lg p-2.5 text-xs text-text-primary focus:border-gold-500/50 outline-none min-w-[150px]">
+        <option value="name-asc">Nama (A-Z)</option>
+        <option value="name-desc">Nama (Z-A)</option>
+      </select>
+    </div>
   </div>
 
   {#if showForm}
@@ -382,8 +412,29 @@
             </div>
             
             <div class="flex flex-col gap-1 sm:col-span-2">
-              <label class="text-[10px] font-bold text-text-secondary">URL Media / Berkas</label>
-              <input type="text" bind:value={newMedia.url} class="bg-iron-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-gold-500/50 outline-none" placeholder="https://host.com/gambar-tokoh.png">
+              <label class="text-[10px] font-bold text-text-secondary">URL Media / Berkas (atau Upload)</label>
+              <div class="flex gap-2 items-center">
+                <input type="text" bind:value={newMedia.url} class="flex-1 bg-iron-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-gold-500/50 outline-none" placeholder="https://host.com/gambar-tokoh.png">
+                <input type="file" accept="image/*,audio/*,video/*,.pdf,.txt" class="hidden" id="fileUploadActor" onchange={async (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (!file) return;
+                  const fd = new FormData();
+                  fd.append('file', file);
+                  try {
+                    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                    const data = await res.json();
+                    if (data.url) {
+                      newMedia.url = data.url;
+                      if (!newMedia.title) newMedia.title = data.title;
+                    } else alert(data.error || 'Upload gagal');
+                  } catch (err) {
+                    alert('Upload gagal');
+                  }
+                }}>
+                <label for="fileUploadActor" class="px-3 py-2 bg-iron-900 hover:bg-iron-800 border border-border/10 rounded text-xs cursor-pointer text-text-secondary transition-colors whitespace-nowrap font-bold">
+                  📁 Upload
+                </label>
+              </div>
             </div>
             
             <div class="flex flex-col gap-1">
@@ -443,17 +494,28 @@
         <tbody class="divide-y divide-border/5">
           {#if isLoading}
             <tr><td colspan="5" class="px-6 py-8 text-center text-text-muted">Memuat data...</td></tr>
-          {:else if actors.length === 0}
-            <tr><td colspan="5" class="px-6 py-8 text-center text-text-muted">Belum ada data tokoh.</td></tr>
+          {:else if filteredActors.length === 0}
+            <tr><td colspan="5" class="px-6 py-8 text-center text-text-muted">Tidak ada data tokoh ditemukan.</td></tr>
           {:else}
-            {#each actors as actor}
+            {#each filteredActors as actor}
               <tr class="hover:bg-iron-950/20 transition-colors">
                 <td class="px-6 py-4">
-                  <div class="flex flex-col gap-0.5">
-                    <span class="font-bold text-text-primary text-sm">{actor.name}</span>
-                    {#if actor.description}
-                      <p class="text-[11px] text-text-muted max-w-sm line-clamp-1 italic">{actor.description}</p>
+                  <div class="flex items-center gap-4">
+                    {#if actor.mediaLinks && actor.mediaLinks.some((m: any) => m.mediaType === 'image')}
+                      <div class="w-10 h-10 rounded-full overflow-hidden border border-border/10 flex-shrink-0">
+                        <img src={actor.mediaLinks.find((m: any) => m.mediaType === 'image').url} alt={actor.name} class="w-full h-full object-cover" />
+                      </div>
+                    {:else}
+                      <div class="w-10 h-10 rounded-full bg-iron-900 flex items-center justify-center text-xl border border-border/10 flex-shrink-0">
+                        👤
+                      </div>
                     {/if}
+                    <div class="flex flex-col gap-0.5">
+                      <span class="font-bold text-text-primary text-sm">{actor.name}</span>
+                      {#if actor.description}
+                        <p class="text-[11px] text-text-muted max-w-sm line-clamp-1 italic">{actor.description}</p>
+                      {/if}
+                    </div>
                   </div>
                 </td>
                 <td class="px-6 py-4 text-text-secondary">

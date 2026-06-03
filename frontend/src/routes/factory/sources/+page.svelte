@@ -315,8 +315,29 @@
             </div>
             
             <div class="flex flex-col gap-1 sm:col-span-2">
-              <label for="newMediaUrl" class="text-[10px] font-bold text-text-secondary">Tautan URL Berkas</label>
-              <input id="newMediaUrl" type="text" bind:value={newMedia.url} class="bg-iron-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-blue-500/50 outline-none" placeholder="https://host.com/manuskrip-kuno.jpg">
+              <label for="newMediaUrl" class="text-[10px] font-bold text-text-secondary">Tautan URL Berkas (atau Upload)</label>
+              <div class="flex gap-2 items-center">
+                <input id="newMediaUrl" type="text" bind:value={newMedia.url} class="flex-1 bg-iron-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-blue-500/50 outline-none" placeholder="https://host.com/manuskrip-kuno.jpg">
+                <input type="file" accept="image/*,audio/*,video/*,.pdf,.txt" class="hidden" id="fileUploadSource" onchange={async (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (!file) return;
+                  const fd = new FormData();
+                  fd.append('file', file);
+                  try {
+                    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                    const data = await res.json();
+                    if (data.url) {
+                      newMedia.url = data.url;
+                      if (!newMedia.title) newMedia.title = data.title;
+                    } else alert(data.error || 'Upload gagal');
+                  } catch (err) {
+                    alert('Upload gagal');
+                  }
+                }}>
+                <label for="fileUploadSource" class="px-3 py-2 bg-iron-900 hover:bg-iron-800 border border-border/10 rounded text-xs cursor-pointer text-text-secondary transition-colors whitespace-nowrap font-bold">
+                  📁 Upload
+                </label>
+              </div>
             </div>
             
             <div class="flex flex-col gap-1">
@@ -382,9 +403,20 @@
             {#each sources as src}
               <tr class="hover:bg-iron-950/20 transition-colors">
                 <td class="px-6 py-4 font-bold text-text-primary max-w-xs" title={src.title || src.referenceText}>
-                  <div class="flex flex-col">
-                    <span class="text-blue-400 font-bold">{src.title || 'Tanpa Judul'}</span>
-                    <span class="text-[10px] text-text-muted italic truncate max-w-xs">"{src.referenceText}"</span>
+                  <div class="flex items-center gap-4">
+                    {#if src.mediaLinks && src.mediaLinks.some((m: any) => m.mediaType === 'image')}
+                      <div class="w-10 h-10 rounded-lg overflow-hidden border border-border/10 flex-shrink-0">
+                        <img src={src.mediaLinks.find((m: any) => m.mediaType === 'image').url} alt={src.title} class="w-full h-full object-cover" />
+                      </div>
+                    {:else}
+                      <div class="w-10 h-10 rounded-lg bg-iron-900 flex items-center justify-center text-xl border border-border/10 flex-shrink-0">
+                        📖
+                      </div>
+                    {/if}
+                    <div class="flex flex-col">
+                      <span class="text-blue-400 font-bold">{src.title || 'Tanpa Judul'}</span>
+                      <span class="text-[10px] text-text-muted italic truncate max-w-[200px]">"{src.referenceText}"</span>
+                    </div>
                   </div>
                 </td>
                 <td class="px-6 py-4 text-text-secondary">

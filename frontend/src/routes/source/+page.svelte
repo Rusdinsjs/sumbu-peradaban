@@ -41,7 +41,7 @@
   <!-- Header Title -->
   <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
     <div>
-      <h1 class="text-xl md:text-2xl font-extrabold text-violet-400">Direktori Kitab Rujukan & Sanad</h1>
+      <h1 class="text-xl md:text-2xl font-extrabold text-gold-400">Direktori Kitab Rujukan & Sanad</h1>
       <p class="text-xs text-text-secondary mt-1">Poros dimensi pembuktian historis — memetakan tingkat keabsahan & reliabilitas naskah rujukan di Sumbu Peradaban.</p>
     </div>
   </div>
@@ -53,21 +53,21 @@
         type="text"
         bind:value={searchQuery}
         placeholder="Cari rujukan sejarah..."
-        class="w-full bg-iron-950/60 border border-border/15 rounded-xl px-4 py-2.5 text-xs text-text-primary placeholder-text-muted outline-none focus:border-violet-500/40 transition-colors"
+        class="w-full bg-iron-950/60 border border-border/15 rounded-xl px-4 py-2.5 text-xs text-text-primary placeholder-text-muted outline-none focus:border-gold-500/40 transition-colors"
       />
     </div>
     <div class="flex items-center gap-4 w-full md:w-auto justify-between md:justify-end">
       <span class="text-xs text-text-muted">{filteredSources.length} sumber tervalidasi</span>
       <div class="flex items-center bg-iron-950/60 border border-border/10 rounded-lg p-1">
         <button 
-          class="p-1.5 rounded-md text-xs transition-colors {viewMode === 'grid' ? 'bg-violet-500/20 text-violet-400' : 'text-text-muted hover:text-text-primary'}"
+          class="p-1.5 rounded-md text-xs transition-colors {viewMode === 'grid' ? 'bg-gold-500/20 text-gold-400' : 'text-text-muted hover:text-text-primary'}"
           onclick={() => viewMode = 'grid'}
           title="Tampilan Kanban (Grid)"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
         </button>
         <button 
-          class="p-1.5 rounded-md text-xs transition-colors {viewMode === 'list' ? 'bg-violet-500/20 text-violet-400' : 'text-text-muted hover:text-text-primary'}"
+          class="p-1.5 rounded-md text-xs transition-colors {viewMode === 'list' ? 'bg-gold-500/20 text-gold-400' : 'text-text-muted hover:text-text-primary'}"
           onclick={() => viewMode = 'list'}
           title="Tampilan Daftar (List)"
         >
@@ -87,69 +87,79 @@
       {#each filteredSources as source}
         <a 
           href="/source/{source.id}"
-          class="glass p-5 rounded-2xl border border-border/10 hover:border-violet-500/30 hover:shadow-[0_0_20px_rgba(139,92,246,0.05)] transition-all flex flex-col gap-4 group"
+          class="rounded-2xl transition-all flex flex-row group overflow-hidden h-full gap-4 hover:bg-iron-950/20"
         >
-          <div class="flex justify-between items-start">
-            <div class="w-12 h-12 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-xl text-violet-400 group-hover:scale-105 transition-transform">
-              {source.avatar}
-            </div>
-            <CurationBadge tier={source.tier as any} size="sm" />
+          <!-- Book Cover Section (25%) -->
+          <div class="w-1/4 min-w-[80px] bg-gradient-to-br from-gold-900/40 to-iron-950 border-r border-gold-500/20 flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(212,168,83,0.05)] group-hover:from-gold-800/40 transition-colors rounded-l-xl rounded-r-sm">
+            <div class="absolute left-0 top-0 bottom-0 w-2 bg-black/40"></div> <!-- Spine shadow -->
+            <div class="absolute left-2 top-0 bottom-0 w-[1px] bg-white/10"></div> <!-- Spine highlight -->
+            <span class="text-3xl sm:text-4xl relative z-10 filter drop-shadow-lg">{source.avatar}</span>
           </div>
 
-          <div>
-            <h3 class="text-sm font-bold text-text-primary group-hover:text-violet-400 transition-colors leading-snug">{source.title}</h3>
-            <p class="text-xs text-text-secondary mt-0.5">{source.author}</p>
-          </div>
+          <!-- Book Details Section (75%) -->
+          <div class="flex-1 py-4 pr-4 flex flex-col gap-3">
+            <div class="flex justify-between items-start gap-2">
+              <h3 class="text-sm font-bold text-text-primary group-hover:text-gold-400 transition-colors leading-snug line-clamp-2">{source.title}</h3>
+              <CurationBadge tier={source.tier as any} size="sm" />
+            </div>
 
-          <div class="p-3.5 rounded-xl bg-iron-950/40 border border-border/5 flex flex-col gap-1.5 text-[10px] mt-auto">
-            <div class="flex justify-between">
-              <span class="text-text-muted">Klasifikasi:</span>
-              <span class="text-text-primary font-medium">{source.type}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-text-muted">Era Penulisan:</span>
-              <span class="text-gold-400 font-medium">{source.period}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-text-muted">Tingkat Kepercayaan:</span>
-              <span class="text-verdigris-400 font-bold">{source.reliability}</span>
+            <p class="text-[11px] text-text-secondary line-clamp-1 italic">{source.author}</p>
+
+            <div class="rounded-xl bg-iron-950/40 border border-border/5 flex flex-col gap-1.5 p-3 text-[10px] mt-auto">
+              <div class="flex justify-between">
+                <span class="text-text-muted">Domain:</span>
+                <span class="text-text-primary font-medium truncate max-w-[100px] text-right">{source.type}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-text-muted">Era:</span>
+                <span class="text-gold-400 font-medium">{source.period}</span>
+              </div>
+              <div class="flex justify-between items-center mt-1.5 pt-1.5 border-t border-border/5">
+                <span class="text-text-muted">Validitas:</span>
+                <span class="text-verdigris-400 font-bold px-1.5 bg-verdigris-500/10 border border-verdigris-500/20 rounded">{source.reliability}</span>
+              </div>
             </div>
           </div>
         </a>
       {/each}
     </div>
   {:else}
-    <div class="flex flex-col gap-3">
+    <div class="flex flex-col gap-8">
       {#each filteredSources as source}
         <a 
           href="/source/{source.id}"
-          class="glass p-4 rounded-xl border border-border/10 hover:border-violet-500/30 hover:shadow-[0_0_20px_rgba(139,92,246,0.05)] transition-all flex flex-col md:flex-row md:items-center justify-between gap-4 group"
+          class="transition-all flex flex-row items-stretch group gap-5"
         >
-          <div class="flex items-center gap-4">
-            <div class="w-10 h-10 rounded-xl bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-lg text-violet-400 group-hover:scale-105 transition-transform flex-shrink-0">
-              {source.avatar}
-            </div>
-            <div>
-              <h3 class="text-sm font-bold text-text-primary group-hover:text-violet-400 transition-colors">{source.title}</h3>
-              <p class="text-[10px] text-text-secondary mt-0.5">{source.author}</p>
-            </div>
+          <!-- Book Cover Section (fixed width for list view) -->
+          <div class="w-20 md:w-28 rounded-r-sm rounded-l-xl bg-gradient-to-br from-gold-900/40 to-iron-950 border-r border-gold-500/20 flex flex-col items-center justify-center relative shadow-[0_0_20px_rgba(212,168,83,0.05)] group-hover:from-gold-800/40 transition-colors flex-shrink-0">
+            <div class="absolute left-0 top-0 bottom-0 w-1.5 bg-black/40"></div>
+            <div class="absolute left-1.5 top-0 bottom-0 w-[1px] bg-white/10"></div>
+            <span class="text-2xl md:text-3xl relative z-10 filter drop-shadow-lg">{source.avatar}</span>
           </div>
 
-          <div class="flex items-center gap-4 md:gap-6 flex-wrap text-[10px] justify-between md:justify-end">
-            <div class="flex flex-col text-right">
-              <span class="text-text-muted">Domain</span>
-              <span class="text-text-primary font-medium mt-0.5">{source.type}</span>
+          <!-- Book Details -->
+          <div class="py-2 flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-border/5 pb-6">
+            <div class="flex-1">
+              <h3 class="text-sm font-bold text-text-primary group-hover:text-gold-400 transition-colors line-clamp-1">{source.title}</h3>
+              <p class="text-[10px] text-text-secondary mt-1 italic line-clamp-1">{source.author}</p>
             </div>
-            <div class="flex flex-col text-right">
-              <span class="text-text-muted">Era</span>
-              <span class="text-gold-400 font-medium mt-0.5">{source.period}</span>
-            </div>
-            <div class="flex flex-col text-right">
-              <span class="text-text-muted">Keandalan</span>
-              <span class="text-verdigris-400 font-bold mt-0.5 font-mono">{source.reliability}</span>
-            </div>
-            <div class="flex-shrink-0 ml-auto md:ml-0">
-              <CurationBadge tier={source.tier as any} size="sm" />
+
+            <div class="flex items-center gap-4 md:gap-6 flex-wrap text-[10px] justify-between md:justify-end">
+              <div class="flex flex-col text-right hidden sm:flex">
+                <span class="text-text-muted">Domain</span>
+                <span class="text-text-primary font-medium mt-0.5">{source.type}</span>
+              </div>
+              <div class="flex flex-col text-right">
+                <span class="text-text-muted">Era</span>
+                <span class="text-gold-400 font-medium mt-0.5">{source.period}</span>
+              </div>
+              <div class="flex flex-col text-right">
+                <span class="text-text-muted">Keandalan</span>
+                <span class="text-verdigris-400 font-bold mt-0.5 font-mono bg-verdigris-500/10 border border-verdigris-500/20 px-1.5 py-0.5 rounded inline-block">{source.reliability}</span>
+              </div>
+              <div class="flex-shrink-0 ml-auto md:ml-0">
+                <CurationBadge tier={source.tier as any} size="sm" />
+              </div>
             </div>
           </div>
         </a>

@@ -115,7 +115,7 @@ impl QueryRoot {
                 e.precision AS precision, 
                 e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
-                e.global_pivot_category AS global_pivot_category",
+                e.global_pivot_category AS global_pivot_category, e.media_links AS media_links",
                 )
                 .param("uuid", uuid.to_string()),
             )
@@ -156,7 +156,7 @@ impl QueryRoot {
                 e.precision AS precision, 
                 e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
-                e.global_pivot_category AS global_pivot_category 
+                e.global_pivot_category AS global_pivot_category, e.media_links AS media_links 
                 ORDER BY e.hijri_year ASC, e.hijri_month ASC, e.hijri_day ASC 
                 SKIP $offset LIMIT $limit",
                 )
@@ -199,7 +199,7 @@ impl QueryRoot {
                 e.precision AS precision, 
                 e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
-                e.global_pivot_category AS global_pivot_category 
+                e.global_pivot_category AS global_pivot_category, e.media_links AS media_links 
                 LIMIT $limit")
                 .param("query", query)
                 .param("limit", limit as i64)
@@ -703,7 +703,7 @@ impl QueryRoot {
                 e.precision AS precision, 
                 e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
-                e.global_pivot_category AS global_pivot_category 
+                e.global_pivot_category AS global_pivot_category, e.media_links AS media_links 
                 ORDER BY e.hijri_year ASC",
                 )
                 .param("from_year", from_year as i64)
@@ -763,6 +763,9 @@ fn row_to_event(row: &neo4rs::Row) -> Result<Event> {
     let is_connected: bool = row.get("is_connected_to_global").unwrap_or(false);
     let pivot_cat: Option<String> = row.get("global_pivot_category").ok();
 
+    let media_links_str: Option<String> = row.get("media_links").ok();
+    let media_links: Option<Vec<MediaLink>> = media_links_str.and_then(|s| serde_json::from_str(&s).ok());
+
     Ok(Event {
         uuid,
         title,
@@ -784,6 +787,7 @@ fn row_to_event(row: &neo4rs::Row) -> Result<Event> {
             is_connected_to_global: is_connected,
             global_pivot_category: pivot_cat,
         },
+        media_links,
     })
 }
 
@@ -988,7 +992,7 @@ impl Actor {
                 e.gregorian_month AS gregorian_month, e.gregorian_day AS gregorian_day, 
                 e.precision AS precision, e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
-                e.global_pivot_category AS global_pivot_category")
+                e.global_pivot_category AS global_pivot_category, e.media_links AS media_links")
             .param("uuid", self.uuid.to_string())
         ).await?;
         
@@ -1074,7 +1078,7 @@ impl Actor {
                 e.gregorian_month AS gregorian_month, e.gregorian_day AS gregorian_day, 
                 e.precision AS precision, e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
-                e.global_pivot_category AS global_pivot_category")
+                e.global_pivot_category AS global_pivot_category, e.media_links AS media_links")
             .param("uuid", self.uuid.to_string())
         ).await?;
         
@@ -1192,7 +1196,7 @@ impl Location {
                 e.gregorian_month AS gregorian_month, e.gregorian_day AS gregorian_day, 
                 e.precision AS precision, e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
-                e.global_pivot_category AS global_pivot_category")
+                e.global_pivot_category AS global_pivot_category, e.media_links AS media_links")
             .param("uuid", self.uuid.to_string())
         ).await?;
         
@@ -1255,7 +1259,7 @@ impl Location {
                 e.gregorian_month AS gregorian_month, e.gregorian_day AS gregorian_day, 
                 e.precision AS precision, e.curation_tier AS curation_tier, 
                 e.is_connected_to_global AS is_connected_to_global, 
-                e.global_pivot_category AS global_pivot_category")
+                e.global_pivot_category AS global_pivot_category, e.media_links AS media_links")
             .param("uuid", self.uuid.to_string())
         ).await?;
         
@@ -1452,7 +1456,7 @@ impl Source {
                     e.gregorian_month AS gregorian_month, e.gregorian_day AS gregorian_day, 
                     e.precision AS precision, e.curation_tier AS curation_tier, 
                     e.is_connected_to_global AS is_connected_to_global, 
-                    e.global_pivot_category AS global_pivot_category
+                    e.global_pivot_category AS global_pivot_category, e.media_links AS media_links
             ")
             .param("source_id", self.source_id.to_string())
         ).await?;

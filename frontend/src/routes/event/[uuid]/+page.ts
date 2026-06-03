@@ -17,6 +17,11 @@ export const load: PageLoad = async ({ fetch, params }) => {
         }
         curationTier
         precision
+        mediaLinks {
+          mediaType
+          url
+          title
+        }
         sources {
           sourceId
           domain

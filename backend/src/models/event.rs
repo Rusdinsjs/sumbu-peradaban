@@ -23,6 +23,7 @@ pub struct Event {
     pub precision: TimePrecision,
     pub curation_tier: CurationTier,
     pub global_hook: GlobalHook,
+    pub media_links: Option<Vec<MediaLink>>,
 }
 
 // ---------------------------------------------------------------------------
@@ -39,6 +40,7 @@ pub struct CreateEventInput {
     pub precision: TimePrecision,
     pub is_connected_to_global: Option<bool>,
     pub global_pivot_category: Option<String>,
+    pub media_links: Option<Vec<MediaLinkInput>>,
 }
 
 #[derive(Debug, InputObject)]
@@ -51,4 +53,5 @@ pub struct UpdateEventInput {
     pub precision: Option<TimePrecision>,
     pub is_connected_to_global: Option<bool>,
     pub global_pivot_category: Option<String>,
+    pub media_links: Option<Vec<MediaLinkInput>>,
 }

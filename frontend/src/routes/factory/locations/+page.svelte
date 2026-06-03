@@ -5,6 +5,21 @@
 
   let locations = $state<any[]>([]);
   let isLoading = $state(true);
+
+  let searchQuery = $state('');
+  let filterType = $state('all');
+  let sortBy = $state('name-asc');
+
+  let filteredLocations = $derived(locations.filter(loc => {
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = loc.name.toLowerCase().includes(searchLower) || (loc.historicalRole && loc.historicalRole.toLowerCase().includes(searchLower));
+    const matchesFilter = filterType === 'all' || loc.precision === filterType;
+    return matchesSearch && matchesFilter;
+  }).sort((a, b) => {
+    if (sortBy === 'name-asc') return a.name.localeCompare(b.name);
+    if (sortBy === 'name-desc') return b.name.localeCompare(a.name);
+    return 0;
+  }));
   
   let showForm = $state(false);
   let formMode = $state('create'); // 'create' | 'edit'
@@ -234,15 +249,30 @@
     </div>
   {/if}
 
-  <!-- Header -->
-  <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-    <div>
-      <h1 class="text-2xl font-extrabold text-verdigris-400">Manajemen Lokasi (Location)</h1>
-      <p class="text-xs text-text-secondary mt-1">Kelola entitas spasial / tempat bersejarah dalam Knowledge Graph.</p>
+  <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4">
+    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+      <div>
+        <h1 class="text-2xl font-extrabold text-verdigris-400">Manajemen Lokasi (Location)</h1>
+        <p class="text-xs text-text-secondary mt-1">Kelola entitas spasial / tempat bersejarah dalam Knowledge Graph.</p>
+      </div>
+      <button onclick={openCreateForm} class="px-5 py-2.5 bg-verdigris-500/10 hover:bg-verdigris-500/20 text-verdigris-400 text-xs font-bold rounded-xl border border-verdigris-500/20 transition-all flex items-center gap-2 whitespace-nowrap">
+        <span>➕</span> Tambah Lokasi
+      </button>
     </div>
-    <button onclick={openCreateForm} class="px-5 py-2.5 bg-verdigris-500/10 hover:bg-verdigris-500/20 text-verdigris-400 text-xs font-bold rounded-xl border border-verdigris-500/20 transition-all flex items-center gap-2">
-      <span>➕</span> Tambah Lokasi
-    </button>
+
+    <div class="flex flex-col md:flex-row gap-3 pt-4 border-t border-border/10">
+      <input type="text" bind:value={searchQuery} placeholder="Cari nama atau sejarah..." class="flex-1 bg-iron-950/60 border border-border/10 rounded-lg p-2.5 text-xs text-text-primary focus:border-verdigris-500/50 outline-none" />
+      <select bind:value={filterType} class="bg-iron-950/60 border border-border/10 rounded-lg p-2.5 text-xs text-text-primary focus:border-verdigris-500/50 outline-none min-w-[150px]">
+        <option value="all">Semua Presisi</option>
+        <option value="POINT">Titik Koordinat (POINT)</option>
+        <option value="REGION">Wilayah Umum (REGION)</option>
+        <option value="CONCEPTUAL">Konseptual (CONCEPTUAL)</option>
+      </select>
+      <select bind:value={sortBy} class="bg-iron-950/60 border border-border/10 rounded-lg p-2.5 text-xs text-text-primary focus:border-verdigris-500/50 outline-none min-w-[150px]">
+        <option value="name-asc">Nama (A-Z)</option>
+        <option value="name-desc">Nama (Z-A)</option>
+      </select>
+    </div>
   </div>
 
   {#if showForm}
@@ -323,8 +353,29 @@
             </div>
             
             <div class="flex flex-col gap-1 sm:col-span-2">
-              <label class="text-[10px] font-bold text-text-secondary">URL Media / Berkas</label>
-              <input type="text" bind:value={newMedia.url} class="bg-iron-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-verdigris-500/50 outline-none" placeholder="https://host.com/peta-kuno.png">
+              <label class="text-[10px] font-bold text-text-secondary">URL Media / Berkas (atau Upload)</label>
+              <div class="flex gap-2 items-center">
+                <input type="text" bind:value={newMedia.url} class="flex-1 bg-iron-900 border border-border/10 rounded p-2 text-xs text-text-primary focus:border-gold-500/50 outline-none" placeholder="https://host.com/gambar-lokasi.png">
+                <input type="file" accept="image/*,audio/*,video/*,.pdf,.txt" class="hidden" id="fileUploadLocation" onchange={async (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (!file) return;
+                  const fd = new FormData();
+                  fd.append('file', file);
+                  try {
+                    const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                    const data = await res.json();
+                    if (data.url) {
+                      newMedia.url = data.url;
+                      if (!newMedia.title) newMedia.title = data.title;
+                    } else alert(data.error || 'Upload gagal');
+                  } catch (err) {
+                    alert('Upload gagal');
+                  }
+                }}>
+                <label for="fileUploadLocation" class="px-3 py-2 bg-iron-900 hover:bg-iron-800 border border-border/10 rounded text-xs cursor-pointer text-text-secondary transition-colors whitespace-nowrap font-bold">
+                  📁 Upload
+                </label>
+              </div>
             </div>
             
             <div class="flex flex-col gap-1">
@@ -384,16 +435,29 @@
         <tbody class="divide-y divide-border/5">
           {#if isLoading}
             <tr><td colspan="5" class="px-6 py-8 text-center text-text-muted">Memuat data...</td></tr>
-          {:else if locations.length === 0}
-            <tr><td colspan="5" class="px-6 py-8 text-center text-text-muted">Belum ada data lokasi.</td></tr>
+          {:else if filteredLocations.length === 0}
+            <tr><td colspan="5" class="px-6 py-8 text-center text-text-muted">Tidak ada data lokasi ditemukan.</td></tr>
           {:else}
-            {#each locations as loc}
+            {#each filteredLocations as loc}
               <tr class="hover:bg-iron-950/20 transition-colors">
                 <td class="px-6 py-4">
-                  <div class="font-bold text-text-primary">{loc.name}</div>
-                  {#if loc.historicalRole}
-                    <div class="text-[10px] text-text-muted truncate max-w-[200px] mt-0.5">{loc.historicalRole}</div>
-                  {/if}
+                  <div class="flex items-center gap-4">
+                    {#if loc.mediaLinks && loc.mediaLinks.some((m: any) => m.mediaType === 'image')}
+                      <div class="w-10 h-10 rounded-full overflow-hidden border border-border/10 flex-shrink-0">
+                        <img src={loc.mediaLinks.find((m: any) => m.mediaType === 'image').url} alt={loc.name} class="w-full h-full object-cover" />
+                      </div>
+                    {:else}
+                      <div class="w-10 h-10 rounded-full bg-iron-900 flex items-center justify-center text-xl border border-border/10 flex-shrink-0">
+                        📍
+                      </div>
+                    {/if}
+                    <div class="flex flex-col">
+                      <div class="font-bold text-text-primary">{loc.name}</div>
+                      {#if loc.historicalRole}
+                        <div class="text-[10px] text-text-muted truncate max-w-[200px] mt-0.5">{loc.historicalRole}</div>
+                      {/if}
+                    </div>
+                  </div>
                 </td>
                 <td class="px-6 py-4 text-text-secondary">
                   <span class="px-2 py-1 bg-iron-950/50 rounded text-[10px] uppercase border border-border/10">{loc.precision}</span>

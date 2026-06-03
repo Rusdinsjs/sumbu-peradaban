@@ -1,6 +1,7 @@
 <script lang="ts">
   import MapView from '$lib/components/MapView.svelte';
   import { slide } from 'svelte/transition';
+  import { Search } from 'lucide-svelte';
   let { data } = $props<{ data: any }>();
 
   // Derive location event counts from central API graph data
@@ -207,7 +208,13 @@
     return finalTree;
   }
 
-  let treeData = $derived(buildTree(formattedLocations));
+  let searchQuery = $state('');
+
+  let treeData = $derived(buildTree(
+    searchQuery 
+      ? formattedLocations.filter((loc: any) => loc.name.toLowerCase().includes(searchQuery.toLowerCase()))
+      : formattedLocations
+  ));
 
   let expandedRegions = $state<Record<string, boolean>>({});
   let initialized = false;
@@ -236,6 +243,18 @@
       <p class="text-xs text-text-secondary leading-relaxed">
         Visualisasi 3 Dimensi geospasial lokasi-lokasi penting sejarah Islam dan keterhubungannya dengan konseptual transendental.
       </p>
+      
+      <div class="relative">
+        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+          <Search size={14} class="text-text-muted" />
+        </div>
+        <input 
+          type="text" 
+          bind:value={searchQuery}
+          placeholder="Cari lokasi..." 
+          class="w-full bg-iron-950/60 border border-border/10 rounded-lg pl-9 pr-3 py-2 text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-gold-500/50 transition-colors"
+        />
+      </div>
     </div>
 
     <!-- Location Tree -->

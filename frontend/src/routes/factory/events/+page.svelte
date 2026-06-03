@@ -11,6 +11,22 @@
   let sources: any[] = $state([]);
   let isLoading = $state(true);
 
+  // --- Search & Filter States ---
+  let searchQuery = $state('');
+  let filterType = $state('all');
+  let sortBy = $state('title-asc');
+
+  let filteredEvents = $derived(events.filter(evt => {
+    const searchLower = searchQuery.toLowerCase();
+    const matchesSearch = evt.title.toLowerCase().includes(searchLower) || (evt.description && evt.description.toLowerCase().includes(searchLower));
+    const matchesFilter = filterType === 'all' || evt.precision === filterType;
+    return matchesSearch && matchesFilter;
+  }).sort((a, b) => {
+    if (sortBy === 'title-asc') return a.title.localeCompare(b.title);
+    if (sortBy === 'title-desc') return b.title.localeCompare(a.title);
+    return 0;
+  }));
+
   // --- UI States ---
   let showForm = $state(false);
   let formMode = $state('create'); // 'create' | 'edit'
@@ -40,7 +56,8 @@
     selectedActors: [] as string[],
     selectedLocations: [] as string[],
     selectedSources: [] as string[],
-    subReferences: {} as Record<string, Array<{ section: string, point: string, note: string }>>
+    subReferences: {} as Record<string, Array<{ section: string, point: string, note: string }>>,
+    mediaLinks: [] as Array<{ mediaType: string, url: string, title: string }>
   });
   let submitError = $state('');
   let isSaving = $state(false);
@@ -76,6 +93,7 @@
             actors { uuid }
             locations { uuid }
             sources { sourceId subReferences }
+            mediaLinks { mediaType url title }
           }
           actors { uuid name }
           locations { uuid name }
@@ -126,7 +144,8 @@
       selectedActors: (evt.actors || []).map((a: any) => a.uuid),
       selectedLocations: (evt.locations || []).map((l: any) => l.uuid),
       selectedSources: (evt.sources || []).map((s: any) => s.sourceId),
-      subReferences: subRefsMap
+      subReferences: subRefsMap,
+      mediaLinks: evt.mediaLinks ? evt.mediaLinks.map((m: any) => ({ ...m })) : []
     };
     submitError = '';
     showForm = true;
@@ -136,7 +155,7 @@
     formData = {
       uuid: '', title: '', description: '', hijriYear: '', gregorianYear: '', 
       precision: 'EXACT', isPivot: false, selectedActors: [], selectedLocations: [], selectedSources: [],
-      subReferences: {}
+      subReferences: {}, mediaLinks: []
     };
     submitError = '';
   }
@@ -163,7 +182,8 @@
             gregorianDate: { year: parseInt(formData.gregorianYear) || 0 },
             precision: formData.precision,
             isConnectedToGlobal: formData.isPivot,
-            globalPivotCategory: formData.isPivot ? "Dunia Islam" : null
+            globalPivotCategory: formData.isPivot ? "Dunia Islam" : null,
+            mediaLinks: formData.mediaLinks.length > 0 ? formData.mediaLinks : null
           }
         };
 
@@ -185,7 +205,8 @@
             gregorianDate: { year: parseInt(formData.gregorianYear) || 0 },
             precision: formData.precision,
             isConnectedToGlobal: formData.isPivot,
-            globalPivotCategory: formData.isPivot ? "Dunia Islam" : null
+            globalPivotCategory: formData.isPivot ? "Dunia Islam" : null,
+            mediaLinks: formData.mediaLinks.length > 0 ? formData.mediaLinks : null
           }
         };
 
@@ -280,11 +301,26 @@
 
   {#if activeTab === 'manual'}
     {#if !showForm}
-      <div class="flex justify-between items-center mb-2 mt-2">
-        <h2 class="text-lg font-bold text-text-primary">Daftar Peristiwa ({events.length})</h2>
-        <button onclick={openCreateForm} class="px-5 py-2 rounded-xl gradient-rust text-surface font-bold text-xs hover:shadow-[0_0_15px_rgba(212,168,83,0.4)] transition-all flex items-center gap-2">
-          <span>+</span> Tambah Peristiwa
-        </button>
+      <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 mb-4 mt-2">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <h2 class="text-lg font-bold text-text-primary">Daftar Peristiwa ({filteredEvents.length})</h2>
+          <button onclick={openCreateForm} class="px-5 py-2 rounded-xl gradient-rust text-surface font-bold text-xs hover:shadow-[0_0_15px_rgba(212,168,83,0.4)] transition-all flex items-center gap-2 whitespace-nowrap">
+            <span>+</span> Tambah Peristiwa
+          </button>
+        </div>
+        <div class="flex flex-col md:flex-row gap-3 pt-4 border-t border-border/10">
+          <input type="text" bind:value={searchQuery} placeholder="Cari judul atau deskripsi..." class="flex-1 bg-iron-950/60 border border-border/10 rounded-lg p-2.5 text-xs text-text-primary focus:border-gold-500/50 outline-none" />
+          <select bind:value={filterType} class="bg-iron-950/60 border border-border/10 rounded-lg p-2.5 text-xs text-text-primary focus:border-gold-500/50 outline-none min-w-[150px]">
+            <option value="all">Semua Presisi</option>
+            <option value="EXACT">Tepat Waktu (EXACT)</option>
+            <option value="YEAR">Tahun (YEAR)</option>
+            <option value="DECADE">Dekade (DECADE)</option>
+          </select>
+          <select bind:value={sortBy} class="bg-iron-950/60 border border-border/10 rounded-lg p-2.5 text-xs text-text-primary focus:border-gold-500/50 outline-none min-w-[150px]">
+            <option value="title-asc">Judul (A-Z)</option>
+            <option value="title-desc">Judul (Z-A)</option>
+          </select>
+        </div>
       </div>
 
       {#if isLoading}
@@ -308,7 +344,10 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-border/10">
-                {#each events as evt}
+                {#if filteredEvents.length === 0}
+                  <tr><td colspan="4" class="px-6 py-8 text-center text-text-muted">Tidak ada data peristiwa ditemukan.</td></tr>
+                {:else}
+                  {#each filteredEvents as evt}
                   <tr class="hover:bg-surface-lighter/20 transition-colors">
                     <td class="px-6 py-4">
                       <div class="font-bold text-text-primary">{evt.title}</div>
@@ -329,6 +368,7 @@
                     </td>
                   </tr>
                 {/each}
+              {/if}
               </tbody>
             </table>
           {/if}
@@ -392,6 +432,63 @@
                   </label>
                 </div>
               </div>
+            </div>
+          </div>
+
+          <!-- Group 1.5: Jumbotron Ilustrasi Peristiwa (Full Width) -->
+          <div class="glass p-6 rounded-2xl border border-border/10 flex flex-col gap-4 bg-iron-950/20">
+            <div class="flex justify-between items-center border-b border-border/5 pb-2.5">
+              <h3 class="text-sm font-bold text-gold-400 flex items-center gap-2">
+                <span>🖼️</span> 1.5 Jumbotron / Ilustrasi Peristiwa
+              </h3>
+            </div>
+            
+            <div class="flex flex-col gap-3">
+              <p class="text-[10px] text-text-muted">Tambahkan gambar ilustrasi untuk menghidupkan narasi peristiwa (Jumbotron). Anda bisa memberikan URL atau langsung mengunggah file.</p>
+              
+              <div class="flex flex-col gap-2">
+                {#each formData.mediaLinks as media, i}
+                  <div class="flex gap-3 items-center bg-iron-900/40 p-3 rounded-lg border border-border/5 group relative">
+                    <div class="w-12 h-12 bg-iron-950 rounded flex-shrink-0 border border-border/10 overflow-hidden">
+                      <img src={media.url} alt="preview" class="w-full h-full object-cover opacity-80" onerror={(e) => e.currentTarget.style.display = 'none'} />
+                    </div>
+                    <div class="flex flex-col flex-1 gap-1">
+                      <input type="text" bind:value={media.title} class="bg-transparent border-b border-border/10 text-xs text-text-primary focus:border-gold-500/50 outline-none w-full" placeholder="Judul / Keterangan Gambar" />
+                      <input type="text" bind:value={media.url} class="bg-transparent text-[10px] text-text-secondary focus:text-text-primary outline-none w-full font-mono" placeholder="URL Gambar..." />
+                    </div>
+                    <button onclick={() => formData.mediaLinks.splice(i, 1)} class="text-red-400 hover:bg-red-500/20 px-2 py-1 rounded text-xs opacity-50 group-hover:opacity-100 transition-opacity">Hapus</button>
+                  </div>
+                {/each}
+              </div>
+
+              <div class="flex flex-col gap-2 mt-2 p-3 bg-iron-950/40 rounded-lg border border-border/5">
+                <span class="text-[10px] font-bold text-text-secondary uppercase tracking-widest">Tambah Gambar Baru</span>
+                <div class="flex gap-2 items-center">
+                  <input type="file" accept="image/*" class="hidden" id="fileUploadEvent" onchange={async (e) => {
+                    const file = (e.target as HTMLInputElement).files?.[0];
+                    if (!file) return;
+                    const fd = new FormData();
+                    fd.append('file', file);
+                    try {
+                      const res = await fetch('/api/upload', { method: 'POST', body: fd });
+                      const data = await res.json();
+                      if (data.url) {
+                        formData.mediaLinks.push({ mediaType: 'image', url: data.url, title: data.title });
+                      } else alert(data.error || 'Upload gagal');
+                    } catch (err) {
+                      alert('Upload gagal');
+                    }
+                  }}>
+                  <label for="fileUploadEvent" class="px-4 py-2.5 bg-gold-500/10 hover:bg-gold-500/20 border border-gold-500/20 rounded-lg text-xs cursor-pointer text-gold-400 transition-colors whitespace-nowrap font-bold flex items-center gap-2">
+                    📁 Upload File Gambar
+                  </label>
+                  <span class="text-[10px] text-text-muted px-2">atau</span>
+                  <button onclick={() => formData.mediaLinks.push({ mediaType: 'image', url: '', title: '' })} class="px-4 py-2.5 bg-iron-900 hover:bg-iron-800 border border-border/10 rounded-lg text-xs cursor-pointer text-text-secondary transition-colors font-bold whitespace-nowrap">
+                    🔗 Input URL Manual
+                  </button>
+                </div>
+              </div>
+
             </div>
           </div>
 

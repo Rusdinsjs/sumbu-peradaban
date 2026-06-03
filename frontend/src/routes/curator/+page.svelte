@@ -11,7 +11,21 @@
   let isSaving = $state(false);
   let errorMessage = $state('');
 
-  const selectedItem = $derived(queue.find(item => item.id === selectedId));
+  let searchQuery = $state('');
+  let filterType = $state('all');
+  let sortBy = $state('title-asc');
+
+  let filteredQueue = $derived(queue.filter(item => {
+    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesFilter = filterType === 'all' || item.type === filterType;
+    return matchesSearch && matchesFilter;
+  }).sort((a, b) => {
+    if (sortBy === 'title-asc') return a.title.localeCompare(b.title);
+    if (sortBy === 'title-desc') return b.title.localeCompare(a.title);
+    return 0;
+  }));
+
+  const selectedItem = $derived(filteredQueue.find(item => item.id === selectedId));
 
   async function loadData() {
     isLoading = true;
@@ -197,10 +211,26 @@
       <!-- Queue Sidebar (2/5) -->
       <div class="lg:col-span-2 flex flex-col gap-4">
         <div class="glass p-5 rounded-2xl border border-border/10 flex flex-col gap-3 flex-1">
-          <h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider">Antrean Peninjauan ({queue.length})</h3>
+          <h3 class="text-xs font-bold text-text-secondary uppercase tracking-wider">Antrean Peninjauan ({filteredQueue.length})</h3>
           
+          <div class="flex flex-col gap-2 mb-2">
+            <input type="text" bind:value={searchQuery} placeholder="Cari entitas..." class="w-full bg-iron-950/60 border border-border/10 rounded-lg p-2 text-xs text-text-primary focus:border-gold-500/50 outline-none" />
+            <div class="flex gap-2">
+              <select bind:value={filterType} class="flex-1 bg-iron-950/60 border border-border/10 rounded-lg p-2 text-xs text-text-primary focus:border-gold-500/50 outline-none">
+                <option value="all">Semua Tipe</option>
+                <option value="event">Peristiwa</option>
+                <option value="actor">Pelaku</option>
+                <option value="location">Lokasi</option>
+              </select>
+              <select bind:value={sortBy} class="flex-1 bg-iron-950/60 border border-border/10 rounded-lg p-2 text-xs text-text-primary focus:border-gold-500/50 outline-none">
+                <option value="title-asc">Nama (A-Z)</option>
+                <option value="title-desc">Nama (Z-A)</option>
+              </select>
+            </div>
+          </div>
+
           <div class="flex flex-col gap-2 max-h-[600px] overflow-y-auto pr-1">
-            {#each queue as item}
+            {#each filteredQueue as item}
               <button
                 onclick={() => { selectedId = item.id; reset(); }}
                 class="w-full p-4 rounded-xl text-left border transition-all flex flex-col gap-2 bg-iron-950/60 {selectedId === item.id ? 'border-gold-500/40 bg-iron-900/40' : 'border-border/10 hover:border-gold-500/20'}"

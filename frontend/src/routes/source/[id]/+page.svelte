@@ -46,7 +46,7 @@
       return {
         label: 'Dapat Diterima / Kredibilitas Cukup',
         tier: 'verified',
-        badgeClass: 'border-blue-500/30 text-blue-400 bg-blue-950/20',
+        badgeClass: 'border-gold-500/30 text-gold-400 bg-gold-950/20',
         shield: '⚙️',
         desc: 'Sumber sekunder atau kompilasi riwayat yang cukup valid, memerlukan komparasi teks pembanding.'
       };
@@ -65,7 +65,7 @@
 
 <div class="w-full flex flex-col gap-6 animate-fade-in pb-12">
   <!-- Back Link -->
-  <a href="/source" class="text-xs text-blue-400 hover:text-blue-300 transition-colors font-bold flex items-center gap-1.5 self-start">
+  <a href="/source" class="text-xs text-gold-400 hover:text-gold-300 transition-colors font-bold flex items-center gap-1.5 self-start">
     ← Kembali ke Direktori Rujukan
   </a>
 
@@ -74,274 +74,258 @@
       <span class="text-4xl">📚</span>
       <h2 class="text-lg font-bold text-text-primary">Data Rujukan Tidak Ditemukan</h2>
       <p class="text-xs text-text-muted">Rujukan dengan ID tersebut tidak terdaftar di sistem atau telah dihapus.</p>
-      <a href="/source" class="mt-2 px-5 py-2.5 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-bold rounded-xl border border-blue-500/20 transition-all">
+      <a href="/source" class="mt-2 px-5 py-2.5 bg-gold-500/10 hover:bg-gold-500/20 text-gold-400 text-xs font-bold rounded-xl border border-gold-500/20 transition-all">
         Kembali ke Direktori
       </a>
     </div>
   {:else}
-    <!-- Main Card Header -->
-    <div class="glass p-8 rounded-3xl border border-blue-500/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+    <!-- Document-Style Container -->
+    <div class="glass p-8 lg:p-12 rounded-3xl border border-gold-500/10 flex flex-col gap-10 relative overflow-hidden">
       <!-- Ambient light effect -->
-      <div class="absolute -top-12 -left-12 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute -top-24 -left-24 w-96 h-96 bg-gold-500/10 rounded-full blur-3xl pointer-events-none"></div>
       
-      <div class="flex items-start sm:items-center gap-5 relative z-10">
-        <div class="w-20 h-20 rounded-2xl bg-blue-500/10 border border-blue-500/25 flex items-center justify-center text-4xl shadow-[0_0_20px_rgba(59,130,246,0.15)] flex-shrink-0">
-          {#if src.domain === 'Teks Suci'}
-            📖
+      <!-- Header Section -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10 border-b border-border/5 pb-8">
+        <div class="flex items-start sm:items-center gap-6">
+          <!-- Book Cover Representation -->
+          {#if src.mediaLinks && src.mediaLinks.some((m: any) => m.mediaType === 'image')}
+            <div class="w-24 h-32 rounded-r-xl rounded-l-sm overflow-hidden border-r border-gold-500/20 shadow-[0_0_30px_rgba(59,130,246,0.15)] flex-shrink-0 relative">
+              <div class="absolute left-0 top-0 bottom-0 w-2 bg-black/40 z-10"></div>
+              <div class="absolute left-2 top-0 bottom-0 w-[1px] bg-white/20 z-10"></div>
+              <img src={src.mediaLinks.find((m: any) => m.mediaType === 'image').url} alt={src.title} class="w-full h-full object-cover" />
+            </div>
           {:else}
-            📄
+            <div class="w-24 h-32 rounded-r-xl rounded-l-sm bg-gradient-to-br from-gold-900/40 to-iron-950 border-r border-gold-500/20 flex flex-col items-center justify-center relative shadow-[0_0_30px_rgba(59,130,246,0.15)] flex-shrink-0">
+              <div class="absolute left-0 top-0 bottom-0 w-2 bg-black/40"></div>
+              <div class="absolute left-2 top-0 bottom-0 w-[1px] bg-white/10"></div>
+              <span class="text-5xl relative z-10 filter drop-shadow-md">
+                {#if src.domain === 'Teks Suci'}
+                  📖
+                {:else}
+                  📄
+                {/if}
+              </span>
+            </div>
           {/if}
-        </div>
-        
-        <div class="flex flex-col gap-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2 py-0.5 bg-blue-500/15 text-blue-400 border border-blue-500/20 text-[9px] font-extrabold uppercase rounded tracking-wider">
-              {src.domain}
-            </span>
-            {#if rel}
-              <CurationBadge tier={rel.tier} size="sm" />
-            {/if}
-          </div>
           
-          <h1 class="text-xl sm:text-2xl font-black text-text-primary leading-tight mt-1">
-            {src.title || 'Manuskrip Sejarah'}
-          </h1>
-          
-          <div class="text-xs text-text-secondary font-medium flex flex-wrap items-center gap-x-2 gap-y-1 mt-0.5">
-            <span>Ditulis oleh:</span> 
-            <span class="text-blue-400 font-bold">{src.author || 'Penyusun Anonim'}</span>
-            <span class="text-text-muted">•</span>
-            <span class="text-text-muted italic">{src.publicationEra || 'Era Sejarah'}</span>
+          <div class="flex flex-col gap-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 bg-gold-500/15 text-gold-400 border border-gold-500/20 text-[10px] font-extrabold uppercase rounded tracking-widest">
+                {src.domain}
+              </span>
+              {#if rel}
+                <CurationBadge tier={rel.tier} size="sm" />
+              {/if}
+            </div>
+            
+            <h1 class="text-2xl sm:text-4xl font-black text-text-primary leading-tight mt-1 tracking-tight">
+              {src.title || 'Manuskrip Sejarah'}
+            </h1>
+            
+            <div class="text-xs sm:text-sm text-text-secondary font-medium flex flex-wrap items-center gap-x-2 gap-y-1 mt-1">
+              <span>Ditulis oleh:</span> 
+              <span class="text-gold-400 font-bold">{src.author || 'Penyusun Anonim'}</span>
+              <span class="text-text-muted">•</span>
+              <span class="text-text-muted italic">{src.publicationEra || 'Era Sejarah'}</span>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Kredibilitas Shield Badge -->
-      <div class="px-5 py-3 rounded-2xl bg-iron-950/60 border border-border/10 flex flex-row md:flex-col items-center gap-3 md:gap-1 text-center min-w-[130px] self-stretch md:self-auto relative z-10 justify-between sm:justify-center">
-        <span class="text-2xl">{rel?.shield}</span>
-        <div class="flex flex-col md:items-center">
-          <span class="text-[9px] text-text-muted font-bold uppercase tracking-wider">Kredibilitas</span>
-          <span class="text-base font-black text-blue-400">
+        <!-- Kredibilitas Minimalist Info -->
+        <div class="flex flex-col items-start md:items-end gap-1">
+          <span class="text-[9px] text-text-muted font-bold uppercase tracking-widest">Kredibilitas</span>
+          <span class="text-lg sm:text-2xl font-black text-gold-400 font-mono flex items-center gap-2">
+            <span>{rel?.shield}</span>
             {src.reliabilityScore !== null ? `${(src.reliabilityScore * 100).toFixed(0)}%` : 'TBD'}
           </span>
         </div>
       </div>
-    </div>
 
-    <!-- Details Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Column 1 & 2: Primary Text and Assessment -->
-      <div class="lg:col-span-2 flex flex-col gap-6">
+      <!-- Seamless Content Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 relative z-10">
         
-        <!-- Kutipan Primer -->
-        <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-4 relative">
-          <span class="absolute top-6 right-8 text-6xl text-blue-500/5 font-serif select-none pointer-events-none">“</span>
+        <!-- Main Column: Primary Text and Assessment -->
+        <div class="lg:col-span-2 flex flex-col gap-12">
           
-          <h2 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
-            <span>📜</span> Kutipan Naskah Primer (Reference Text)
-          </h2>
-          
-          <div class="p-6 bg-iron-950/50 border border-border/5 rounded-2xl font-serif text-sm sm:text-base text-text-primary italic leading-relaxed whitespace-pre-wrap">
-            "{src.referenceText}"
+          <!-- Kutipan Primer -->
+          <div class="flex flex-col gap-4 relative">
+            <span class="absolute -top-4 -left-4 text-7xl text-gold-500/10 font-serif select-none pointer-events-none">“</span>
+            
+            <h2 class="text-[11px] font-bold text-gold-400 uppercase tracking-widest flex items-center gap-2">
+              <span class="text-base">📜</span> Kutipan Naskah Primer
+            </h2>
+            
+            <div class="font-serif text-sm sm:text-[15px] text-text-primary italic leading-loose whitespace-pre-wrap pl-4 border-l-2 border-gold-500/20">
+              "{src.referenceText}"
+            </div>
+
+            {#if src.interpretationMethod}
+              <div class="flex items-center gap-2 mt-2">
+                <span class="text-[10px] text-text-muted uppercase tracking-widest">Metodologi Interpretasi:</span>
+                <span class="text-[11px] text-text-secondary font-mono">
+                  {src.interpretationMethod}
+                </span>
+              </div>
+            {/if}
           </div>
 
-          {#if src.interpretationMethod}
-            <div class="flex items-center gap-2 mt-2">
-              <span class="text-[10px] text-text-muted">Metodologi Interpretasi:</span>
-              <span class="px-2 py-0.5 bg-iron-900 border border-border/10 rounded text-[10px] text-text-secondary font-mono">
-                {src.interpretationMethod}
-              </span>
-            </div>
-          {/if}
-        </div>
+          <!-- Analisis Kesahihan -->
+          <div class="flex flex-col gap-4">
+            <h2 class="text-[11px] font-bold text-gold-400 uppercase tracking-widest flex items-center gap-2">
+              <span class="text-base">🔬</span> Analisis Kritik Intern & Ekstern
+            </h2>
 
-        <!-- Analisis Kesahihan Akademis -->
-        <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
-            <span>🔬</span> Analisis Kritik Intern & Ekstern
-          </h2>
-
-          {#if src.reliabilityAssessment}
-            <p class="text-xs text-text-secondary leading-relaxed font-normal whitespace-pre-wrap">
-              {src.reliabilityAssessment}
-            </p>
-          {:else}
-            <p class="text-xs text-text-muted italic leading-relaxed">
-              Belum ada deskripsi analisis kritik akademis yang diinput untuk rujukan ini.
-            </p>
-          {/if}
-        </div>
-      </div>
-
-      <!-- Column 3: Authenticity Card and Media Scans -->
-      <div class="flex flex-col gap-6">
-        
-        <!-- Scorecard Visual Badge -->
-        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-blue-400 uppercase tracking-wider">
-            Authenticity Scorecard
-          </h2>
-
-          {#if rel}
-            <div class="flex flex-col gap-3">
-              <div class="p-4 rounded-2xl border {rel.badgeClass} flex flex-col gap-1.5">
-                <span class="text-[10px] font-bold uppercase tracking-wider opacity-95">Tingkat Kesahihan</span>
-                <span class="text-xs font-extrabold">{rel.label}</span>
-              </div>
-              <p class="text-[11px] text-text-secondary leading-relaxed">
-                {rel.desc}
+            {#if src.reliabilityAssessment}
+              <p class="text-[13px] text-text-secondary leading-loose font-normal whitespace-pre-wrap">
+                {src.reliabilityAssessment}
               </p>
-            </div>
-          {/if}
-
-          {#if src.reliabilityScore !== null}
-            <div class="flex flex-col gap-1.5 mt-2 border-t border-border/5 pt-4">
-              <div class="flex justify-between text-[10px] font-bold text-text-secondary">
-                <span>Nilai Validitas Kontekstual</span>
-                <span>{(src.reliabilityScore * 100).toFixed(0)}%</span>
-              </div>
-              <div class="h-2 w-full bg-iron-950 rounded-full overflow-hidden border border-border/5">
-                <div class="h-full bg-blue-500 rounded-full" style="width: {src.reliabilityScore * 100}%"></div>
-              </div>
-            </div>
-          {/if}
+            {:else}
+              <p class="text-xs text-text-muted italic leading-relaxed">
+                Belum ada deskripsi analisis kritik akademis.
+              </p>
+            {/if}
+          </div>
+          
         </div>
 
-        <!-- Berkas Pendukung Scan Media -->
-        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-blue-400 uppercase tracking-wider flex items-center gap-2">
-            <span>🎥</span> Berkas Pendukung ({src.mediaLinks ? src.mediaLinks.length : 0})
-          </h2>
+        <!-- Sidebar Column: Scorecard, Media, Connections -->
+        <div class="flex flex-col gap-10 border-t lg:border-t-0 lg:border-l border-border/5 pt-8 lg:pt-0 lg:pl-10">
+          
+          <!-- Scorecard -->
+          <div class="flex flex-col gap-4">
+            <h2 class="text-[11px] font-bold text-text-muted uppercase tracking-widest">
+              Authenticity Scorecard
+            </h2>
 
-          {#if src.mediaLinks && src.mediaLinks.length > 0}
-            <div class="flex flex-col gap-2">
-              {#each src.mediaLinks as media}
-                <a href={media.url} target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-blue-500/20 rounded-2xl transition-all gap-3">
-                  <div class="flex items-center gap-2.5 overflow-hidden">
-                    <span class="text-lg">
-                      {#if media.mediaType === 'image'}
-                        🖼️
-                      {:else}
-                        📄
-                      {/if}
-                    </span>
-                    <div class="flex flex-col overflow-hidden">
-                      <span class="text-[11px] font-bold text-text-primary group-hover:text-blue-400 transition-colors truncate">
-                        {media.title || 'Unduh Berkas'}
-                      </span>
-                      <span class="text-[9px] text-text-muted uppercase tracking-wider mt-0.5">
-                        {media.mediaType}
-                      </span>
+            {#if rel}
+              <div class="flex flex-col gap-3">
+                <div class="flex flex-col gap-0.5">
+                  <span class="text-[10px] font-bold uppercase tracking-widest text-text-muted">Tingkat Kesahihan</span>
+                  <span class="text-xs font-extrabold {rel.badgeClass.split(' ')[1]}">{rel.label}</span>
+                </div>
+                <p class="text-[11px] text-text-secondary leading-relaxed">
+                  {rel.desc}
+                </p>
+              </div>
+            {/if}
+
+            {#if src.reliabilityScore !== null}
+              <div class="flex flex-col gap-2 mt-2 pt-4 border-t border-border/5">
+                <div class="flex justify-between text-[10px] font-bold text-text-secondary uppercase tracking-widest">
+                  <span>Skor Validitas</span>
+                  <span class="text-gold-400 font-mono">{(src.reliabilityScore * 100).toFixed(0)}%</span>
+                </div>
+                <div class="h-1.5 w-full bg-iron-950 rounded-full overflow-hidden">
+                  <div class="h-full bg-gold-500 rounded-full" style="width: {src.reliabilityScore * 100}%"></div>
+                </div>
+              </div>
+            {/if}
+          </div>
+
+          <!-- Media Scans -->
+          <div class="flex flex-col gap-4">
+            <h2 class="text-[11px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
+              <span>🎥</span> Lampiran Media Berkas
+            </h2>
+
+            {#if src.mediaLinks && src.mediaLinks.length > 0}
+              <div class="flex flex-col gap-3">
+                {#each src.mediaLinks as media}
+                  <a href={media.url} target="_blank" rel="noopener noreferrer" class="group flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs group-hover:border-gold-500/30 transition-colors">
+                      {media.mediaType === 'image' ? '🖼️' : '📄'}
                     </div>
-                  </div>
-                  <span class="text-[10px] text-blue-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
-                </a>
-              {/each}
-            </div>
-          {:else}
-            <p class="text-[11px] text-text-muted italic">
-              Tidak ada scan manuskrip kuno atau rekaman media pendukung yang dilampirkan.
-            </p>
-          {/if}
+                    <div class="flex flex-col">
+                      <span class="text-xs font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate max-w-[150px]">{media.title || 'Unduh Berkas'}</span>
+                      <span class="text-[9px] text-text-muted uppercase tracking-widest">{media.mediaType}</span>
+                    </div>
+                  </a>
+                {/each}
+              </div>
+            {:else}
+              <p class="text-[11px] text-text-muted italic">Tidak ada scan manuskrip dilampirkan.</p>
+            {/if}
+          </div>
+
         </div>
       </div>
-    </div>
-
-    <!-- Dimension Connections Section -->
-    <div class="border-t border-border/10 pt-8 mt-6">
-      <h2 class="text-sm font-bold text-blue-400 uppercase tracking-wider mb-6 flex items-center gap-2">
-        <span>🌐</span> Peta Hubungan Multi-Dimensi Sejarah
-      </h2>
       
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- a. Tokoh Sejarah yang Ditulis -->
-        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h3 class="text-xs font-bold text-gold-400 uppercase tracking-wider flex items-center gap-2">
-            <span>👤</span> Tokoh Sejarah Yang Ditulis
-          </h3>
+      <!-- Dimension Connections Section -->
+      <div class="border-t border-border/5 pt-10 mt-2 flex flex-col gap-8">
+        <h2 class="text-[11px] font-bold text-gold-400 uppercase tracking-widest flex items-center gap-2">
+          <span class="text-base">🌐</span> Peta Hubungan Multi-Dimensi Sejarah
+        </h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-10">
           
-          {#if src.actors && src.actors.length > 0}
-            <div class="flex flex-col gap-2">
-              {#each src.actors as rel}
-                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
-                  <div class="flex items-center gap-2.5 overflow-hidden">
-                    <span class="text-sm">👤</span>
-                    <div class="flex flex-col overflow-hidden">
-                      <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
-                        {rel.actor.name}
-                      </span>
-                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5">
-                        {rel.relationshipType}
-                      </span>
+          <!-- a. Tokoh -->
+          <div class="flex flex-col gap-4">
+            <h3 class="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
+              <span>👤</span> Tokoh Sejarah Terkait
+            </h3>
+            {#if src.actors && src.actors.length > 0}
+              <div class="flex flex-col gap-3">
+                {#each src.actors as rel}
+                  <a href="/actor/{rel.actor.uuid}" class="group flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs group-hover:border-gold-500/30 transition-colors">👤</div>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-bold text-text-primary group-hover:text-gold-400 transition-colors">{rel.actor.name}</span>
+                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest">{rel.relationshipType}</span>
                     </div>
-                  </div>
-                  <span class="text-[10px] text-gold-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
-                </a>
-              {/each}
-            </div>
-          {:else}
-            <p class="text-[11px] text-text-muted italic">Tidak ada catatan tokoh sejarah yang ditulis dalam rujukan ini.</p>
-          {/if}
-        </div>
+                  </a>
+                {/each}
+              </div>
+            {:else}
+              <p class="text-[11px] text-text-muted italic">Tidak ada tokoh yang dicatat.</p>
+            {/if}
+          </div>
 
-        <!-- b. Tempat Sejarah yang Disebut -->
-        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h3 class="text-xs font-bold text-gold-400 uppercase tracking-wider flex items-center gap-2">
-            <span>📍</span> Tempat Sejarah Yang Disebut
-          </h3>
-          
-          {#if src.locations && src.locations.length > 0}
-            <div class="flex flex-col gap-2">
-              {#each src.locations as rel}
-                <a href="/location/{rel.location.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
-                  <div class="flex items-center gap-2.5 overflow-hidden">
-                    <span class="text-sm">📍</span>
-                    <div class="flex flex-col overflow-hidden">
-                      <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
-                        {rel.location.name}
-                      </span>
-                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5">
-                        {rel.relationshipType}
-                      </span>
+          <!-- b. Lokasi -->
+          <div class="flex flex-col gap-4">
+            <h3 class="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
+              <span>📍</span> Tempat Geografis
+            </h3>
+            {#if src.locations && src.locations.length > 0}
+              <div class="flex flex-col gap-3">
+                {#each src.locations as rel}
+                  <a href="/location/{rel.location.uuid}" class="group flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs group-hover:border-gold-500/30 transition-colors">📍</div>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-bold text-text-primary group-hover:text-gold-400 transition-colors">{rel.location.name}</span>
+                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest">{rel.relationshipType}</span>
                     </div>
-                  </div>
-                  <span class="text-[10px] text-gold-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
-                </a>
-              {/each}
-            </div>
-          {:else}
-            <p class="text-[11px] text-text-muted italic">Tidak ada catatan lokasi sejarah yang disebut dalam rujukan ini.</p>
-          {/if}
-        </div>
+                  </a>
+                {/each}
+              </div>
+            {:else}
+              <p class="text-[11px] text-text-muted italic">Tidak ada lokasi disebut.</p>
+            {/if}
+          </div>
 
-        <!-- c. Peristiwa Sejarah yang Diulas -->
-        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h3 class="text-xs font-bold text-gold-400 uppercase tracking-wider flex items-center gap-2">
-            <span>📅</span> Peristiwa Sejarah Yang Diulas
-          </h3>
-          
-          {#if src.events && src.events.length > 0}
-            <div class="flex flex-col gap-2">
-              {#each src.events as ev}
-                <a href="/event/{ev.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-gold-500/20 rounded-2xl transition-all gap-3">
-                  <div class="flex items-center gap-2.5 overflow-hidden">
-                    <span class="text-sm">📅</span>
-                    <div class="flex flex-col overflow-hidden">
-                      <span class="text-[11px] font-bold text-text-primary group-hover:text-gold-400 transition-colors truncate">
-                        {ev.title}
-                      </span>
-                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5 font-mono">
-                        {ev.gregorianDate?.year ? `${ev.gregorianDate.year} M` : 'Kronologi Sejarah'}
-                      </span>
+          <!-- c. Peristiwa -->
+          <div class="flex flex-col gap-4">
+            <h3 class="text-[10px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
+              <span>📅</span> Peristiwa Diulas
+            </h3>
+            {#if src.events && src.events.length > 0}
+              <div class="flex flex-col gap-3">
+                {#each src.events as ev}
+                  <a href="/event/{ev.uuid}" class="group flex items-center gap-3">
+                    <div class="w-8 h-8 rounded bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs group-hover:border-gold-500/30 transition-colors font-mono tracking-widest text-gold-400">
+                      {ev.gregorianDate?.year ? String(ev.gregorianDate.year).slice(-2) : 'Ev'}
                     </div>
-                  </div>
-                  <span class="text-[10px] text-gold-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
-                </a>
-              {/each}
-            </div>
-          {:else}
-            <p class="text-[11px] text-text-muted italic">Tidak ada catatan peristiwa sejarah yang diulas dalam rujukan ini.</p>
-          {/if}
+                    <div class="flex flex-col">
+                      <span class="text-xs font-bold text-text-primary group-hover:text-gold-400 transition-colors line-clamp-1">{ev.title}</span>
+                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest font-mono">{ev.gregorianDate?.year ? `${ev.gregorianDate.year} M` : 'Kronologi Sejarah'}</span>
+                    </div>
+                  </a>
+                {/each}
+              </div>
+            {:else}
+              <p class="text-[11px] text-text-muted italic">Tidak ada peristiwa yang diulas.</p>
+            {/if}
+          </div>
+
         </div>
       </div>
     </div>

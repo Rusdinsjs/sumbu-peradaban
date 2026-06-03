@@ -21,266 +21,237 @@
       </a>
     </div>
   {:else}
-    <!-- Main Card Header -->
-    <div class="glass p-8 rounded-3xl border border-verdigris-500/10 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative overflow-hidden">
+    <!-- CV-Style Document Container -->
+    <div class="glass p-8 lg:p-12 rounded-3xl border border-verdigris-500/10 flex flex-col gap-10 relative overflow-hidden">
       <!-- Ambient light effect -->
-      <div class="absolute -top-12 -left-12 w-48 h-48 bg-verdigris-500/10 rounded-full blur-3xl"></div>
+      <div class="absolute -top-24 -left-24 w-96 h-96 bg-verdigris-500/10 rounded-full blur-3xl pointer-events-none"></div>
       
-      <div class="flex items-start sm:items-center gap-5 relative z-10">
-        <div class="w-20 h-20 rounded-2xl bg-verdigris-500/10 border border-verdigris-500/25 flex items-center justify-center text-4xl shadow-[0_0_20px_rgba(16,185,129,0.15)] flex-shrink-0">
-          {#if actor.actorType === 'Nabi & Rasul' || actor.actorType === 'Khulafaur Rasyidin'}
-            👑
-          {:else if actor.actorType === 'Sahabat Nabi'}
-            ⚔️
-          {:else if actor.actorType === 'Tabi\'in & Tabi\'ut Tabi\'in'}
-            📖
-          {:else}
-            👤
-          {/if}
-        </div>
-        
-        <div class="flex flex-col gap-1">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="px-2 py-0.5 bg-verdigris-500/15 text-verdigris-400 border border-verdigris-500/20 text-[9px] font-extrabold uppercase rounded tracking-wider">
-              {actor.actorType}
-            </span>
-            <CurationBadge tier={actor.curationTier} size="sm" />
+      <!-- Header Section -->
+      <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-8 relative z-10 border-b border-border/5 pb-8">
+        <div class="flex items-start sm:items-center gap-6">
+          <div class="w-32 h-32 sm:w-40 sm:h-40 rounded-full bg-iron-950 border-4 border-gold-500/20 flex items-center justify-center text-6xl shadow-[0_0_30px_rgba(212,168,83,0.15)] overflow-hidden relative group shrink-0">
+            {#if actor.mediaLinks && actor.mediaLinks.some((m: any) => m.mediaType === 'image')}
+              <img src={actor.mediaLinks.find((m: any) => m.mediaType === 'image').url} alt={actor.name} class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            {:else}
+              <span class="relative z-10 filter drop-shadow-md group-hover:scale-110 transition-transform duration-500">
+                {actor.actorType === 'Group' || actor.actorType === 'Dynasty' ? '👥' : '👤'}
+              </span>
+            {/if}
           </div>
           
-          <h1 class="text-xl sm:text-2xl font-black text-text-primary leading-tight mt-1">
-            {actor.name}
-          </h1>
-          
-          <p class="text-xs text-text-secondary font-medium mt-0.5">
-            Wilayah Pengaruh: <span class="text-verdigris-400 font-bold">{actor.culturalSphere}</span>
-          </p>
+          <div class="flex flex-col gap-1.5">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 bg-verdigris-500/15 text-verdigris-400 border border-verdigris-500/20 text-[10px] font-extrabold uppercase rounded tracking-widest">
+                {actor.actorType}
+              </span>
+              <CurationBadge tier={actor.curationTier} size="sm" />
+            </div>
+            
+            <h1 class="text-2xl sm:text-4xl font-black text-text-primary leading-tight mt-1 tracking-tight">
+              {actor.name}
+            </h1>
+            
+            <p class="text-xs sm:text-sm text-text-secondary font-medium mt-1 flex items-center gap-2">
+              <span>Wilayah Pengaruh:</span>
+              <span class="text-verdigris-400 font-bold">{actor.culturalSphere || '-'}</span>
+            </p>
+          </div>
         </div>
-      </div>
 
-      <!-- Life Span Badge -->
-      <div class="px-5 py-3 rounded-2xl bg-iron-950/60 border border-border/10 flex flex-row md:flex-col items-center gap-3 md:gap-1 text-center min-w-[130px] self-stretch md:self-auto relative z-10 justify-between sm:justify-center">
-        <span class="text-2xl">⏳</span>
-        <div class="flex flex-col md:items-center">
-          <span class="text-[9px] text-text-muted font-bold uppercase tracking-wider">Masa Hidup</span>
-          <span class="text-xs font-black text-verdigris-400 font-mono">
-            {actor.birthYear !== null ? `${actor.birthYear} H` : '?'} - {actor.deathYear !== null ? `${actor.deathYear} H` : '?'}
+        <!-- Life Span Minimalist Info -->
+        <div class="flex flex-col items-start md:items-end gap-1">
+          <span class="text-[9px] text-text-muted font-bold uppercase tracking-widest">Masa Hidup</span>
+          <span class="text-lg sm:text-xl font-black text-verdigris-400 font-mono">
+            {actor.birthYear !== null ? `${actor.birthYear} H` : '?'} — {actor.deathYear !== null ? `${actor.deathYear} H` : '?'}
           </span>
         </div>
       </div>
-    </div>
 
-    <!-- Details Grid -->
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-      <!-- Column 1 & 2: Biography, Timeline, and Media -->
-      <div class="lg:col-span-2 flex flex-col gap-6">
+      <!-- Seamless Content Grid (CV Style) -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-12 relative z-10">
         
-        <!-- Biography Description -->
-        <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
-            <span>📜</span> Biografi & Deskripsi Tokoh
-          </h2>
-          <p class="text-xs text-text-secondary leading-relaxed whitespace-pre-wrap font-normal">
-            {actor.description || 'Tidak ada uraian biografi tertulis untuk tokoh sejarah ini.'}
-          </p>
-        </div>
-
-        <!-- Works and Contributions -->
-        <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-5">
-          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider">
-            💼 Peran & Karya Intelektual (Mahakarya)
-          </h2>
+        <!-- Main Column: Biography, Timeline, Works -->
+        <div class="lg:col-span-2 flex flex-col gap-12">
           
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
-            <!-- Roles -->
-            <div class="flex flex-col gap-2.5">
-              <span class="text-[10px] text-text-muted font-bold uppercase tracking-wider">Peran Utama</span>
-              {#if actor.roles && actor.roles.length > 0}
-                <div class="flex flex-wrap gap-1.5">
-                  {#each actor.roles as role}
-                    <span class="px-2.5 py-1 rounded-xl bg-verdigris-500/10 border border-verdigris-500/20 text-verdigris-300 text-xs">{role}</span>
-                  {/each}
-                </div>
-              {:else}
-                <p class="text-xs text-text-muted italic">Belum ada peran terdaftar untuk tokoh ini.</p>
-              {/if}
-            </div>
+          <!-- Biography -->
+          <div class="flex flex-col gap-4">
+            <h2 class="text-[11px] font-bold text-verdigris-400 uppercase tracking-widest flex items-center gap-2">
+              <span class="text-base">📜</span> Biografi Singkat
+            </h2>
+            <p class="text-[13px] text-text-secondary leading-loose whitespace-pre-wrap font-normal">
+              {actor.description || 'Tidak ada uraian biografi tertulis untuk tokoh sejarah ini.'}
+            </p>
+          </div>
 
-            <!-- Works -->
-            <div class="flex flex-col gap-2.5">
-              <span class="text-[10px] text-text-muted font-bold uppercase tracking-wider">Karya Kitab / Tulisan (Mahakarya)</span>
-              {#if actor.works && actor.works.length > 0}
-                <div class="flex flex-wrap gap-1.5">
-                  {#each actor.works as work}
-                    <span class="px-2.5 py-1 rounded-xl bg-gold-500/10 border border-gold-500/20 text-gold-300 text-xs italic">📖 {work}</span>
-                  {/each}
-                </div>
-              {:else}
-                <p class="text-xs text-text-muted italic">Belum ada mahakarya/kitab terdaftar untuk tokoh ini.</p>
-              {/if}
+          <!-- Works & Roles -->
+          <div class="flex flex-col gap-6">
+            <h2 class="text-[11px] font-bold text-verdigris-400 uppercase tracking-widest flex items-center gap-2">
+              <span class="text-base">💼</span> Portofolio & Kontribusi
+            </h2>
+            
+            <div class="flex flex-col sm:flex-row gap-8">
+              <!-- Roles -->
+              <div class="flex-1 flex flex-col gap-3">
+                <span class="text-[10px] text-text-muted font-bold uppercase tracking-widest">Jabatan / Gelar Utama</span>
+                {#if actor.roles && actor.roles.length > 0}
+                  <ul class="flex flex-col gap-2">
+                    {#each actor.roles as role}
+                      <li class="flex items-center gap-2 text-xs text-text-primary">
+                        <span class="w-1.5 h-1.5 rounded-full bg-verdigris-500/50"></span>
+                        {role}
+                      </li>
+                    {/each}
+                  </ul>
+                {:else}
+                  <p class="text-xs text-text-muted italic">Belum ada catatan peran/jabatan.</p>
+                {/if}
+              </div>
+
+              <!-- Works -->
+              <div class="flex-1 flex flex-col gap-3">
+                <span class="text-[10px] text-text-muted font-bold uppercase tracking-widest">Karya Tulis / Mahakarya</span>
+                {#if actor.works && actor.works.length > 0}
+                  <ul class="flex flex-col gap-2">
+                    {#each actor.works as work}
+                      <li class="flex items-center gap-2 text-xs text-gold-400 italic">
+                        <span class="w-1.5 h-1.5 rounded-full bg-gold-500/50"></span>
+                        {work}
+                      </li>
+                    {/each}
+                  </ul>
+                {:else}
+                  <p class="text-xs text-text-muted italic">Belum ada karya terdaftar.</p>
+                {/if}
+              </div>
             </div>
           </div>
-        </div>
 
-        <!-- Timeline of Events -->
-        <div class="glass p-8 rounded-3xl border border-border/10 flex flex-col gap-6">
-          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
-            <span>📅</span> Linimasa Keterlibatan Peristiwa Sejarah
-          </h2>
+          <!-- Timeline -->
+          <div class="flex flex-col gap-6 mt-4">
+            <h2 class="text-[11px] font-bold text-verdigris-400 uppercase tracking-widest flex items-center gap-2">
+              <span class="text-base">📅</span> Linimasa Keterlibatan Peristiwa
+            </h2>
 
-          {#if actor.timeline && actor.timeline.length > 0}
-            <div class="relative border-l border-border/10 pl-6 ml-3 space-y-6">
-              {#each actor.timeline as ev}
-                <div class="relative group">
-                  <!-- Node Dot -->
-                  <span class="absolute -left-[31px] top-1.5 w-3 h-3 bg-verdigris-500 rounded-full border-2 border-surface shadow-[0_0_6px_rgba(16,185,129,0.8)] group-hover:scale-110 transition-transform"></span>
-                  
-                  <div>
-                    <span class="text-[9px] font-bold text-verdigris-400 bg-verdigris-500/10 px-2 py-0.5 rounded font-mono">
-                      {ev.gregorianDate.year} M
-                    </span>
-                    <a href="/event/{ev.uuid}" class="block text-xs font-bold text-text-primary hover:text-verdigris-400 mt-2 transition-colors">
-                      {ev.title}
-                    </a>
-                    {#if ev.description}
-                      <p class="text-[11px] text-text-muted mt-1 leading-relaxed line-clamp-2">{ev.description}</p>
-                    {/if}
-                  </div>
-                </div>
-              {/each}
-            </div>
-          {:else}
-            <p class="text-xs text-text-muted italic">Tidak ada catatan peristiwa sejarah yang terhubung langsung dengan tokoh ini.</p>
-          {/if}
-        </div>
-      </div>
-
-      <!-- Column 3: Network, Locations, and Sources -->
-      <div class="flex flex-col gap-6">
-        
-        <!-- Companions Network -->
-        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
-            <span>🕸️</span> Jejaring Tokoh Terkait
-          </h2>
-
-          {#if actor.relatedActors && actor.relatedActors.length > 0}
-            <div class="flex flex-col gap-2">
-              {#each actor.relatedActors as rel}
-                <a href="/actor/{rel.actor.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-verdigris-500/20 rounded-2xl transition-all gap-3">
-                  <div class="flex items-center gap-2.5 overflow-hidden">
-                    <span class="text-base">👤</span>
-                    <div class="flex flex-col overflow-hidden">
-                      <span class="text-[11px] font-bold text-text-primary group-hover:text-verdigris-400 transition-colors truncate">
-                        {rel.actor.name}
+            {#if actor.timeline && actor.timeline.length > 0}
+              <div class="relative border-l border-border/10 pl-6 ml-2 space-y-8 mt-2">
+                {#each actor.timeline as ev}
+                  <div class="relative group">
+                    <span class="absolute -left-[29px] top-1.5 w-2.5 h-2.5 bg-verdigris-500 rounded-full shadow-[0_0_8px_rgba(16,185,129,0.6)] group-hover:scale-125 transition-transform"></span>
+                    
+                    <div class="flex flex-col gap-1">
+                      <span class="text-[10px] font-bold text-verdigris-400 font-mono tracking-wider">
+                        {ev.gregorianDate.year} M
                       </span>
-                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5">
-                        {rel.relationshipType}
-                      </span>
-                    </div>
-                  </div>
-                  <span class="text-[10px] text-verdigris-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
-                </a>
-              {/each}
-            </div>
-          {:else}
-            <p class="text-[11px] text-text-muted italic">Belum ada jejaring tokoh terhubung.</p>
-          {/if}
-        </div>
-
-        <!-- Related Locations -->
-        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
-            <span>🌍</span> Tempat yang Terkait
-          </h2>
-
-          {#if actor.visitedLocations && actor.visitedLocations.length > 0}
-            <div class="flex flex-col gap-2">
-              {#each actor.visitedLocations as rel}
-                <a href="/location/{rel.location.uuid}" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-verdigris-500/20 rounded-2xl transition-all gap-3">
-                  <div class="flex items-center gap-2.5 overflow-hidden">
-                    <span class="text-base">📍</span>
-                    <div class="flex flex-col overflow-hidden">
-                      <span class="text-[11px] font-bold text-text-primary group-hover:text-verdigris-400 transition-colors truncate">
-                        {rel.location.name}
-                      </span>
-                      <span class="text-[9px] text-verdigris-400 font-bold uppercase tracking-wider mt-0.5">
-                        {rel.relationshipType}
-                      </span>
-                    </div>
-                  </div>
-                  <span class="text-[10px] text-verdigris-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
-                </a>
-              {/each}
-            </div>
-          {:else}
-            <p class="text-[11px] text-text-muted italic">Tidak ada catatan lokasi sejarah yang terkait dengan tokoh ini.</p>
-          {/if}
-        </div>
-
-        <!-- Sources validation -->
-        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
-            <span>📚</span> Sumber & Validasi Rujukan
-          </h2>
-
-          {#if actor.sources && actor.sources.length > 0}
-            <div class="flex flex-col gap-3">
-              {#each actor.sources as rel}
-                <a href="/source/{rel.source.sourceId}" class="group block p-3.5 bg-iron-950/60 hover:bg-iron-900 border border-border/5 rounded-2xl transition-all">
-                  <div class="flex justify-between items-start gap-2">
-                    <span class="text-[11px] font-bold text-text-primary group-hover:text-verdigris-400 transition-colors line-clamp-1">{rel.source.title || 'Manuskrip Sejarah'}</span>
-                    {#if rel.source.reliabilityScore !== null}
-                      <span class="text-[9px] font-bold text-verdigris-400 font-mono">{(rel.source.reliabilityScore * 100).toFixed(0)}%</span>
-                    {/if}
-                  </div>
-                  <div class="flex flex-col gap-0.5 mt-1">
-                    <span class="text-[9px] text-text-muted">{rel.source.author || 'Penyusun Anonim'}</span>
-                    <span class="text-[9px] text-verdigris-400 font-semibold uppercase tracking-wider mt-0.5">{rel.relationshipType}</span>
-                  </div>
-                </a>
-              {/each}
-            </div>
-          {:else}
-            <p class="text-[11px] text-text-muted italic">Belum ada rujukan kitab yang terhubung langsung dengan riwayat tokoh ini.</p>
-          {/if}
-        </div>
-
-        <!-- Media Scans -->
-        <div class="glass p-6 rounded-3xl border border-border/10 flex flex-col gap-4">
-          <h2 class="text-xs font-bold text-verdigris-400 uppercase tracking-wider flex items-center gap-2">
-            <span>🎥</span> Berkas Media Pendukung
-          </h2>
-
-          {#if actor.mediaLinks && actor.mediaLinks.length > 0}
-            <div class="flex flex-col gap-2">
-              {#each actor.mediaLinks as media}
-                <a href={media.url} target="_blank" rel="noopener noreferrer" class="group flex items-center justify-between p-3 bg-iron-950/60 hover:bg-iron-900 border border-border/5 hover:border-verdigris-500/20 rounded-2xl transition-all gap-3">
-                  <div class="flex items-center gap-2.5 overflow-hidden">
-                    <span class="text-lg">
-                      {#if media.mediaType === 'image'}
-                        🖼️
-                      {:else if media.mediaType === 'audio'}
-                        🎙️
-                      {:else}
-                        📄
+                      <a href="/event/{ev.uuid}" class="text-sm font-bold text-text-primary hover:text-verdigris-400 transition-colors inline-block mt-0.5">
+                        {ev.title}
+                      </a>
+                      {#if ev.description}
+                        <p class="text-xs text-text-secondary mt-1 leading-relaxed">{ev.description}</p>
                       {/if}
-                    </span>
-                    <div class="flex flex-col overflow-hidden">
-                      <span class="text-[11px] font-bold text-text-primary group-hover:text-verdigris-400 transition-colors truncate">
-                        {media.title || 'Lihat Berkas'}
-                      </span>
-                      <span class="text-[9px] text-text-muted uppercase tracking-wider mt-0.5">
-                        {media.mediaType}
-                      </span>
                     </div>
                   </div>
-                  <span class="text-[10px] text-verdigris-400 opacity-0 group-hover:opacity-100 transition-opacity">↗</span>
-                </a>
-              {/each}
-            </div>
-          {:else}
-            <p class="text-[11px] text-text-muted italic">Tidak ada berkas media gambar/audio pendukung yang dilampirkan.</p>
-          {/if}
+                {/each}
+              </div>
+            {:else}
+              <p class="text-xs text-text-muted italic">Tidak ada catatan peristiwa yang terhubung.</p>
+            {/if}
+          </div>
+
+        </div>
+
+        <!-- Sidebar Column: Network, Location, Source -->
+        <div class="flex flex-col gap-10 border-t lg:border-t-0 lg:border-l border-border/5 pt-8 lg:pt-0 lg:pl-10">
+          
+          <!-- Network -->
+          <div class="flex flex-col gap-4">
+            <h2 class="text-[11px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
+              <span>🕸️</span> Koneksi & Jejaring
+            </h2>
+            {#if actor.relatedActors && actor.relatedActors.length > 0}
+              <div class="flex flex-col gap-3">
+                {#each actor.relatedActors as rel}
+                  <a href="/actor/{rel.actor.uuid}" class="group flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs group-hover:border-verdigris-500/30 transition-colors">👤</div>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-bold text-text-primary group-hover:text-verdigris-400 transition-colors">{rel.actor.name}</span>
+                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest">{rel.relationshipType}</span>
+                    </div>
+                  </a>
+                {/each}
+              </div>
+            {:else}
+              <p class="text-[11px] text-text-muted italic">Tidak ada jejaring tercatat.</p>
+            {/if}
+          </div>
+
+          <!-- Locations -->
+          <div class="flex flex-col gap-4">
+            <h2 class="text-[11px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
+              <span>🌍</span> Jejak Geografis
+            </h2>
+            {#if actor.visitedLocations && actor.visitedLocations.length > 0}
+              <div class="flex flex-col gap-3">
+                {#each actor.visitedLocations as rel}
+                  <a href="/location/{rel.location.uuid}" class="group flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs group-hover:border-verdigris-500/30 transition-colors">📍</div>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-bold text-text-primary group-hover:text-verdigris-400 transition-colors">{rel.location.name}</span>
+                      <span class="text-[9px] text-text-muted uppercase tracking-widest">{rel.relationshipType}</span>
+                    </div>
+                  </a>
+                {/each}
+              </div>
+            {:else}
+              <p class="text-[11px] text-text-muted italic">Tidak ada jejak lokasi.</p>
+            {/if}
+          </div>
+
+          <!-- Sources -->
+          <div class="flex flex-col gap-4">
+            <h2 class="text-[11px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
+              <span>📚</span> Daftar Rujukan (Referensi)
+            </h2>
+            {#if actor.sources && actor.sources.length > 0}
+              <div class="flex flex-col gap-4">
+                {#each actor.sources as rel}
+                  <a href="/source/{rel.source.sourceId}" class="group flex flex-col gap-1">
+                    <span class="text-xs font-bold text-text-primary group-hover:text-verdigris-400 transition-colors leading-snug">{rel.source.title || 'Manuskrip Sejarah'}</span>
+                    <div class="flex items-center gap-2">
+                      <span class="text-[9px] text-text-muted">{rel.source.author || 'Anonim'}</span>
+                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest">• {rel.relationshipType}</span>
+                    </div>
+                  </a>
+                {/each}
+              </div>
+            {:else}
+              <p class="text-[11px] text-text-muted italic">Tidak ada rujukan sumber.</p>
+            {/if}
+          </div>
+
+          <!-- Media -->
+          <div class="flex flex-col gap-4">
+            <h2 class="text-[11px] font-bold text-text-muted uppercase tracking-widest flex items-center gap-2">
+              <span>🎥</span> Lampiran Media
+            </h2>
+            {#if actor.mediaLinks && actor.mediaLinks.length > 0}
+              <div class="flex flex-col gap-3">
+                {#each actor.mediaLinks as media}
+                  <a href={media.url} target="_blank" rel="noopener noreferrer" class="group flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-lg bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs group-hover:border-verdigris-500/30 transition-colors">
+                      {media.mediaType === 'image' ? '🖼️' : media.mediaType === 'audio' ? '🎙️' : '📄'}
+                    </div>
+                    <div class="flex flex-col">
+                      <span class="text-xs font-bold text-text-primary group-hover:text-verdigris-400 transition-colors truncate max-w-[150px]">{media.title || 'Lampiran'}</span>
+                      <span class="text-[9px] text-text-muted uppercase tracking-widest">{media.mediaType}</span>
+                    </div>
+                  </a>
+                {/each}
+              </div>
+            {:else}
+              <p class="text-[11px] text-text-muted italic">Tidak ada media lampiran.</p>
+            {/if}
+          </div>
+
         </div>
       </div>
     </div>
