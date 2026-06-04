@@ -449,7 +449,7 @@
             <th class="px-6 py-4 font-bold text-text-secondary">Penulis / Era</th>
             <th class="px-6 py-4 font-bold text-text-secondary">Metodologi</th>
             <th class="px-6 py-4 font-bold text-text-secondary">Keandalan</th>
-            <th class="px-6 py-4 font-bold text-text-secondary text-right">Aksi</th>
+            <th class="px-6 py-4 font-bold text-text-secondary text-right w-28">Aksi</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-border/5">
@@ -499,13 +499,17 @@
                     <span class="text-text-muted">-</span>
                   {/if}
                 </td>
-                <td class="px-6 py-4 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <a href="/source/{src.sourceId}" target="_blank" class="text-violet-400 hover:text-violet-300 font-bold px-3 py-1 bg-violet-500/10 rounded-lg transition-colors flex items-center gap-1">
-                      <span class="text-sm">👁️</span> View
+                <td class="px-6 py-4 text-right w-28">
+                  <div class="flex items-center justify-end gap-1.5">
+                    <a href="/source/{src.sourceId}" target="_blank" title="Lihat Detail" class="text-violet-400 hover:text-violet-300 p-2 bg-violet-500/10 rounded-lg transition-colors flex items-center justify-center aspect-square">
+                      <span class="text-[13px] leading-none">👁️</span>
                     </a>
-                    <button onclick={() => openEditForm(src)} class="text-blue-400 hover:text-blue-300 font-bold px-3 py-1 bg-blue-500/10 rounded-lg transition-colors">Edit</button>
-                    <button onclick={() => deleteSource(src.sourceId)} class="text-red-400 hover:text-red-300 font-bold px-3 py-1 bg-red-500/10 rounded-lg transition-colors">Hapus</button>
+                    <button onclick={() => openEditForm(src)} title="Edit" class="text-blue-400 hover:text-blue-300 p-2 bg-blue-500/10 rounded-lg transition-colors flex items-center justify-center aspect-square">
+                      <span class="text-[13px] leading-none">✏️</span>
+                    </button>
+                    <button onclick={() => deleteSource(src.sourceId)} title="Hapus" class="text-red-400 hover:text-red-300 p-2 bg-red-500/10 rounded-lg transition-colors flex items-center justify-center aspect-square">
+                      <span class="text-[13px] leading-none">🗑️</span>
+                    </button>
                   </div>
                 </td>
               </tr>

@@ -146,7 +146,7 @@
             <th class="px-6 py-4 font-bold">Nama Lengkap</th>
             <th class="px-6 py-4 font-bold">Email</th>
             <th class="px-6 py-4 font-bold">Role Aktif</th>
-            <th class="px-6 py-4 font-bold text-right">Aksi</th>
+            <th class="px-6 py-4 font-bold text-right w-20">Aksi</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-red-500/5">
@@ -169,10 +169,14 @@
                     {user.role}
                   </span>
                 </td>
-                <td class="px-6 py-4 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <button onclick={() => openEditForm(user)} class="text-blue-400 hover:text-blue-300 font-bold px-3 py-1 bg-blue-500/10 rounded-lg transition-colors">Edit</button>
-                    <button onclick={() => deleteUser(user.id)} class="text-red-400 hover:text-red-300 font-bold px-3 py-1 bg-red-500/10 rounded-lg transition-colors disabled:opacity-50" disabled={user.id === auth.user?.id}>Hapus</button>
+                <td class="px-6 py-4 text-right w-20">
+                  <div class="flex items-center justify-end gap-1.5">
+                    <button onclick={() => openEditForm(user)} title="Edit" class="text-blue-400 hover:text-blue-300 p-2 bg-blue-500/10 rounded-lg transition-colors flex items-center justify-center aspect-square">
+                      <span class="text-[13px] leading-none">✏️</span>
+                    </button>
+                    <button onclick={() => deleteUser(user.id)} title="Hapus" class="text-red-400 hover:text-red-300 p-2 bg-red-500/10 rounded-lg transition-colors flex items-center justify-center aspect-square disabled:opacity-50" disabled={user.id === auth.user?.id}>
+                      <span class="text-[13px] leading-none">🗑️</span>
+                    </button>
                   </div>
                 </td>
               </tr>

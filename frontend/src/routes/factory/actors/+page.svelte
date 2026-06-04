@@ -546,7 +546,7 @@
             <th class="px-6 py-4 font-bold text-text-secondary">Tipe</th>
             <th class="px-6 py-4 font-bold text-text-secondary">Kultural & Peran</th>
             <th class="px-6 py-4 font-bold text-text-secondary">Metadata Sejarah</th>
-            <th class="px-6 py-4 font-bold text-text-secondary text-right">Aksi</th>
+            <th class="px-6 py-4 font-bold text-text-secondary text-right w-28">Aksi</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-border/5">
@@ -604,13 +604,17 @@
                     </div>
                   </div>
                 </td>
-                <td class="px-6 py-4 text-right">
-                  <div class="flex items-center justify-end gap-2">
-                    <a href="/actor/{actor.uuid}" target="_blank" class="text-verdigris-400 hover:text-verdigris-300 font-bold px-3 py-1 bg-verdigris-500/10 rounded-lg transition-colors flex items-center gap-1">
-                      <span class="text-sm">👁️</span> View
+                <td class="px-6 py-4 text-right w-28">
+                  <div class="flex items-center justify-end gap-1.5">
+                    <a href="/actor/{actor.uuid}" target="_blank" title="Lihat Detail" class="text-verdigris-400 hover:text-verdigris-300 p-2 bg-verdigris-500/10 rounded-lg transition-colors flex items-center justify-center aspect-square">
+                      <span class="text-[13px] leading-none">👁️</span>
                     </a>
-                    <button onclick={() => openEditForm(actor)} class="text-gold-400 hover:text-gold-300 font-bold px-3 py-1 bg-gold-500/10 rounded-lg transition-colors">Edit</button>
-                    <button onclick={() => deleteActor(actor.uuid)} class="text-red-400 hover:text-red-300 font-bold px-3 py-1 bg-red-500/10 rounded-lg transition-colors">Hapus</button>
+                    <button onclick={() => openEditForm(actor)} title="Edit" class="text-gold-400 hover:text-gold-300 p-2 bg-gold-500/10 rounded-lg transition-colors flex items-center justify-center aspect-square">
+                      <span class="text-[13px] leading-none">✏️</span>
+                    </button>
+                    <button onclick={() => deleteActor(actor.uuid)} title="Hapus" class="text-red-400 hover:text-red-300 p-2 bg-red-500/10 rounded-lg transition-colors flex items-center justify-center aspect-square">
+                      <span class="text-[13px] leading-none">🗑️</span>
+                    </button>
                   </div>
                 </td>
               </tr>
