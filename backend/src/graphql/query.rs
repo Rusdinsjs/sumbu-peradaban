@@ -1145,7 +1145,7 @@ impl Actor {
                 OPTIONAL MATCH (a)-[:PARTICIPATED_IN]->(e:Event)-[:SOURCED_FROM]->(s2:Source)
                 WITH a, s1, s2, e
                 WITH a, s1, 'Rujukan Riwayat Tokoh' AS rel1,
-                     s2, 'Rujukan Peristiwa: ' + e.title AS rel2
+                     s2, 'Terlink Peristiwa: ' + e.title AS rel2
                 WITH a, collect({id: s1.uuid, rel: rel1}) + collect({id: s2.uuid, rel: rel2}) AS connections
                 UNWIND connections AS conn
                 WITH conn.id AS source_id, conn.rel AS rel
@@ -1280,7 +1280,7 @@ impl Location {
                 OPTIONAL MATCH (a2:Actor)-[:PARTICIPATED_IN]->(e:Event)-[:OCCURRED_AT]->(l)
                 WITH l, a1, a2, e
                 WITH l, a1, 'Pernah Berkunjung' AS rel1,
-                     a2, 'Hadir pada Peristiwa: ' + e.title AS rel2
+                     a2, 'Terlink Peristiwa: ' + e.title AS rel2
                 WITH l, collect({node: a1, rel: rel1}) + collect({node: a2, rel: rel2}) AS connections
                 UNWIND connections AS conn
                 WITH conn.node AS other, conn.rel AS rel
@@ -1322,7 +1322,7 @@ impl Location {
                 OPTIONAL MATCH (l)<-[:OCCURRED_AT]-(e:Event)-[:SOURCED_FROM]->(s2:Source)
                 WITH l, s1, s2, e
                 WITH l, s1, 'Rujukan Riwayat Lokasi' AS rel1,
-                     s2, 'Rujukan Peristiwa: ' + e.title AS rel2
+                     s2, 'Terlink Peristiwa: ' + e.title AS rel2
                 WITH l, collect({id: s1.uuid, rel: rel1}) + collect({id: s2.uuid, rel: rel2}) AS connections
                 UNWIND connections AS conn
                 WITH conn.id AS source_id, conn.rel AS rel
@@ -1372,7 +1372,7 @@ impl Source {
                 OPTIONAL MATCH (a2:Actor)-[:PARTICIPATED_IN]->(e:Event)-[:SOURCED_FROM]->(s)
                 WITH s, a1, a2, e
                 WITH s, a1, 'Ditulis langsung di Riwayat' AS rel1,
-                     a2, 'Ditulis di Peristiwa: ' + e.title AS rel2
+                     a2, 'Terlink Peristiwa: ' + e.title AS rel2
                 WITH s, collect({node: a1, rel: rel1}) + collect({node: a2, rel: rel2}) AS connections
                 UNWIND connections AS conn
                 WITH conn.node AS other, conn.rel AS rel
@@ -1412,7 +1412,7 @@ impl Source {
                 OPTIONAL MATCH (l2:Location)<-[:OCCURRED_AT]-(e:Event)-[:SOURCED_FROM]->(s)
                 WITH s, l1, l2, e
                 WITH s, l1, 'Disebut langsung di Riwayat' AS rel1,
-                     l2, 'Disebut di Peristiwa: ' + e.title AS rel2
+                     l2, 'Terlink Peristiwa: ' + e.title AS rel2
                 WITH s, collect({node: l1, rel: rel1}) + collect({node: l2, rel: rel2}) AS connections
                 UNWIND connections AS conn
                 WITH conn.node AS loc, conn.rel AS rel
