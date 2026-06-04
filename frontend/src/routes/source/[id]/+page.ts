@@ -5,7 +5,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
   const sourceId = params.id;
   try {
     const data = await gql<any>(`
-      query GetSource($sourceId: UUID!) {
+      query GetSourceAndEvents($sourceId: UUID!) {
         source(sourceId: $sourceId) {
           sourceId
           domain
@@ -45,14 +45,19 @@ export const load: PageLoad = async ({ params, fetch }) => {
             }
           }
         }
+        events(limit: 1000) {
+          uuid
+          title
+        }
       }
     `, { sourceId }, fetch);
     
     return {
-      source: data.source || null
+      source: data.source || null,
+      allEvents: data.events || []
     };
   } catch (err) {
     console.error('Failed to fetch source:', err);
-    return { source: null };
+    return { source: null, allEvents: [] };
   }
 };

@@ -1,9 +1,11 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
   import CurationBadge from '$lib/components/CurationBadge.svelte';
+  import { renderTextWithEventLinks } from '$lib/utils/eventLinker';
 
-  let { data } = $props<{ data: { source: any } }>();
+  let { data } = $props<{ data: { source: any; allEvents: any[] } }>();
   let src = $derived(data.source);
+  let allEvents = $derived(data.allEvents || []);
 
   // Helper to determine authenticity label, color, and shield icon
   type ReliabilityDetails = {
@@ -156,7 +158,7 @@
             </h2>
             
             <div class="font-serif text-sm sm:text-[15px] text-text-primary italic leading-loose whitespace-pre-wrap pl-4 border-l-2 border-gold-500/20">
-              "{src.referenceText}"
+              "{@html renderTextWithEventLinks(src.referenceText, allEvents)}"
             </div>
 
             {#if src.interpretationMethod}
@@ -177,7 +179,7 @@
 
             {#if src.reliabilityAssessment}
               <p class="text-[13px] text-text-secondary leading-loose font-normal whitespace-pre-wrap">
-                {src.reliabilityAssessment}
+                {@html renderTextWithEventLinks(src.reliabilityAssessment, allEvents)}
               </p>
             {:else}
               <p class="text-xs text-text-muted italic leading-relaxed">
@@ -266,13 +268,13 @@
             {#if src.actors && src.actors.length > 0}
               <div class="flex flex-col gap-3">
                 {#each src.actors as rel}
-                  <a href="/actor/{rel.actor.uuid}" class="group flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs group-hover:border-gold-500/30 transition-colors">👤</div>
+                  <div class="group flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs">👤</div>
                     <div class="flex flex-col">
-                      <span class="text-xs font-bold text-text-primary group-hover:text-gold-400 transition-colors">{rel.actor.name}</span>
-                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest">{rel.relationshipType}</span>
+                      <a href="/actor/{rel.actor.uuid}" class="text-xs font-bold text-text-primary hover:text-gold-400 transition-colors">{rel.actor.name}</a>
+                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest">{@html renderTextWithEventLinks(rel.relationshipType, allEvents)}</span>
                     </div>
-                  </a>
+                  </div>
                 {/each}
               </div>
             {:else}
@@ -288,13 +290,13 @@
             {#if src.locations && src.locations.length > 0}
               <div class="flex flex-col gap-3">
                 {#each src.locations as rel}
-                  <a href="/location/{rel.location.uuid}" class="group flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs group-hover:border-gold-500/30 transition-colors">📍</div>
+                  <div class="group flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs">📍</div>
                     <div class="flex flex-col">
-                      <span class="text-xs font-bold text-text-primary group-hover:text-gold-400 transition-colors">{rel.location.name}</span>
-                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest">{rel.relationshipType}</span>
+                      <a href="/location/{rel.location.uuid}" class="text-xs font-bold text-text-primary hover:text-gold-400 transition-colors">{rel.location.name}</a>
+                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest">{@html renderTextWithEventLinks(rel.relationshipType, allEvents)}</span>
                     </div>
-                  </a>
+                  </div>
                 {/each}
               </div>
             {:else}

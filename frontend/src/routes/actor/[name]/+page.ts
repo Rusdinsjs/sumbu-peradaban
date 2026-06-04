@@ -43,7 +43,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
 
   try {
     const data = await gql<any>(`
-      query GetActor($actorId: UUID!) {
+      query GetActorAndEvents($actorId: UUID!) {
         actor(uuid: $actorId) {
           uuid
           name
@@ -94,16 +94,22 @@ export const load: PageLoad = async ({ params, fetch }) => {
             }
           }
         }
+        events(limit: 1000) {
+          uuid
+          title
+        }
       }
     `, { actorId: targetUuid }, fetch);
     
     return {
-      actor: data.actor || null
+      actor: data.actor || null,
+      allEvents: data.events || []
     };
   } catch (err) {
     console.error('Failed to fetch actor detail:', err);
     return {
-      actor: null
+      actor: null,
+      allEvents: []
     };
   }
 };

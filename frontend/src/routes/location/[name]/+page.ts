@@ -43,7 +43,7 @@ export const load: PageLoad = async ({ params, fetch }) => {
 
   try {
     const data = await gql<any>(`
-      query GetLocationDetail($uuid: UUID!) {
+      query GetLocationDetailAndEvents($uuid: UUID!) {
         location(uuid: $uuid) {
           uuid
           name
@@ -93,16 +93,22 @@ export const load: PageLoad = async ({ params, fetch }) => {
              }
            }
         }
+        events(limit: 1000) {
+          uuid
+          title
+        }
       }
     `, { uuid: targetUuid }, fetch);
     
     return {
-      location: data.location || null
+      location: data.location || null,
+      allEvents: data.events || []
     };
   } catch (err) {
     console.error('Failed to fetch location details:', err);
     return {
-      location: null
+      location: null,
+      allEvents: []
     };
   }
 };

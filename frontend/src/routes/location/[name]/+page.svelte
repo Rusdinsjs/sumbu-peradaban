@@ -2,11 +2,13 @@
   import CurationBadge from '$lib/components/CurationBadge.svelte';
   import MapView from '$lib/components/MapView.svelte';
   import { slide } from 'svelte/transition';
+  import { renderTextWithEventLinks } from '$lib/utils/eventLinker';
 
   import { page } from '$app/stores';
 
-  let { data } = $props<{ data: { location: any } }>();
+  let { data } = $props<{ data: { location: any; allEvents: any[] } }>();
   let dbLoc = $derived(data.location);
+  let allEvents = $derived(data.allEvents || []);
 
   // Fallback dictionary for canonical sites if dbLoc isn't in graph yet
   const locationRegistryFallback: Record<string, {
@@ -198,11 +200,11 @@
               <span class="text-base">🗺️</span> Karakteristik Geografis & Geopolitik
             </h2>
             <p class="text-[13px] text-text-secondary leading-loose whitespace-pre-wrap font-normal pl-4 border-l-2 border-gold-500/20">
-              {loc.description}
+              {@html renderTextWithEventLinks(loc.description, allEvents)}
             </p>
             <div class="p-4 rounded-xl bg-iron-950/40 border-l border-border/10 mt-2">
               <span class="text-[10px] uppercase font-bold text-gold-400 block mb-1.5 tracking-widest">Nilai Strategis Militer & Ekonomi:</span>
-              <p class="text-[12px] text-text-muted leading-relaxed font-normal">{loc.strategicValue}</p>
+              <p class="text-[12px] text-text-muted leading-relaxed font-normal">{@html renderTextWithEventLinks(loc.strategicValue, allEvents)}</p>
             </div>
           </div>
 
@@ -213,7 +215,7 @@
             </h2>
             {#if loc.demographics}
               <p class="text-[13px] text-text-secondary leading-loose whitespace-pre-wrap font-normal">
-                {loc.demographics}
+                {@html renderTextWithEventLinks(loc.demographics, allEvents)}
               </p>
             {:else}
               <p class="text-[12px] text-text-muted italic leading-relaxed font-normal">
@@ -229,7 +231,7 @@
             </h2>
             {#if loc.socioCultural}
               <p class="text-[13px] text-text-secondary leading-loose whitespace-pre-wrap font-normal">
-                {loc.socioCultural}
+                {@html renderTextWithEventLinks(loc.socioCultural, allEvents)}
               </p>
             {:else}
               <p class="text-[12px] text-text-muted italic leading-relaxed font-normal">
@@ -258,7 +260,7 @@
                         {ev.title}
                       </a>
                       {#if ev.description}
-                        <p class="text-[12px] text-text-muted mt-2 leading-relaxed line-clamp-2">{ev.description}</p>
+                        <p class="text-[12px] text-text-muted mt-2 leading-relaxed line-clamp-2">{@html renderTextWithEventLinks(ev.description, allEvents)}</p>
                       {/if}
                     </div>
                   </div>
@@ -329,13 +331,13 @@
             {#if loc.actors && loc.actors.length > 0}
               <div class="flex flex-col gap-3">
                 {#each loc.actors as rel}
-                  <a href="/actor/{rel.actor.uuid}" class="group flex items-center gap-3">
-                    <div class="w-8 h-8 rounded-full bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs group-hover:border-gold-500/30 transition-colors">👤</div>
+                  <div class="group flex items-center gap-3">
+                    <div class="w-8 h-8 rounded-full bg-iron-950/60 border border-border/10 flex items-center justify-center text-xs">👤</div>
                     <div class="flex flex-col">
-                      <span class="text-[12px] font-bold text-text-primary group-hover:text-gold-400 transition-colors">{rel.actor.name}</span>
-                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest">{rel.relationshipType}</span>
+                      <a href="/actor/{rel.actor.uuid}" class="text-[12px] font-bold text-text-primary hover:text-gold-400 transition-colors">{rel.actor.name}</a>
+                      <span class="text-[9px] text-verdigris-400 uppercase tracking-widest">{@html renderTextWithEventLinks(rel.relationshipType, allEvents)}</span>
                     </div>
-                  </a>
+                  </div>
                 {/each}
               </div>
             {:else}
@@ -352,18 +354,18 @@
             {#if loc.sources && loc.sources.length > 0}
               <div class="flex flex-col gap-3">
                 {#each loc.sources as rel}
-                  <a href="/source/{rel.source.sourceId}" class="group block p-3 bg-iron-950/40 hover:bg-iron-900 border border-border/5 rounded-xl transition-all">
+                  <div class="group block p-3 bg-iron-950/40 hover:bg-iron-900 border border-border/5 rounded-xl transition-all">
                     <div class="flex justify-between items-start gap-2">
-                      <span class="text-[12px] font-bold text-text-primary group-hover:text-gold-400 transition-colors line-clamp-1">{rel.source.title || 'Manuskrip Sejarah'}</span>
+                      <a href="/source/{rel.source.sourceId}" class="text-[12px] font-bold text-text-primary hover:text-gold-400 transition-colors line-clamp-1">{rel.source.title || 'Manuskrip Sejarah'}</a>
                       {#if rel.source.reliabilityScore !== null}
                         <span class="text-[10px] font-bold text-verdigris-400 font-mono">{(rel.source.reliabilityScore * 100).toFixed(0)}%</span>
                       {/if}
                     </div>
                     <div class="flex flex-col gap-0.5 mt-1">
                       <span class="text-[10px] text-text-muted">{rel.source.author || 'Penyusun Anonim'}</span>
-                      <span class="text-[9px] text-verdigris-400 font-semibold uppercase tracking-widest mt-0.5">{rel.relationshipType}</span>
+                      <span class="text-[9px] text-verdigris-400 font-semibold uppercase tracking-widest mt-0.5">{@html renderTextWithEventLinks(rel.relationshipType, allEvents)}</span>
                     </div>
-                  </a>
+                  </div>
                 {/each}
               </div>
             {:else}
