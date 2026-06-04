@@ -320,13 +320,27 @@
     >
       <!-- Sub-header Menu for Toggle View Engine -->
       <div class="p-3 border-b border-border/10 bg-surface/30 flex justify-between items-center pr-48 md:pr-56">
-        <div class="flex flex-col">
-          <h3 class="text-[10px] font-bold text-text-secondary uppercase tracking-wider">
-            Visualisasi Sumbu Peradaban
-          </h3>
-          <span class="text-[8px] text-text-muted mt-0.5">
-            {deriveActors(filteredEvents).length} Tokoh Terkoneksi • {filteredEvents.length} Peristiwa
-          </span>
+        <div class="flex items-center gap-4">
+          <div class="flex flex-col">
+            <h3 class="text-[10px] font-bold text-text-secondary uppercase tracking-wider">
+              Visualisasi Sumbu Peradaban
+            </h3>
+            <span class="text-[8px] text-text-muted mt-0.5">
+              {deriveActors(filteredEvents).length} Tokoh Terkoneksi • {filteredEvents.length} Peristiwa
+            </span>
+          </div>
+          <!-- Stats Badges -->
+          <div class="hidden md:flex items-center gap-2">
+            <span class="px-2 py-0.5 bg-gold-500/10 text-gold-400 border border-gold-500/20 rounded-full text-[9px] font-bold">
+              📜 {filteredEvents.length}
+            </span>
+            <span class="px-2 py-0.5 bg-verdigris-500/10 text-verdigris-400 border border-verdigris-500/20 rounded-full text-[9px] font-bold">
+              👤 {deriveActors(filteredEvents).length}
+            </span>
+            <span class="px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full text-[9px] font-bold">
+              📍 {deriveLocations(filteredEvents).length}
+            </span>
+          </div>
         </div>
         
         <!-- Search Input & Suggestions Dropdown -->
@@ -383,7 +397,7 @@
         </div>
       </div>
 
-      <div class="flex-1 relative p-4 bg-[#060913]/30">
+      <div class="flex-1 relative p-0 bg-[#08060a]">
         {#if viewMode === '3d'}
           <!-- 🛸 Gorgeous 3D Spatio-Temporal space-time cube visualizer -->
           <Graph3D 
@@ -426,63 +440,68 @@
       {/if}
     </div>
 
-    <!-- Bottom Right Overlay: Node Detail Inspector -->
+    <!-- Detail Inspector Panel (Enhanced) -->
     {#if selectedNode}
       <div
-        class="absolute bottom-6 right-6 w-56 glass p-4 rounded-xl border border-border/10 flex flex-col shadow-[0_10px_40px_rgba(0,0,0,0.8)] animate-fade-in z-50 backdrop-blur-md"
+        class="absolute bottom-6 right-6 w-72 glass p-5 rounded-2xl border border-gold-500/15 flex flex-col shadow-[0_10px_50px_rgba(0,0,0,0.9)] animate-fade-in z-50 backdrop-blur-xl"
       >
-        <!-- Close Button -->
         <button 
-          class="absolute top-3 right-3 text-text-muted hover:text-white transition-colors cursor-pointer z-10 text-[10px]"
+          class="absolute top-4 right-4 text-text-muted hover:text-white transition-colors cursor-pointer z-10 w-6 h-6 rounded-full bg-iron-950/60 flex items-center justify-center text-[10px] hover:bg-red-500/20"
           onclick={() => selectedNode = null}
           title="Tutup Panel"
         >
           ✕
         </button>
 
-        <h3
-          class="text-[8px] font-bold text-text-secondary uppercase tracking-wider mb-2.5 pb-2 border-b border-border/10 pr-4"
-        >
-          Detail Peninjau Graf
-        </h3>
+        <div class="flex items-center gap-2 mb-3 pb-2.5 border-b border-border/10">
+          <span class="text-lg">
+            {selectedNode.type === 'event' ? '📜' : selectedNode.type === 'actor' ? '👤' : selectedNode.type === 'location' ? '📍' : '📖'}
+          </span>
+          <h3 class="text-[9px] font-bold text-text-secondary uppercase tracking-widest">
+            Detail {selectedNode.type === 'event' ? 'Peristiwa' : selectedNode.type === 'actor' ? 'Tokoh' : selectedNode.type === 'location' ? 'Lokasi' : 'Sumber'}
+          </h3>
+        </div>
 
         <div class="flex flex-col gap-3">
           <div>
             <span
-              class="text-[7px] uppercase font-extrabold tracking-wider px-1.5 py-0.5 rounded {selectedNode.type === 'event' ? 'bg-gold-500/10 text-gold-400 border border-gold-500/25' : selectedNode.type === 'actor' ? 'bg-verdigris-500/10 text-verdigris-400 border border-verdigris-500/25' : selectedNode.type === 'location' ? 'bg-amber-500/10 text-amber-400 border border-amber-500/25' : 'bg-violet-500/10 text-violet-400 border border-violet-500/25'}"
+              class="text-[8px] uppercase font-extrabold tracking-wider px-2 py-0.5 rounded-full {selectedNode.type === 'event' ? 'bg-gold-500/15 text-gold-400 border border-gold-500/25' : selectedNode.type === 'actor' ? 'bg-verdigris-500/15 text-verdigris-400 border border-verdigris-500/25' : selectedNode.type === 'location' ? 'bg-amber-500/15 text-amber-400 border border-amber-500/25' : 'bg-violet-500/15 text-violet-400 border border-violet-500/25'}"
             >
               {selectedNode.type}
             </span>
-            <h2 class="text-xs font-black text-text-primary mt-1.5 leading-tight pr-3 line-clamp-2">
+            <h2 class="text-sm font-black text-text-primary mt-2 leading-snug pr-6 line-clamp-2">
               {selectedNode.label}
             </h2>
-            <p class="text-[8px] text-text-muted mt-0.5 truncate">{displaySubtitle}</p>
+            <p class="text-[9px] text-gold-400 mt-1 font-semibold">{displaySubtitle}</p>
           </div>
 
-          <!-- Metadata Badges -->
-          <div
-            class="p-2 rounded-lg bg-iron-950/60 border border-border/10 flex flex-col gap-1.5"
-          >
+          <!-- Description Preview -->
+          <p class="text-[10px] text-text-muted leading-relaxed line-clamp-3 border-l-2 border-gold-500/20 pl-2.5">
+            {displayDescription}
+          </p>
+
+          <!-- Metadata -->
+          <div class="p-2.5 rounded-xl bg-iron-950/60 border border-border/10 flex flex-col gap-2">
             <div class="flex justify-between items-center text-[9px]">
               <span class="text-text-secondary">Sanad:</span>
-              <span class="text-gold-400 capitalize font-bold flex items-center gap-1">
-                <span class="w-1.5 h-1.5 rounded-full inline-block {displayTier === 'canonical' ? 'bg-verdigris-500' : displayTier === 'reviewed' ? 'bg-gold-500' : 'bg-gray-400'}"></span>
+              <span class="text-gold-400 capitalize font-bold flex items-center gap-1.5">
+                <span class="w-2 h-2 rounded-full inline-block {displayTier === 'canonical' ? 'bg-verdigris-500 shadow-[0_0_4px_rgba(16,185,129,0.6)]' : displayTier === 'reviewed' ? 'bg-gold-500 shadow-[0_0_4px_rgba(212,168,83,0.6)]' : 'bg-gray-400'}"></span>
                 {displayTier}
               </span>
             </div>
             <div class="flex justify-between items-center text-[9px]">
-              <span class="text-text-secondary">Relasi:</span>
+              <span class="text-text-secondary">Koneksi:</span>
               <span class="text-verdigris-400 font-bold">{displayStats}</span>
             </div>
           </div>
 
-          <!-- Deep Link Navigation -->
           <a
             href={displayLink}
-            class="mt-1 w-full py-2 rounded-lg gradient-rust text-surface text-[10px] font-extrabold text-center hover:shadow-[0_0_15px_rgba(212,168,83,0.35)] transition-all flex items-center justify-center gap-1.5 group cursor-pointer"
+            class="mt-1 w-full py-2.5 rounded-xl gradient-rust text-surface text-[11px] font-extrabold text-center hover:shadow-[0_0_20px_rgba(212,168,83,0.4)] transition-all flex items-center justify-center gap-2 group cursor-pointer"
           >
             <span class="text-sm leading-none">👁️</span>
-            <span>Detail Entitas</span>
+            <span>Buka Detail Entitas</span>
+            <span class="text-[9px] opacity-60 group-hover:opacity-100 transition-opacity">→</span>
           </a>
         </div>
       </div>
