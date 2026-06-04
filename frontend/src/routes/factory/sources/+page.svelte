@@ -297,6 +297,64 @@
           <textarea id="sourceReliabilityAssessment" bind:value={formData.reliabilityAssessment} rows="3" class="bg-iron-950/60 border border-border/10 rounded-lg p-3 text-sm text-text-primary focus:border-blue-500/50 outline-none transition-colors" placeholder="Berikan tinjauan ilmiah mengenai keakuratan sanad, ketersambungan periwayatan, serta orisinalitas naskah ini..."></textarea>
         </div>
 
+        <!-- Cover / Foto Rujukan -->
+        <div class="flex flex-col gap-2 md:col-span-2 glass p-4 rounded-xl border border-border/5 bg-iron-950/20 mt-4">
+          <label class="text-xs font-bold text-blue-400 flex items-center gap-2">
+            <span>🖼️</span> Sampul / Foto Rujukan
+          </label>
+          <div class="flex gap-4 items-center">
+            <div class="w-16 h-20 sm:w-20 sm:h-28 rounded-lg bg-iron-900 border-2 border-border/10 overflow-hidden flex-shrink-0 flex items-center justify-center text-3xl">
+              {#if formData.mediaLinks.some((m: any) => m.mediaType === 'image')}
+                <img src={formData.mediaLinks.find((m: any) => m.mediaType === 'image')?.url} class="w-full h-full object-cover" alt="Cover" />
+              {:else}
+                📖
+              {/if}
+            </div>
+            <div class="flex flex-col gap-2 flex-1">
+              <input type="text" 
+                value={formData.mediaLinks.find((m: any) => m.mediaType === 'image')?.url || ''} 
+                oninput={(e) => {
+                  const url = e.currentTarget.value;
+                  const idx = formData.mediaLinks.findIndex((m: any) => m.mediaType === 'image');
+                  if (url) {
+                    if (idx >= 0) formData.mediaLinks[idx].url = url;
+                    else formData.mediaLinks.push({ mediaType: 'image', url, title: 'Sampul' });
+                  } else {
+                    if (idx >= 0) formData.mediaLinks.splice(idx, 1);
+                  }
+                }}
+                class="bg-iron-950/60 border border-border/10 rounded-lg p-2.5 text-xs text-text-primary focus:border-blue-500/50 outline-none w-full" 
+                placeholder="URL Gambar Sampul..." 
+              />
+              <div class="flex gap-2 items-center">
+                <input type="file" accept="image/*" class="hidden" id="avatarUploadSource" onchange={async (e) => {
+                  const file = (e.target as HTMLInputElement).files?.[0];
+                  if (!file) return;
+                  const fd = new FormData();
+                  fd.append('file', file);
+                  try {
+                    const res = await fetch('/internal/upload', { method: 'POST', body: fd });
+                    const data = await res.json();
+                    if (data.url) {
+                      const idx = formData.mediaLinks.findIndex((m: any) => m.mediaType === 'image');
+                      if (idx >= 0) {
+                        formData.mediaLinks[idx].url = data.url;
+                      } else {
+                        formData.mediaLinks.push({ mediaType: 'image', url: data.url, title: 'Sampul' });
+                      }
+                    } else alert(data.error || 'Upload gagal');
+                  } catch (err) {
+                    alert('Upload gagal');
+                  }
+                }}>
+                <label for="avatarUploadSource" class="px-4 py-2 bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 text-xs font-bold rounded-lg border border-blue-500/20 cursor-pointer transition-all">
+                  📁 Upload File Gambar
+                </label>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Media Links Section -->
         <div class="flex flex-col gap-3 md:col-span-2 border-t border-border/5 pt-6">
           <span class="text-xs font-bold text-blue-400 flex items-center gap-2">
