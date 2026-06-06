@@ -8,6 +8,6 @@ export default defineConfig({
     watch: { usePolling: true },
     host: '0.0.0.0',
     port: 5173,
-    allowedHosts: ['super.sjsgroup.site', '43.134.17.13']
+    allowedHosts: ['super.sjsgroup.site', '43.134.17.13', 'sjs-pc.tailf64cc0.ts.net']
   }
 });
